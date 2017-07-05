@@ -1,0 +1,22 @@
+task copySample(type: Copy) {
+    from project(":${project.name}-sample").files('.') {
+        into "${buildDir}/sample"
+        exclude '**/build', '**/*.iml'
+    }
+}
+
+task packZip(type: Zip, dependsOn: ['javadoc', 'copySample']) {
+    baseName = "Cxense${sdkPublicName}SDK-Android"
+    from (copySample.destinationDir) {
+        into("sample")
+    }
+    from "${buildDir}/docs/"
+    from("${buildDir}/outputs/aar/${project.name}-release.aar") {
+        rename {
+            "Cxense${sdkPublicName}SDK-${android.defaultConfig.versionName}.aar"
+        }
+    }
+    from "$rootDir/gradle/cxense.gradle"
+}
+
+rootProject.afterReleaseBuild.dependsOn packZip

@@ -1,0 +1,31 @@
+afterEvaluate {
+    android.libraryVariants.all { variant ->
+        if (variant.name == 'release') {
+            task javadoc(type: Javadoc) {
+                failOnError false
+                source = variant.javaCompile.source
+                classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+                classpath += files(variant.javaCompile.classpath.files)
+                classpath += configurations.compile
+                options.encoding('UTF-8')
+                options.links "http://docs.oracle.com/javase/7/docs/api/"
+                options.linksOffline "http://d.android.com/reference", "${android.sdkDirectory}/docs/reference"
+                exclude '**/BuildConfig.java'
+                exclude '**/R.java'
+                if (JavaVersion.current().isJava8Compatible()) {
+                    options.addStringOption('Xdoclint:none', '-quiet')
+                }
+            }
+
+            // build a jar with javadoc
+            task javadocJar(type: Jar, dependsOn: javadoc) {
+                classifier = 'javadoc'
+                from javadoc.destinationDir
+            }
+
+            artifacts {
+                archives javadocJar
+            }
+        }
+    }
+}
