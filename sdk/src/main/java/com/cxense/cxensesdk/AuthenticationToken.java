@@ -20,7 +20,7 @@ class AuthenticationToken {
     private static final String ISO_8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     private static final String ALGORITHM = "HmacSHA256";
     private static final String CHARSET_NAME = "UTF-8";
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat(ISO_8601, Locale.US);
+    static final DateFormat DATE_FORMAT = new SimpleDateFormat(ISO_8601, Locale.US);
 
     static String create(String username,
                          String secret)

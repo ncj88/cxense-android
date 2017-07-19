@@ -1,0 +1,315 @@
+package com.cxense.cxensesdk;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+import android.util.Log;
+
+import com.cxense.LoadCallback;
+import com.cxense.cxensesdk.db.DatabaseHelper;
+import com.cxense.cxensesdk.db.EventRecord;
+import com.cxense.cxensesdk.model.UserExternalData;
+import com.cxense.cxensesdk.model.UserIdentity;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.reflect.Whitebox;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
+import retrofit2.Call;
+import retrofit2.Callback;
+
+import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+/**
+ * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-19).
+ */
+@PrepareForTest({DatabaseHelper.class, Log.class})
+@PowerMockIgnore("javax.net.ssl.*")
+public class CxenseSdkTest extends BaseTest {
+    private Context context;
+    private DatabaseHelper databaseHelper;
+    private Call call;
+    private LoadCallback callback;
+
+    @Before
+    public void setUp() throws Exception {
+        mockStatic(Log.class);
+        context = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(context);
+        super.setUp();
+        databaseHelper = spy(new DatabaseHelper(context));
+        call = mock(Call.class);
+        CxenseApi api = mock(CxenseApi.class, invocation -> call);
+        callback = mock(LoadCallback.class);
+        Whitebox.setInternalState(cxense, "apiInstance", api);
+        Whitebox.setInternalState(cxense, "databaseHelper", databaseHelper);
+    }
+
+    @Override
+    protected void initCxenseSdk() throws Exception {
+        cxense = spy(new CxenseSdk(context));
+        Whitebox.setInternalState(CxenseSdk.class, "instance", cxense);
+    }
+
+    @Test
+    public void init() throws Exception {
+        Whitebox.setInternalState(CxenseSdk.class, "instance", (CxenseSdk) null);
+        CxenseSdk.init(context);
+        assertNotNull(Whitebox.getInternalState(CxenseSdk.class, "instance"));
+    }
+
+    @Test
+    public void getInstance() throws Exception {
+        assertEquals(cxense, CxenseSdk.getInstance());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void getInstanceUninitialized() throws Exception {
+        Whitebox.setInternalState(CxenseSdk.class, "instance", (CxenseSdk) null);
+        CxenseSdk.getInstance();
+    }
+
+    @Test
+    public void getBaseUrl() throws Exception {
+        assertEquals(BuildConfig.SDK_ENDPOINT, cxense.getBaseUrl());
+    }
+
+    @Test
+    public void getSdkName() throws Exception {
+        assertEquals(BuildConfig.SDK_NAME, cxense.getSdkName());
+    }
+
+    @Test
+    public void getUserAgent() throws Exception {
+        assertThat(cxense.getUserAgent(), startsWith("cx-sdk/"));
+    }
+
+    @Test
+    public void buildHttpClient() throws Exception {
+        OkHttpClient httpClient = cxense.buildHttpClient();
+        assertNotNull(httpClient.authenticator());
+    }
+
+    @Test
+    public void getAuthenticator() throws Exception {
+        assertNotNull(cxense.getAuthenticator());
+    }
+
+    @Test
+    public void updateAuth() throws Exception {
+        String username = "user", apiKey = "key";
+        CxenseAuthenticator authenticator = spy(new CxenseAuthenticator());
+        OkHttpClient httpClient = mock(OkHttpClient.class);
+        when(httpClient.authenticator()).thenReturn(authenticator);
+        Whitebox.setInternalState(cxense, "okHttpClient", httpClient);
+        cxense.updateAuth(username, apiKey);
+        verify(authenticator).updateCredentials(anyString(), anyString());
+    }
+
+    @Test
+    public void getConfiguration() throws Exception {
+        CxenseConfiguration configuration = new CxenseConfiguration();
+        Whitebox.setInternalState(cxense, "configuration", configuration);
+        assertEquals(configuration, cxense.getConfiguration());
+    }
+
+    @Test
+    public void getUserSegmentIds() throws Exception {
+        cxense.getUserSegmentIds(Collections.emptyList(), Collections.emptyList(), callback);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void getUser() throws Exception {
+        doNothing().when(cxense).getUser(any(UserIdentity.class), anyList(), anyBoolean(), anyList(), any(LoadCallback.class));
+        cxense.getUser(new UserIdentity("id", "type"), callback);
+        verify(cxense).getUser(any(UserIdentity.class), isNull(), isNull(), isNull(), any(LoadCallback.class));
+    }
+
+    @Test
+    public void getUserFullArgs() throws Exception {
+        cxense.getUser(new UserIdentity("id", "type"), null, null, null, callback);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void getUserExternalData() throws Exception {
+        doNothing().when(cxense).getUserExternalData(anyString(), anyString(), any(LoadCallback.class));
+        cxense.getUserExternalData("type", callback);
+        verify(cxense).getUserExternalData(isNull(), anyString(), any(LoadCallback.class));
+    }
+
+    @Test
+    public void getUserExternalDataFullArgs() throws Exception {
+        cxense.getUserExternalData("id", "type", callback);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void setUserExternalData() throws Exception {
+        UserExternalData userExternalData = mock(UserExternalData.class);
+        cxense.setUserExternalData(userExternalData, callback);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void deleteUserExternalData() throws Exception {
+        UserExternalData userExternalData = mock(UserExternalData.class);
+        cxense.deleteUserExternalData(userExternalData, callback);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void getUserExternalLink() throws Exception {
+        cxense.getUserExternalLink("id", "type", callback);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void setUserExternalLink() throws Exception {
+        cxense.setUserExternalLink("id", new UserIdentity("id", "type"), callback);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void putEvents() throws Exception {
+        cxense.putEvents(mock(Event.class), mock(Event.class));
+        verify(cxense, times(2)).putEventRecordInDatabase(any());
+    }
+
+    @Test
+    public void putEventTime() throws Exception {
+        String eventId = "id";
+        final HashMap<String, String> map = new HashMap<>();
+        EventRecord eventRecord = new EventRecord();
+        eventRecord.data = "{}";
+        doReturn(eventRecord).when(cxense).getEventFromDatabase(anyString());
+        doReturn(map).when(cxense).unpackMap(anyString());
+        when(cxense.packObject(any())).thenReturn("{}");
+        doReturn(0L).when(cxense).putEventRecordInDatabase(any(EventRecord.class));
+        cxense.putEventTime(eventId, 60);
+        verify(cxense).getEventFromDatabase(eventId);
+        verify(cxense).unpackMap(eventRecord.data);
+        verify(cxense).packObject(any());
+        verify(cxense).putEventRecordInDatabase(any(EventRecord.class));
+    }
+
+    @Test
+    public void pushEvents() throws Exception {
+        cxense.pushEvents(mock(Event.class));
+        verifyPrivate(cxense).invoke("postRunnable", any(Runnable.class));
+    }
+
+    @Test
+    public void trackActiveTime() throws Exception {
+        PowerMockito.doNothing().when(cxense).trackActiveTime(anyString(), anyLong());
+        cxense.trackActiveTime("id");
+        verify(cxense).trackActiveTime(anyString(), anyLong());
+    }
+
+    @Test
+    public void trackActiveTimeFullArgs() throws Exception {
+        cxense.trackActiveTime("id", 1234);
+        verifyPrivate(cxense).invoke("postRunnable", any(Runnable.class));
+    }
+    @Test
+    public void initSendTaskSchedule() throws Exception {
+        ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        ScheduledFuture<?> scheduled = mock(ScheduledFuture.class);
+        doReturn(scheduled).when(executor).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
+        Whitebox.setInternalState(cxense, "executor", executor);
+        cxense.initSendTaskSchedule();
+        verify(executor).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
+    }
+
+    @Test
+    public void getDisplayMetrics() throws Exception {
+        DisplayMetrics dm = spy(new DisplayMetrics());
+        Resources resources = mock(Resources.class);
+        when(context.getResources()).thenReturn(resources);
+        when(resources.getDisplayMetrics()).thenReturn(dm);
+        assertEquals(dm, cxense.getDisplayMetrics());
+    }
+
+    @Test
+    public void getApplicationVersion() throws Exception {
+        assertEquals(APPVERSION, cxense.getApplicationVersion());
+    }
+
+    @Test
+    public void getApplicationName() throws Exception {
+        assertEquals(APPNAME, cxense.getApplicationName());
+    }
+
+    @Test
+    public void packObject() throws Exception {
+        Map<String, String> map = new HashMap<>();
+        map.put("1", "2");
+        assertEquals("{\"1\":\"2\"}", cxense.packObject(map));
+    }
+
+    @Test
+    public void unpackMap() throws Exception {
+        assertThat(cxense.unpackMap("{\"1\":\"2\"}"), hasEntry("1", "2"));
+    }
+
+    @Test
+    public void putEventRecordInDatabase() throws Exception {
+        doReturn(0L).when(databaseHelper).save(any(EventRecord.class));
+        cxense.putEventRecordInDatabase(new EventRecord());
+        verify(databaseHelper).save(any(EventRecord.class));
+    }
+
+    @Test
+    public void deleteOutdatedEvents() throws Exception {
+        doReturn(0).when(databaseHelper).delete(anyString(), anyString(), any(String[].class));
+        cxense.deleteOutdatedEvents();
+        verify(databaseHelper).delete(eq(EventRecord.TABLE_NAME), anyString(), any(String[].class));
+    }
+
+    @Test
+    public void getNotSubmittedEvents() throws Exception {
+        doReturn(new ArrayList<>()).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        assertThat(cxense.getNotSubmittedEvents(true), hasSize(0));
+        verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+    }
+
+    @Test
+    public void getEventFromDatabase() throws Exception {
+        doReturn(new ArrayList<>()).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        assertNull(cxense.getEventFromDatabase("id"));
+        verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+    }
+
+}

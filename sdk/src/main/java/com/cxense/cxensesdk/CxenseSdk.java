@@ -31,8 +31,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +49,6 @@ public final class CxenseSdk extends Cxense {
     private static final String TAG = CxenseSdk.class.getSimpleName();
     private static CxenseSdk instance;
     private final CxenseConfiguration configuration;
-    private final ScheduledExecutorService executor;
     private final DatabaseHelper databaseHelper;
     private CxenseApi apiInstance;
     private ScheduledFuture<?> scheduled;
@@ -65,7 +62,6 @@ public final class CxenseSdk extends Cxense {
         super(context);
         apiInstance = retrofit.create(CxenseApi.class);
         configuration = new CxenseConfiguration();
-        executor = Executors.newSingleThreadScheduledExecutor();
         databaseHelper = new DatabaseHelper(context);
         sendTask = new SendTask();
         initSendTaskSchedule();
@@ -264,6 +260,48 @@ public final class CxenseSdk extends Cxense {
         apiInstance.updateUserExternalLink(new CxenseUserIdentity(identity, cxenseId)).enqueue(transform(callback));
     }
 
+    void putEvents(final Event... events) {
+        for (Event event : events) {
+            try {
+                putEventRecordInDatabase(event.toEventRecord());
+            } catch (JsonProcessingException e) {
+                // TODO: May be we need to rethrow new exception?
+                Log.e(TAG, "Can't serialize event data", e);
+            } catch (Exception e) {
+                Log.e(TAG, "Error at pushing event", e);
+            }
+        }
+    }
+
+    void putEventTime(String eventId, long activeTime) {
+        try {
+            EventRecord record = getEventFromDatabase(eventId);
+            // Only for page view events
+            if (record == null)
+                return;
+            EventRecord newRecord = new EventRecord(record);
+            // some black magic with map
+            if (activeTime == 0)
+                activeTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - newRecord.timestamp);
+            newRecord.spentTime = activeTime;
+
+            Map<String, String> eventMap = unpackMap(newRecord.data);
+            eventMap.put(PageViewEvent.ACTIVE_RND, eventMap.get(PageViewEvent.RND));
+            eventMap.put(PageViewEvent.ACTIVE_TIME, eventMap.get(PageViewEvent.TIME));
+            eventMap.put(PageViewEvent.ACTIVE_SPENT_TIME, "" + activeTime);
+            newRecord.data = packObject(eventMap);
+
+            putEventRecordInDatabase(newRecord);
+        } catch (JsonProcessingException e) {
+            Log.e(TAG, "Can't serialize event data", e);
+        } catch (IOException e) {
+            // TODO: May be we need to rethrow new exception?
+            Log.e(TAG, "Can't deserialize event data", e);
+        } catch (Exception e) {
+            Log.e(TAG, "Error at tracking time", e);
+        }
+    }
+
     /**
      * Push events to sending queue.
      *
@@ -271,18 +309,7 @@ public final class CxenseSdk extends Cxense {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void pushEvents(@NonNull Event... events) {
-        executor.execute((() -> {
-            for (Event event : events) {
-                try {
-                    long value = putEventRecordInDatabase(event.toEventRecord());
-                } catch (JsonProcessingException e) {
-                    // TODO: May be we need to rethrow new exception?
-                    Log.e(TAG, "Can't serialize event data", e);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error at pushing event", e);
-                }
-            }
-        }));
+        postRunnable(() -> putEvents(events));
     }
 
     /**
@@ -304,35 +331,7 @@ public final class CxenseSdk extends Cxense {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess", "SameParameterValue"}) // Public API.
     public void trackActiveTime(final String eventId, final long activeTime) {
-        executor.execute((() -> {
-            try {
-                EventRecord record = getEventFromDatabase(eventId);
-                // Only for page view events
-                if (record == null)
-                    return;
-                EventRecord newRecord = new EventRecord(record);
-                // some black magic with map
-                long time = activeTime;
-                if (time == 0)
-                    time = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - newRecord.timestamp);
-                newRecord.spentTime = time;
-
-                Map<String, String> eventMap = unpackMap(newRecord.data);
-                eventMap.put(PageViewEvent.ACTIVE_RND, eventMap.get(PageViewEvent.RND));
-                eventMap.put(PageViewEvent.ACTIVE_TIME, eventMap.get(PageViewEvent.TIME));
-                eventMap.put(PageViewEvent.ACTIVE_SPENT_TIME, "" + activeTime);
-                newRecord.data = packObject(eventMap);
-
-                putEventRecordInDatabase(newRecord);
-            } catch (JsonProcessingException e) {
-                Log.e(TAG, "Can't serialize event data", e);
-            } catch (IOException e) {
-                // TODO: May be we need to rethrow new exception?
-                Log.e(TAG, "Can't deserialize event data", e);
-            } catch (Exception e) {
-                Log.e(TAG, "Error at tracking time", e);
-            }
-        }));
+        postRunnable(() -> putEventTime(eventId, activeTime));
     }
 
     void initSendTaskSchedule() {
@@ -367,15 +366,8 @@ public final class CxenseSdk extends Cxense {
      */
     @Nullable
     String getApplicationName() {
-        try {
-            Resources resources = appContext.getResources();
-            CharSequence appName = resources.getText(
-                    resources.getIdentifier("app_name", "string", appContext.getPackageName()));
-            return appName.toString();
-        } catch (Resources.NotFoundException e) {
-            Log.e(TAG, "Problems during application name search", e);
-        }
-        return null;
+        CharSequence label = appContext.getPackageManager().getApplicationLabel(appContext.getApplicationInfo());
+        return label != null ? label.toString() : null;
     }
 
     String packObject(Object data) throws JsonProcessingException {

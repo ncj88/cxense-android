@@ -18,7 +18,7 @@ import okhttp3.Route;
  */
 class CxenseAuthenticator implements Authenticator {
     public static final int DEFAULT_MAX_ATTEMPTS = 3;
-    private static final String AUTH_HEADER = "X-cXense-Authentication";
+    static final String AUTH_HEADER = "X-cXense-Authentication";
 
     private int maxAttempts;
     private String username;

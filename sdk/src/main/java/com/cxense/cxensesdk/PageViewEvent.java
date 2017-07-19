@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-03).
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-public class PageViewEvent extends Event {
+public final class PageViewEvent extends Event {
     public static final int MAX_EXTERNAL_USER_IDS = 5;
     /**
      * Max length for custom parameter value.
@@ -497,7 +497,7 @@ public class PageViewEvent extends Event {
          *
          * @return Event instance
          */
-        public Event build() {
+        public PageViewEvent build() {
             return new PageViewEvent(this);
         }
     }

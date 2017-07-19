@@ -7,7 +7,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-alpha6'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha7'
         
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -36,10 +36,8 @@ ext {
     compileSourceVersion = JavaVersion.VERSION_1_8
     compileTargetVersion = JavaVersion.VERSION_1_8
 
-    cxenseVersion = '3.2.2'
+    cxenseVersion = 'develop-SNAPSHOT'
     junitVersion = '4.12'
-    supportVersion = '25.4.0'
-    butterknifeVersion = '8.6.0'
-    architectureVersion = '1.0.0-alpha3'
-    daggerVersion = '2.11'
+    powermockVersion = '1.7.0'
+    hamcrestVersion = '1.3'
 }

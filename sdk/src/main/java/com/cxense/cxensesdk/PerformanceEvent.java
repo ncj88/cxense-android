@@ -284,7 +284,7 @@ public final class PerformanceEvent extends Event {
          * @return Builder instance
          */
         public Builder setOrigin(String origin) {
-            Preconditions.checkStringForRegex(origin, "origin", "\\w{3}-\\w+", "'%s' must be prefixed by the customer prefix.");
+            Preconditions.checkStringForRegex(origin, "origin", "\\w{3}-\\w+", "'%s' must be prefixed by the customer prefix.", "origin");
             this.origin = origin;
             return this;
         }
