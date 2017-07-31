@@ -42,4 +42,22 @@ public class BaseUserIdentity {
         Preconditions.checkStringForNullOrEmpty(type, "type");
         this.type = type;
     }
+
+    /**
+     * Gets user identifier value
+     *
+     * @return user identifier
+     */
+    public String getId() {
+        return id;
+    }
+
+    /**
+     * Gets user identifier type
+     *
+     * @return user identifier type
+     */
+    public String getType() {
+        return type;
+    }
 }

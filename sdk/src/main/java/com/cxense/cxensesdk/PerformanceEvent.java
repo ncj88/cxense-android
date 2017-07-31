@@ -74,7 +74,7 @@ public final class PerformanceEvent extends Event {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public Date getTime() {
-        return time != null ? new Date(time) : null;
+        return time != null ? new Date(TimeUnit.SECONDS.toMillis(time)) : null;
     }
 
     /**
@@ -190,7 +190,7 @@ public final class PerformanceEvent extends Event {
             setType(type);
         }
 
-        private void setTime(long milliseconds) {
+        void setTime(long milliseconds) {
             this.time = TimeUnit.MILLISECONDS.toSeconds(milliseconds);
         }
 

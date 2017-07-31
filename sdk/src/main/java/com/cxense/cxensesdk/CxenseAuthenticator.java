@@ -55,7 +55,7 @@ class CxenseAuthenticator implements Authenticator {
         }
     }
 
-    private int responseCount(Response response) {
+    int responseCount(Response response) {
         int result = 1;
         while ((response = response.priorResponse()) != null) {
             result++;

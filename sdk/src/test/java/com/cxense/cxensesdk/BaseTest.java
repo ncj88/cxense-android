@@ -1,6 +1,8 @@
 package com.cxense.cxensesdk;
 
+import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -17,15 +19,18 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-19).
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({CxenseSdk.class, TextUtils.class})
+@PrepareForTest({CxenseSdk.class, TextUtils.class, Log.class})
 public abstract class BaseTest {
     protected static final String APPNAME = "NAME";
     protected static final String APPVERSION = "1.0";
     protected CxenseSdk cxense;
+    protected Context context;
 
     @Before
     public void setUp() throws Exception {
-        mockStatic(TextUtils.class);
+        context = mock(Context.class);
+        when(context.getApplicationContext()).thenReturn(context);
+        mockStatic(TextUtils.class, Log.class);
         initCxenseSdk();
         doReturn(APPNAME).when(cxense).getApplicationName();
         doReturn(APPVERSION).when(cxense).getApplicationVersion();

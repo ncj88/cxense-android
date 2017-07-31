@@ -1,25 +1,29 @@
 package com.cxense.cxensesdk;
 
+import android.location.Location;
 import android.util.DisplayMetrics;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.reflect.Whitebox;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.cxense.cxensesdk.PageViewEvent.CUSTOM_PARAMETER_PREFIX;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
@@ -51,9 +55,90 @@ public class PageViewEventTest extends BaseTest {
     }
 
     @Test
+    public void getEventId() throws Exception {
+        String eventId = "eventId";
+        Whitebox.setInternalState(event, "eventId", eventId);
+        assertEquals(eventId, event.getEventId());
+    }
+
+    @Test
+    public void getType() throws Exception {
+        String type = "type";
+        Whitebox.setInternalState(event, "type", type);
+        assertEquals(type, event.getType());
+    }
+
+    @Test
+    public void getAccountId() throws Exception {
+        int accountId = 1;
+        Whitebox.setInternalState(event, "accountId", accountId);
+        assertEquals(accountId, event.getAccountId());
+    }
+
+    @Test
+    public void getLocation() throws Exception {
+        String location = "location";
+        Whitebox.setInternalState(event, "location", location);
+        assertEquals(location, event.getLocation());
+    }
+
+    @Test
+    public void getReferrer() throws Exception {
+        String referrer = "referrer";
+        Whitebox.setInternalState(event, "referrer", referrer);
+        assertEquals(referrer, event.getReferrer());
+    }
+
+    @Test
+    public void getGoalId() throws Exception {
+        String goalId = "goalId";
+        Whitebox.setInternalState(event, "goalId", goalId);
+        assertEquals(goalId, event.getGoalId());
+    }
+
+    @Test
+    public void getPageName() throws Exception {
+        String pageName = "pageName";
+        Whitebox.setInternalState(event, "pageName", pageName);
+        assertEquals(pageName, event.getPageName());
+    }
+
+    @Test
+    public void getDate() throws Exception {
+        Date date = new Date();
+        Whitebox.setInternalState(event, "date", date);
+        assertEquals(date, event.getDate());
+    }
+
+    @Test
+    public void isNewUser() throws Exception {
+        Whitebox.setInternalState(event, "isNewUser", true);
+        assertTrue(event.isNewUser());
+    }
+
+    @Test
+    public void getUserLocation() throws Exception {
+        Location userLocation = new Location("gps");
+        Whitebox.setInternalState(event, "userLocation", userLocation);
+        assertThat(userLocation, is(event.getUserLocation()));
+    }
+
+    @Test
     public void toMap() throws Exception {
         DisplayMetrics dm = new DisplayMetrics();
-        when(cxense.getDisplayMetrics()).thenReturn(dm);
+        when(cxense.getDisplayMetrics()).thenReturn(dm);Location userLocation = mock(Location.class);
+        when(userLocation.hasAccuracy()).thenReturn(true);
+        when(userLocation.hasAltitude()).thenReturn(true);
+        when(userLocation.hasBearing()).thenReturn(true);
+        when(userLocation.hasSpeed()).thenReturn(true);
+        Map<String, String> params = new HashMap<>();
+        params.put("key", "value");
+        List<ExternalUserId> externalUserIds = new ArrayList<>();
+        externalUserIds.add(new ExternalUserId("userType", "userId"));
+        Whitebox.setInternalState(event, "userLocation", userLocation);
+        Whitebox.setInternalState(event, "customParameters", params);
+        Whitebox.setInternalState(event, "customUserParameters", params);
+        Whitebox.setInternalState(event, "externalUserIds", externalUserIds);
         Map<String, String> result = event.toMap();
         assertThat(result, allOf(
                 hasKey(PageViewEvent.SITE_ID),

@@ -41,6 +41,7 @@ import retrofit2.Response;
 
 /**
  * Singleton class used as a facade to the Cxense services
+ * Read full documentation <a href="https://wiki.cxense.com/display/cust/Cxense+SDK+for+Android">here</a>
  *
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-03).
  */
@@ -410,8 +411,8 @@ public final class CxenseSdk extends Cxense {
         return new EventRecord(values.get(0));
     }
 
-    private static class SendTask implements Runnable {
-        private void sendDmpEvents(@NonNull List<EventRecord> events) {
+    static class SendTask implements Runnable {
+        void sendDmpEvents(@NonNull List<EventRecord> events) {
             if (events.isEmpty())
                 return;
             try {
@@ -433,7 +434,7 @@ public final class CxenseSdk extends Cxense {
             }
         }
 
-        private void sendPageViewEvents(@NonNull List<EventRecord> events) {
+        void sendPageViewEvents(@NonNull List<EventRecord> events) {
             CxenseSdk cxense = CxenseSdk.getInstance();
             for (EventRecord event : events) {
                 try {

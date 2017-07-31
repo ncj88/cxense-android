@@ -43,6 +43,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -54,19 +55,15 @@ import static org.powermock.api.mockito.PowerMockito.when;
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-19).
  */
-@PrepareForTest({DatabaseHelper.class, Log.class})
+@PrepareForTest({DatabaseHelper.class})
 @PowerMockIgnore("javax.net.ssl.*")
 public class CxenseSdkTest extends BaseTest {
-    private Context context;
     private DatabaseHelper databaseHelper;
     private Call call;
     private LoadCallback callback;
 
     @Before
     public void setUp() throws Exception {
-        mockStatic(Log.class);
-        context = mock(Context.class);
-        when(context.getApplicationContext()).thenReturn(context);
         super.setUp();
         databaseHelper = spy(new DatabaseHelper(context));
         call = mock(Call.class);
@@ -138,6 +135,14 @@ public class CxenseSdkTest extends BaseTest {
     }
 
     @Test
+    public void updateAuthNullAuthenticator() throws Exception {
+        OkHttpClient httpClient = mock(OkHttpClient.class);
+        when(httpClient.authenticator()).thenReturn(null);
+        Whitebox.setInternalState(cxense, "okHttpClient", httpClient);
+        cxense.updateAuth("user", "key");
+    }
+
+    @Test
     public void getConfiguration() throws Exception {
         CxenseConfiguration configuration = new CxenseConfiguration();
         Whitebox.setInternalState(cxense, "configuration", configuration);
@@ -159,7 +164,7 @@ public class CxenseSdkTest extends BaseTest {
 
     @Test
     public void getUserFullArgs() throws Exception {
-        cxense.getUser(new UserIdentity("id", "type"), null, null, null, callback);
+        cxense.getUser(new UserIdentity("id", "type"), new ArrayList<>(), null, new ArrayList<>(), callback);
         verify(call).enqueue(any(Callback.class));
     }
 
@@ -218,7 +223,7 @@ public class CxenseSdkTest extends BaseTest {
         doReturn(map).when(cxense).unpackMap(anyString());
         when(cxense.packObject(any())).thenReturn("{}");
         doReturn(0L).when(cxense).putEventRecordInDatabase(any(EventRecord.class));
-        cxense.putEventTime(eventId, 60);
+        cxense.putEventTime(eventId, 0);
         verify(cxense).getEventFromDatabase(eventId);
         verify(cxense).unpackMap(eventRecord.data);
         verify(cxense).packObject(any());

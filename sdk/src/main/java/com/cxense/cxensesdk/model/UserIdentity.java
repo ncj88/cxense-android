@@ -38,22 +38,4 @@ public class UserIdentity extends BaseUserIdentity {
     public UserIdentity(@NonNull UserIdentity identity) {
         this(identity.id, identity.type);
     }
-
-    /**
-     * Gets user identifier value
-     *
-     * @return user identifier
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * Gets user identifier type
-     *
-     * @return user identifier type
-     */
-    public String getType() {
-        return type;
-    }
 }
