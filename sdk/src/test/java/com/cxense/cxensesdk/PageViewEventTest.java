@@ -19,7 +19,10 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -126,7 +129,8 @@ public class PageViewEventTest extends BaseTest {
     @Test
     public void toMap() throws Exception {
         DisplayMetrics dm = new DisplayMetrics();
-        when(cxense.getDisplayMetrics()).thenReturn(dm);Location userLocation = mock(Location.class);
+        when(cxense.getDisplayMetrics()).thenReturn(dm);
+        Location userLocation = mock(Location.class);
         when(userLocation.hasAccuracy()).thenReturn(true);
         when(userLocation.hasAltitude()).thenReturn(true);
         when(userLocation.hasBearing()).thenReturn(true);

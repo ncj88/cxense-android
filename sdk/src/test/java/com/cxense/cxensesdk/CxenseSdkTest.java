@@ -1,9 +1,7 @@
 package com.cxense.cxensesdk;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
 import com.cxense.LoadCallback;
 import com.cxense.cxensesdk.db.DatabaseHelper;
@@ -33,7 +31,10 @@ import retrofit2.Callback;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -43,11 +44,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -248,6 +247,7 @@ public class CxenseSdkTest extends BaseTest {
         cxense.trackActiveTime("id", 1234);
         verifyPrivate(cxense).invoke("postRunnable", any(Runnable.class));
     }
+
     @Test
     public void initSendTaskSchedule() throws Exception {
         ScheduledExecutorService executor = mock(ScheduledExecutorService.class);

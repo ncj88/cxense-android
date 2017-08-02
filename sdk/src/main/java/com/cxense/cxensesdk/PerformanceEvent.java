@@ -60,7 +60,7 @@ public final class PerformanceEvent extends Event {
         EventRecord record = new EventRecord();
         record.data = CxenseSdk.getInstance().packObject(this);
         // event time in seconds, but timestamp in milliseconds
-        record.timestamp = time != null ? TimeUnit.SECONDS.toMillis(time): System.currentTimeMillis();
+        record.timestamp = time != null ? TimeUnit.SECONDS.toMillis(time) : System.currentTimeMillis();
         record.ckp = prnd;
         record.rnd = rnd;
         record.eventType = type;

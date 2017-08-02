@@ -21,7 +21,6 @@ import okio.BufferedSource;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.isNull;
