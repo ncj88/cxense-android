@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.webkit.URLUtil;
 
 import com.cxense.ArrayFixedSizeQueue;
 import com.cxense.Preconditions;
@@ -382,7 +383,7 @@ public final class PageViewEvent extends Event {
          */
         public Builder setLocation(@NonNull String location) {
             Preconditions.checkStringForNullOrEmpty(location, "location");
-            this.location = location;
+            this.location = URLUtil.isNetworkUrl(location) ? location : CxenseSdk.getInstance().getConfiguration().getUrlLessBaseUrl() + location;
             return this;
         }
 

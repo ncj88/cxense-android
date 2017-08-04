@@ -20,20 +20,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.spy;
+import static org.powermock.api.mockito.PowerMockito.when;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-31).
  */
-@PrepareForTest({PageViewEvent.class})
+@PrepareForTest({PageViewEvent.class, CxenseConfiguration.class})
 public class PageViewEventBuilderTest extends BaseTest {
     private PageViewEvent event;
     private PageViewEvent.Builder builder;
+    private CxenseConfiguration configuration;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         event = mock(PageViewEvent.class);
+        configuration = spy(new CxenseConfiguration());
+        when(cxense.getConfiguration()).thenReturn(configuration);
         builder = new PageViewEvent.Builder("siteId", "location");
         whenNew(PageViewEvent.class).withAnyArguments().thenReturn(event);
     }
@@ -66,9 +71,17 @@ public class PageViewEventBuilderTest extends BaseTest {
 
     @Test
     public void setLocation() throws Exception {
-        String location = "location";
+        String location = "http://test.com/page_location";
         assertThat(builder, is(builder.setLocation(location)));
         assertEquals(location, Whitebox.getInternalState(builder, "location"));
+    }
+
+    @Test
+    public void setLocationUrlLess() throws Exception {
+        String baseUrl = "http://test.com/", location = "location";
+        when(configuration.getUrlLessBaseUrl()).thenReturn(baseUrl);
+        assertThat(builder, is(builder.setLocation(location)));
+        assertEquals(baseUrl + location, Whitebox.getInternalState(builder, "location"));
     }
 
     @Test(expected = IllegalArgumentException.class)
