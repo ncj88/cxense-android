@@ -46,6 +46,11 @@ import retrofit2.Response;
  */
 
 public final class CxenseSdk extends Cxense {
+    /**
+     * Default "base url" for url-less mode
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    static final String DEFAULT_URL_LESS_BASE_URL = "http://%s.content.id/%s";
     private static final String TAG = CxenseSdk.class.getSimpleName();
     private static CxenseSdk instance;
     private final CxenseConfiguration configuration;

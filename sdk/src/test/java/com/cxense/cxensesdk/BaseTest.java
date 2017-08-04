@@ -12,7 +12,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -55,8 +54,6 @@ public abstract class BaseTest {
         mockStatic(TextUtils.class, Log.class, URLUtil.class);
         when(URLUtil.isNetworkUrl(anyString())).thenAnswer(invocation -> isNetworkUrl(invocation.getArgument(0)));
         initCxenseSdk();
-        doReturn(APPNAME).when(cxense).getApplicationName();
-        doReturn(APPVERSION).when(cxense).getApplicationVersion();
         when(TextUtils.isEmpty(any())).thenAnswer(invocation -> {
             CharSequence arg = invocation.getArgument(0);
             return arg == null || arg.length() == 0;

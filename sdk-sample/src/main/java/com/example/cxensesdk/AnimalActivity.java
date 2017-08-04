@@ -31,7 +31,8 @@ public class AnimalActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        CxenseSdk.getInstance().pushEvents(new PageViewEvent.Builder(BuildConfig.SITE_ID, "http://example.com/item")
+        CxenseSdk.getInstance().pushEvents(new PageViewEvent.Builder(BuildConfig.SITE_ID)
+                .setContentId(item)
                 .setEventId(item)
                 .addCustomParameter("xyz-item", item)
                 .build());

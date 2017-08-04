@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.webkit.URLUtil;
 
 import com.cxense.ArrayFixedSizeQueue;
 import com.cxense.Preconditions;
@@ -24,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Tracking page view event description.
+ * Page view event has support for two modes: standard page view event and URL-less mode for content view event
  *
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-03).
  */
@@ -82,6 +82,7 @@ public final class PageViewEvent extends Event {
     private String type;
     private int accountId = 0;
     private String siteId;
+    private String contentId;
     private String location;
     private String referrer;
     private String goalId;
@@ -104,6 +105,7 @@ public final class PageViewEvent extends Event {
         type = builder.type;
         accountId = builder.accountId;
         siteId = builder.siteId;
+        contentId = builder.contentId;
         location = builder.location;
         referrer = builder.referrer;
         goalId = builder.goalId;
@@ -153,6 +155,24 @@ public final class PageViewEvent extends Event {
      */
     public int getAccountId() {
         return accountId;
+    }
+
+    /**
+     * Gets the Cxense site identifier.
+     *
+     * @return the Cxense site identifier.
+     */
+    public String getSiteId() {
+        return siteId;
+    }
+
+    /**
+     * Gets content id for URL-less mode.
+     *
+     * @return content id
+     */
+    public String getContentId() {
+        return contentId;
     }
 
     /**
@@ -231,6 +251,7 @@ public final class PageViewEvent extends Event {
         String resolution = String.format(Locale.US, "%dx%d", dm.widthPixels, dm.heightPixels);
         Locale locale = Locale.getDefault();
         String lang = String.format(Locale.US, "%s_%s", escapeString(locale.getLanguage()), escapeString(locale.getCountry()));
+        String locationUrl = contentId != null ? String.format(CxenseSdk.DEFAULT_URL_LESS_BASE_URL, siteId, contentId) : location;
 
         Map<String, String> result = new HashMap<>();
         int i = 0;
@@ -251,7 +272,7 @@ public final class PageViewEvent extends Event {
         result.put(VERSION, "" + version);
         result.put(TYPE, type);
         result.put(ACCOUNT, "" + accountId);
-        result.put(LOCATION, location);
+        result.put(LOCATION, locationUrl);
         result.put(REFERRER, escapeString(referrer));
         result.put(GOAL, escapeString(goalId));
         result.put(PAGE_NAME, escapeString(pageName));
@@ -302,6 +323,7 @@ public final class PageViewEvent extends Event {
         private String type = DEFAULT_EVENT_TYPE;
         private int accountId = 0;
         private String siteId;
+        private String contentId;
         private String location;
         private String referrer;
         private String goalId;
@@ -321,12 +343,11 @@ public final class PageViewEvent extends Event {
         /**
          * Initialize Builder
          *
-         * @param location The URL of the page. Must be a syntactically valid URL, or else the event will be dropped.
+         * @param siteId the Cxense site identifier.
          */
-        public Builder(@NonNull String siteId, @NonNull String location) {
+        public Builder(@NonNull String siteId) {
             this();
             setSiteId(siteId);
-            setLocation(location);
         }
 
         /**
@@ -376,25 +397,39 @@ public final class PageViewEvent extends Event {
         }
 
         /**
+         * Sets content id for URL-less mode.
+         * Forces to ignore page location value.
+         *
+         * @param contentId content id
+         * @return Builder instance
+         */
+        public Builder setContentId(@NonNull String contentId) {
+            Preconditions.checkStringForNullOrEmpty(contentId, "contentId");
+            this.contentId = contentId;
+            return this;
+        }
+
+        /**
          * Sets the URL of the page. Must be a syntactically valid URL, or else the event will be dropped.
+         * This value will be ignored, if you setup content id.
          *
          * @param location page URL
          * @return Builder instance
          */
         public Builder setLocation(@NonNull String location) {
-            Preconditions.checkStringForNullOrEmpty(location, "location");
-            this.location = URLUtil.isNetworkUrl(location) ? location : CxenseSdk.getInstance().getConfiguration().getUrlLessBaseUrl() + location;
+            Preconditions.checkStringIsUrl(location, "location", "location must be valid URL");
+            this.location = location;
             return this;
         }
 
         /**
-         * Sets the URL of the referring page.
+         * Sets the URL of the referring page. Must be a syntactically valid URL
          *
          * @param referrer referring page URL
          * @return Builder instance
          */
         public Builder setReferrer(@NonNull String referrer) {
-            Preconditions.checkStringForNullOrEmpty(referrer, "referrer");
+            Preconditions.checkStringIsUrl(referrer, "referrer", "referrer must be valid URL");
             this.referrer = referrer;
             return this;
         }
@@ -497,8 +532,11 @@ public final class PageViewEvent extends Event {
          * Build {@link Event} instance.
          *
          * @return Event instance
+         * @throws IllegalStateException if location and content id does not specified.
          */
         public PageViewEvent build() {
+            if (location == null && contentId == null)
+                throw new IllegalStateException("You should specify page location or content id");
             return new PageViewEvent(this);
         }
     }

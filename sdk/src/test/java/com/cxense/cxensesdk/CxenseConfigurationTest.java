@@ -137,31 +137,6 @@ public class CxenseConfigurationTest extends BaseTest {
         configuration.setOutdatedPeriod(CxenseConfiguration.MIN_OUTDATE_PERIOD - 1, TimeUnit.MILLISECONDS);
     }
 
-
-    @Test
-    public void getUrlLessBaseUrl() throws Exception {
-        String url = "http://abcd.com/";
-        Whitebox.setInternalState(configuration, "urlLessBaseUrl", url);
-        assertEquals(url, configuration.getUrlLessBaseUrl());
-    }
-
-    @Test
-    public void setUrlLessBaseUrl() throws Exception {
-        String url = "http://abcd.com/";
-        configuration.setUrlLessBaseUrl(url);
-        assertEquals(url, Whitebox.getInternalState(configuration, "urlLessBaseUrl"));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setUrlLessBaseUrlFailed() throws Exception {
-        configuration.setUrlLessBaseUrl("http://abcd.com");
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setUrlLessBaseUrlNotNetworkUri() throws Exception {
-        configuration.setUrlLessBaseUrl("content://");
-    }
-
     @Test
     public void isRestricted() throws Exception {
         when(info.isConnected()).thenReturn(false);

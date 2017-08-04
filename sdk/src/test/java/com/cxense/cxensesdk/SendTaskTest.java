@@ -69,6 +69,12 @@ public class SendTaskTest extends BaseTest {
     }
 
     @Test
+    public void sendDmpEventsUnsuccessful() throws Exception {
+        ResponseBody body = mock(ResponseBody.class);
+        when(call.execute()).thenReturn(Response.error(404, body));
+    }
+
+    @Test
     public void sendPageViewEvents() throws Exception {
         EventRecord record = new EventRecord();
         record.data = "{}";

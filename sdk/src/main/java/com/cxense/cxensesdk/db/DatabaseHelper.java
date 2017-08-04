@@ -12,7 +12,7 @@ import com.cxense.db.AbstractDatabaseHelper;
  */
 
 public final class DatabaseHelper extends AbstractDatabaseHelper {
-    private static final int DATABASE_VERSION = 1;
+    static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "tracks.db";
 
     public DatabaseHelper(Context context) {

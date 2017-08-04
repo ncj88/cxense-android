@@ -5,7 +5,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
-import android.webkit.URLUtil;
 
 import com.cxense.Preconditions;
 
@@ -39,11 +38,6 @@ public final class CxenseConfiguration {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public static final long MIN_OUTDATE_PERIOD = TimeUnit.MINUTES.toMillis(10);
-    /**
-     * Default "base url" for url-less mode
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public static final String DEFAULT_URL_LESS_BASE_URL = "http://example.com/";
 
     static final long DISPATCH_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);
     private String username;
@@ -53,7 +47,6 @@ public final class CxenseConfiguration {
     private NetworkRestriction networkRestriction = NetworkRestriction.NONE;
     private DispatchMode dispatchMode = DispatchMode.ONLINE;
     private long outdatePeriod = DEFAULT_OUTDATED_PERIOD;
-    private String urlLessBaseUrl = DEFAULT_URL_LESS_BASE_URL;
 
     CxenseConfiguration() {
     }
@@ -215,29 +208,6 @@ public final class CxenseConfiguration {
         if (millis < MIN_OUTDATE_PERIOD)
             throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds", TimeUnit.MILLISECONDS.toSeconds(MIN_OUTDATE_PERIOD)));
         this.outdatePeriod = millis;
-    }
-
-    /**
-     * Gets current base url for url-less mode.
-     *
-     * @return current base url
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public String getUrlLessBaseUrl() {
-        return urlLessBaseUrl;
-    }
-
-    /**
-     * Sets base url for url-less mode.
-     *
-     * @param baseUrl base url. Must be a syntactically valid http/https URL
-     * @throws IllegalArgumentException if url is not http/https url
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void setUrlLessBaseUrl(String baseUrl) {
-        Preconditions.check(s -> !URLUtil.isNetworkUrl(s), baseUrl, "baseUrl is not network url");
-        Preconditions.check(s -> !s.endsWith("/"), baseUrl, "baseUrl must end in /");
-        urlLessBaseUrl = baseUrl;
     }
 
     /**

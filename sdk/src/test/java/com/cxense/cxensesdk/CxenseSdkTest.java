@@ -1,5 +1,8 @@
 package com.cxense.cxensesdk;
 
+import android.content.ContentValues;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
@@ -37,6 +40,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -50,6 +54,7 @@ import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
 import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-19).
@@ -60,6 +65,7 @@ public class CxenseSdkTest extends BaseTest {
     private DatabaseHelper databaseHelper;
     private Call call;
     private LoadCallback callback;
+    private PackageManager pm;
 
     @Before
     public void setUp() throws Exception {
@@ -68,6 +74,18 @@ public class CxenseSdkTest extends BaseTest {
         call = mock(Call.class);
         CxenseApi api = mock(CxenseApi.class, invocation -> call);
         callback = mock(LoadCallback.class);
+        pm = mock(PackageManager.class);
+
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.versionName = APPVERSION;
+        when(pm.getApplicationLabel(any())).thenReturn(APPNAME);
+        when(context.getPackageName()).thenReturn(APPNAME);
+        when(context.getPackageManager()).thenReturn(pm);
+        when(pm.getPackageInfo(anyString(), anyInt())).thenReturn(packageInfo);
+
+        EventRecord record = new EventRecord();
+        whenNew(EventRecord.class).withAnyArguments().thenReturn(record);
+
         Whitebox.setInternalState(cxense, "apiInstance", api);
         Whitebox.setInternalState(cxense, "databaseHelper", databaseHelper);
     }
@@ -273,6 +291,12 @@ public class CxenseSdkTest extends BaseTest {
     }
 
     @Test
+    public void getApplicationVersionException() throws Exception {
+        when(pm.getPackageInfo(anyString(), anyInt())).thenThrow(new PackageManager.NameNotFoundException());
+        assertNull(cxense.getApplicationVersion());
+    }
+
+    @Test
     public void getApplicationName() throws Exception {
         assertEquals(APPNAME, cxense.getApplicationName());
     }
@@ -305,13 +329,20 @@ public class CxenseSdkTest extends BaseTest {
 
     @Test
     public void getNotSubmittedEvents() throws Exception {
-        doReturn(new ArrayList<>()).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
-        assertThat(cxense.getNotSubmittedEvents(true), hasSize(0));
+        doReturn(Collections.singletonList(new ContentValues())).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        assertThat(cxense.getNotSubmittedEvents(true), hasSize(1));
         verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
     }
 
     @Test
     public void getEventFromDatabase() throws Exception {
+        doReturn(Collections.singletonList(new ContentValues())).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        assertNotNull(cxense.getEventFromDatabase("id"));
+        verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+    }
+
+    @Test
+    public void getEventFromDatabaseEmpty() throws Exception {
         doReturn(new ArrayList<>()).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
         assertNull(cxense.getEventFromDatabase("id"));
         verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());

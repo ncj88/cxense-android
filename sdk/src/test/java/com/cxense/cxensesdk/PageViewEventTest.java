@@ -43,7 +43,7 @@ public class PageViewEventTest extends BaseTest {
         super.setUp();
         configuration = spy(new CxenseConfiguration());
         when(cxense.getConfiguration()).thenReturn(configuration);
-        event = spy(new PageViewEvent.Builder("siteId", "http://example.com").build());
+        event = spy(new PageViewEvent.Builder("siteId").setLocation("http://example.com").build());
     }
 
     @Test
@@ -76,6 +76,20 @@ public class PageViewEventTest extends BaseTest {
         int accountId = 1;
         Whitebox.setInternalState(event, "accountId", accountId);
         assertEquals(accountId, event.getAccountId());
+    }
+
+    @Test
+    public void getSiteId() throws Exception {
+        String siteId = "siteId";
+        Whitebox.setInternalState(event, "siteId", siteId);
+        assertEquals(siteId, event.getSiteId());
+    }
+
+    @Test
+    public void getContentId() throws Exception {
+        String contentId = "contentId";
+        Whitebox.setInternalState(event, "contentId", contentId);
+        assertEquals(contentId, event.getContentId());
     }
 
     @Test
@@ -128,6 +142,8 @@ public class PageViewEventTest extends BaseTest {
 
     @Test
     public void toMap() throws Exception {
+        doReturn(APPNAME).when(cxense).getApplicationName();
+        doReturn(APPVERSION).when(cxense).getApplicationVersion();
         DisplayMetrics dm = new DisplayMetrics();
         when(cxense.getDisplayMetrics()).thenReturn(dm);
         Location userLocation = mock(Location.class);

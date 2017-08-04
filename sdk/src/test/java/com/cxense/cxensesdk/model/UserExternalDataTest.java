@@ -15,7 +15,9 @@ public class UserExternalDataTest extends BaseTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        externalData = new UserExternalData(new UserExternalData.Builder(new UserIdentity("id", "type")));
+        externalData = new UserExternalData(
+                new UserExternalData.Builder(new UserIdentity("id", "type"))
+                        .addExternalItem("group", "item"));
     }
 
     @Test(expected = UnsupportedOperationException.class)
