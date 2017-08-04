@@ -30,13 +30,12 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
  */
 @PrepareForTest({PerformanceEvent.class})
 public class PerformanceEventBuilderTest extends BaseTest {
-    private PerformanceEvent event;
     private PerformanceEvent.Builder builder;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        event = mock(PerformanceEvent.class);
+        PerformanceEvent event = mock(PerformanceEvent.class);
         builder = spy(new PerformanceEvent.Builder(new ArrayList<>(), "siteId", "xyz-origin", "type"));
         whenNew(PerformanceEvent.class).withAnyArguments().thenReturn(event);
     }

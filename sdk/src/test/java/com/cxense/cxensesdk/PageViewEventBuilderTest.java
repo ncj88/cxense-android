@@ -31,13 +31,12 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 public class PageViewEventBuilderTest extends BaseTest {
     private PageViewEvent event;
     private PageViewEvent.Builder builder;
-    private CxenseConfiguration configuration;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         event = mock(PageViewEvent.class);
-        configuration = spy(new CxenseConfiguration());
+        CxenseConfiguration configuration = spy(new CxenseConfiguration());
         when(cxense.getConfiguration()).thenReturn(configuration);
         builder = new PageViewEvent.Builder("siteId");
         whenNew(PageViewEvent.class).withAnyArguments().thenReturn(event);

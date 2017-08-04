@@ -45,14 +45,13 @@ public class CxenseAuthenticatorTest {
     private CxenseAuthenticator authenticator;
     private Route route;
     private Response response;
-    private Request request;
     private int count = 0;
 
     @Before
     public void setUp() throws Exception {
         route = mock(Route.class);
         response = mock(Response.class);
-        request = new Request.Builder().url("http://example.com/").build();
+        Request request = new Request.Builder().url("http://example.com/").build();
         when(response.request()).thenReturn(request);
         authenticator = spy(new CxenseAuthenticator());
         Calendar calendar = Calendar.getInstance(TIME_ZONE);

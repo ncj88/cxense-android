@@ -10,7 +10,6 @@ import com.cxense.cxensesdk.PageViewEvent;
 public class AnimalActivity extends AppCompatActivity {
     public static final String ITEM_KEY = "item";
     private String item;
-    private TextView textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,7 +17,7 @@ public class AnimalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_animal);
         this.item = getIntent().getStringExtra(ITEM_KEY);
         setContentView(R.layout.activity_animal);
-        textView = (TextView) findViewById(R.id.text);
+        TextView textView = (TextView) findViewById(R.id.text);
         textView.setText(getString(R.string.item_text, item));
     }
 
