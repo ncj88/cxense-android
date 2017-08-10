@@ -57,7 +57,7 @@ public final class CxenseSdk extends Cxense {
     private final DatabaseHelper databaseHelper;
     private CxenseApi apiInstance;
     private ScheduledFuture<?> scheduled;
-    private SendTask sendTask;
+    SendTask sendTask;
 
     /**
      * @param context {@code Context} instance from {@code Activity}/{@code ContentProvider}/etc.

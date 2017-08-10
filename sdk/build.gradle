@@ -18,6 +18,9 @@ android {
         buildConfigField "String", "SDK_NAME", '"cxense"'
         buildConfigField "String", "SDK_ENDPOINT", '"https://api.cxense.com"'
         buildConfigField "String", "AUTHORITY", "APPLICATION_ID + \".$authority\" "
+        buildConfigField "String", "CX_USER", "\"${project.getProperties().get("CX_USER")}\""
+        buildConfigField "String", "CX_KEY", "\"${project.getProperties().get("CX_KEY")}\""
+        buildConfigField "String", "CX_SITE_ID", "\"${project.getProperties().get("CX_SITE_ID")}\""
 
         manifestPlaceholders = [authority: "$authority"]
 
@@ -51,6 +54,9 @@ dependencies {
     testImplementation "org.powermock:powermock-api-mockito2:$powermockVersion"
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
+
+    androidTestImplementation 'com.android.support.test:runner:1.0.0'
+    androidTestImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
 }
 
 apply from: "$rootDir/gradle/javaDoc.gradle"
