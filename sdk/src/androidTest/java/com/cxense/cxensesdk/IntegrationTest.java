@@ -8,14 +8,12 @@ import com.cxense.cxensesdk.model.CustomParameter;
 import com.cxense.cxensesdk.model.UserIdentity;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -65,17 +63,6 @@ public class IntegrationTest {
                 .build();
         start = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
         end = start + TimeUnit.HOURS.toMillis(1);
-    }
-
-    private JSONArray getEventsFromApi(String url, String json) throws Exception {
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
-        Request request = new Request.Builder()
-                .url(url)
-                .post(requestBody)
-                .build();
-        Response response = okHttpClient.newCall(request).execute();
-        JSONObject obj = new JSONObject(response.body().string());
-        return obj.getJSONArray("events");
     }
 
     private void sendAndCheck(String url, String jsonFilter, Event... events) throws Exception {
