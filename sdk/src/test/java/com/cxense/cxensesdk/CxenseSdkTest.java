@@ -9,17 +9,21 @@ import android.util.DisplayMetrics;
 import com.cxense.LoadCallback;
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.db.EventRecord;
+import com.cxense.cxensesdk.model.ContentUser;
 import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
+import com.cxense.cxensesdk.model.UserPreference;
+import com.cxense.cxensesdk.model.WidgetItem;
+import com.cxense.cxensesdk.model.WidgetRequest;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -46,10 +50,10 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
@@ -255,7 +259,7 @@ public class CxenseSdkTest extends BaseTest {
 
     @Test
     public void trackActiveTime() throws Exception {
-        PowerMockito.doNothing().when(cxense).trackActiveTime(anyString(), anyLong());
+        doNothing().when(cxense).trackActiveTime(anyString(), anyLong());
         cxense.trackActiveTime("id");
         verify(cxense).trackActiveTime(anyString(), anyLong());
     }
@@ -264,6 +268,53 @@ public class CxenseSdkTest extends BaseTest {
     public void trackActiveTimeFullArgs() throws Exception {
         cxense.trackActiveTime("id", 1234);
         verifyPrivate(cxense).invoke("postRunnable", any(Runnable.class));
+    }
+
+    @Test
+    public void createWidget() throws Exception {
+        String id = "test";
+        Widget widget = CxenseSdk.createWidget(id);
+        assertEquals(id, Whitebox.getInternalState(widget, "id"));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void createWidgetNullId() throws Exception {
+        CxenseSdk.createWidget(null);
+    }
+
+    @Test
+    public void trackClick() throws Exception {
+        WidgetItem item = new WidgetItem();
+        CxenseSdk.trackClick(item);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void trackClickUrl() throws Exception {
+        CxenseSdk.trackClick("http://example.com");
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void getDefaultUser() throws Exception {
+        String id = "someId";
+        when(cxense.getUserId()).thenReturn(id);
+        ContentUser user = cxense.getDefaultUser();
+        assertNotNull(user);
+        assertThat(user.ids, hasEntry("usi", id));
+    }
+
+    @Test
+    public void getWidgetItems() throws Exception {
+        CxenseApi api = mock(CxenseApi.class);
+        Call call = mock(Call.class);
+        when(api.getWidgetData(any())).thenReturn(call);
+        Whitebox.setInternalState(cxense, "apiInstance", api);
+        ContentUser user = new ContentUser();
+        user.likes = new UserPreference(Arrays.asList("first", "second"), 1);
+        WidgetRequest request = new WidgetRequest("id", null, user);
+        LoadCallback callback = mock(LoadCallback.class);
+        cxense.getWidgetItems(request, callback);
     }
 
     @Test

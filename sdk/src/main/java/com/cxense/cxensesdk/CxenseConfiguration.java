@@ -258,7 +258,7 @@ public final class CxenseConfiguration {
          */
         ONLINE,
         /**
-         * Manually dispatch events when dispatch method is called.
+         * Don't dispatch events, only store it locally.
          */
         OFFLINE
     }

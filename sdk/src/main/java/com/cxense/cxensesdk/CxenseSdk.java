@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -14,6 +15,7 @@ import com.cxense.Preconditions;
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.BaseUserIdentity;
+import com.cxense.cxensesdk.model.ContentUser;
 import com.cxense.cxensesdk.model.CxenseUserIdentity;
 import com.cxense.cxensesdk.model.EventDataRequest;
 import com.cxense.cxensesdk.model.User;
@@ -21,6 +23,8 @@ import com.cxense.cxensesdk.model.UserDataRequest;
 import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
 import com.cxense.cxensesdk.model.UserSegmentRequest;
+import com.cxense.cxensesdk.model.WidgetItem;
+import com.cxense.cxensesdk.model.WidgetRequest;
 import com.cxense.exceptions.CxenseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -36,6 +40,8 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
@@ -55,9 +61,10 @@ public final class CxenseSdk extends Cxense {
     private static CxenseSdk instance;
     private final CxenseConfiguration configuration;
     private final DatabaseHelper databaseHelper;
+    SendTask sendTask;
     private CxenseApi apiInstance;
     private ScheduledFuture<?> scheduled;
-    SendTask sendTask;
+    private ContentUser defaultUser;
 
     /**
      * @param context {@code Context} instance from {@code Activity}/{@code ContentProvider}/etc.
@@ -85,6 +92,49 @@ public final class CxenseSdk extends Cxense {
     public static CxenseSdk getInstance() {
         throwIfUninitialized(instance);
         return instance;
+    }
+
+    /**
+     * Creates a new widget with the specified widget id
+     *
+     * @param widgetId the widget id
+     * @return the new widget
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public static Widget createWidget(@NonNull String widgetId) {
+        if (TextUtils.isEmpty(widgetId))
+            throw new IllegalArgumentException("widgetId can't be empty.");
+        return new Widget(widgetId);
+    }
+
+    /**
+     * Tracks an url click for the given item
+     *
+     * @param item the item that contains the click-url
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public static void trackClick(@NonNull WidgetItem item) {
+        trackClick(item.clickUrl);
+    }
+
+    /**
+     * Tracks a click for the given click-url
+     *
+     * @param url the click-url
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public static void trackClick(@NonNull String url) {
+        CxenseSdk.getInstance().apiInstance.trackUrlClick(url).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                Log.d("REMOVE", response.toString());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                Log.e("REMOVE", throwable.getMessage(), throwable);
+            }
+        });
     }
 
     @NonNull
@@ -223,7 +273,6 @@ public final class CxenseSdk extends Cxense {
         apiInstance.updateUserExternalData(userExternalData).enqueue(transform(callback));
     }
 
-
     /**
      * Asynchronously deletes the external data associated with a given user
      *
@@ -337,6 +386,23 @@ public final class CxenseSdk extends Cxense {
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess", "SameParameterValue"}) // Public API.
     public void trackActiveTime(final String eventId, final long activeTime) {
         postRunnable(() -> putEventTime(eventId, activeTime));
+    }
+
+    /**
+     * Returns the default user used by all widgets if the user hasn't been specifically set on a widget
+     *
+     * @return the default user
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public ContentUser getDefaultUser() {
+        if (defaultUser == null) {
+            defaultUser = new ContentUser(getUserId());
+        }
+        return defaultUser;
+    }
+
+    void getWidgetItems(WidgetRequest request, LoadCallback<List<WidgetItem>> listener) {
+        apiInstance.getWidgetData(request).enqueue(transform(listener, data -> data.items));
     }
 
     void initSendTaskSchedule() {
