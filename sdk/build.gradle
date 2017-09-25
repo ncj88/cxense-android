@@ -60,6 +60,5 @@ dependencies {
 }
 
 apply from: "$rootDir/gradle/javaDoc.gradle"
-apply from: "$rootDir/gradle/pack.gradle"
 apply from: "$rootDir/gradle/upload.gradle"
 apply from: "$rootDir/gradle/jacoco.gradle"
