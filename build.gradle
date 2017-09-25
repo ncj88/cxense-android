@@ -21,6 +21,7 @@ plugins {
 
 scmVersion {
     tag {
+        prefix = ''
         initialVersion = { config, position -> '1.0.0' }
     }
 }
