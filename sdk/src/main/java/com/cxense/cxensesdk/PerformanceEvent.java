@@ -60,7 +60,7 @@ public final class PerformanceEvent extends Event {
         EventRecord record = new EventRecord();
         record.data = CxenseSdk.getInstance().packObject(this);
         // event time in seconds, but timestamp in milliseconds
-        record.timestamp = time != null ? TimeUnit.SECONDS.toMillis(time): System.currentTimeMillis();
+        record.timestamp = time != null ? TimeUnit.SECONDS.toMillis(time) : System.currentTimeMillis();
         record.ckp = prnd;
         record.rnd = rnd;
         record.eventType = type;
@@ -74,7 +74,7 @@ public final class PerformanceEvent extends Event {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public Date getTime() {
-        return time != null ? new Date(time) : null;
+        return time != null ? new Date(TimeUnit.SECONDS.toMillis(time)) : null;
     }
 
     /**
@@ -190,7 +190,7 @@ public final class PerformanceEvent extends Event {
             setType(type);
         }
 
-        private void setTime(long milliseconds) {
+        void setTime(long milliseconds) {
             this.time = TimeUnit.MILLISECONDS.toSeconds(milliseconds);
         }
 
@@ -284,7 +284,7 @@ public final class PerformanceEvent extends Event {
          * @return Builder instance
          */
         public Builder setOrigin(String origin) {
-            Preconditions.checkStringForRegex(origin, "origin", "\\w{3}-\\w+", "'%s' must be prefixed by the customer prefix.");
+            Preconditions.checkStringForRegex(origin, "origin", "\\w{3}-\\w+", "'%s' must be prefixed by the customer prefix.", "origin");
             this.origin = origin;
             return this;
         }

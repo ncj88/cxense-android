@@ -38,6 +38,7 @@ public final class CxenseConfiguration {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public static final long MIN_OUTDATE_PERIOD = TimeUnit.MINUTES.toMillis(10);
+
     static final long DISPATCH_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);
     private String username;
     private String apiKey;
@@ -257,7 +258,7 @@ public final class CxenseConfiguration {
          */
         ONLINE,
         /**
-         * Manually dispatch events when dispatch method is called.
+         * Don't dispatch events, only store it locally.
          */
         OFFLINE
     }

@@ -29,7 +29,7 @@ public class UserExternalData extends UserIdentity {
         super();
     }
 
-    private UserExternalData(Builder builder) {
+    UserExternalData(Builder builder) {
         super(builder.identity);
         List<ExternalItem> itemList = new ArrayList<>(builder.items);
         for (ExternalItem item : itemList) {

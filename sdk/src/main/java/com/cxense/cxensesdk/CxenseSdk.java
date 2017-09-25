@@ -3,9 +3,9 @@ package com.cxense.cxensesdk;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -15,6 +15,7 @@ import com.cxense.Preconditions;
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.BaseUserIdentity;
+import com.cxense.cxensesdk.model.ContentUser;
 import com.cxense.cxensesdk.model.CxenseUserIdentity;
 import com.cxense.cxensesdk.model.EventDataRequest;
 import com.cxense.cxensesdk.model.User;
@@ -22,6 +23,8 @@ import com.cxense.cxensesdk.model.UserDataRequest;
 import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
 import com.cxense.cxensesdk.model.UserSegmentRequest;
+import com.cxense.cxensesdk.model.WidgetItem;
+import com.cxense.cxensesdk.model.WidgetRequest;
 import com.cxense.exceptions.CxenseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -31,31 +34,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
  * Singleton class used as a facade to the Cxense services
+ * Read full documentation <a href="https://wiki.cxense.com/display/cust/Cxense+SDK+for+Android">here</a>
  *
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-03).
  */
 
 public final class CxenseSdk extends Cxense {
+    /**
+     * Default "base url" for url-less mode
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    static final String DEFAULT_URL_LESS_BASE_URL = "http://%s.content.id/%s";
     private static final String TAG = CxenseSdk.class.getSimpleName();
     private static CxenseSdk instance;
     private final CxenseConfiguration configuration;
-    private final ScheduledExecutorService executor;
     private final DatabaseHelper databaseHelper;
+    SendTask sendTask;
     private CxenseApi apiInstance;
     private ScheduledFuture<?> scheduled;
-    private SendTask sendTask;
+    private ContentUser defaultUser;
 
     /**
      * @param context {@code Context} instance from {@code Activity}/{@code ContentProvider}/etc.
@@ -65,7 +74,6 @@ public final class CxenseSdk extends Cxense {
         super(context);
         apiInstance = retrofit.create(CxenseApi.class);
         configuration = new CxenseConfiguration();
-        executor = Executors.newSingleThreadScheduledExecutor();
         databaseHelper = new DatabaseHelper(context);
         sendTask = new SendTask();
         initSendTaskSchedule();
@@ -84,6 +92,49 @@ public final class CxenseSdk extends Cxense {
     public static CxenseSdk getInstance() {
         throwIfUninitialized(instance);
         return instance;
+    }
+
+    /**
+     * Creates a new widget with the specified widget id
+     *
+     * @param widgetId the widget id
+     * @return the new widget
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public static Widget createWidget(@NonNull String widgetId) {
+        if (TextUtils.isEmpty(widgetId))
+            throw new IllegalArgumentException("widgetId can't be empty.");
+        return new Widget(widgetId);
+    }
+
+    /**
+     * Tracks an url click for the given item
+     *
+     * @param item the item that contains the click-url
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public static void trackClick(@NonNull WidgetItem item) {
+        trackClick(item.clickUrl);
+    }
+
+    /**
+     * Tracks a click for the given click-url
+     *
+     * @param url the click-url
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public static void trackClick(@NonNull String url) {
+        CxenseSdk.getInstance().apiInstance.trackUrlClick(url).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                Log.d("REMOVE", response.toString());
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+                Log.e("REMOVE", throwable.getMessage(), throwable);
+            }
+        });
     }
 
     @NonNull
@@ -222,7 +273,6 @@ public final class CxenseSdk extends Cxense {
         apiInstance.updateUserExternalData(userExternalData).enqueue(transform(callback));
     }
 
-
     /**
      * Asynchronously deletes the external data associated with a given user
      *
@@ -264,6 +314,48 @@ public final class CxenseSdk extends Cxense {
         apiInstance.updateUserExternalLink(new CxenseUserIdentity(identity, cxenseId)).enqueue(transform(callback));
     }
 
+    void putEvents(final Event... events) {
+        for (Event event : events) {
+            try {
+                putEventRecordInDatabase(event.toEventRecord());
+            } catch (JsonProcessingException e) {
+                // TODO: May be we need to rethrow new exception?
+                Log.e(TAG, "Can't serialize event data", e);
+            } catch (Exception e) {
+                Log.e(TAG, "Error at pushing event", e);
+            }
+        }
+    }
+
+    void putEventTime(String eventId, long activeTime) {
+        try {
+            EventRecord record = getEventFromDatabase(eventId);
+            // Only for page view events
+            if (record == null)
+                return;
+            EventRecord newRecord = new EventRecord(record);
+            // some black magic with map
+            if (activeTime == 0)
+                activeTime = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - newRecord.timestamp);
+            newRecord.spentTime = activeTime;
+
+            Map<String, String> eventMap = unpackMap(newRecord.data);
+            eventMap.put(PageViewEvent.ACTIVE_RND, eventMap.get(PageViewEvent.RND));
+            eventMap.put(PageViewEvent.ACTIVE_TIME, eventMap.get(PageViewEvent.TIME));
+            eventMap.put(PageViewEvent.ACTIVE_SPENT_TIME, "" + activeTime);
+            newRecord.data = packObject(eventMap);
+
+            putEventRecordInDatabase(newRecord);
+        } catch (JsonProcessingException e) {
+            Log.e(TAG, "Can't serialize event data", e);
+        } catch (IOException e) {
+            // TODO: May be we need to rethrow new exception?
+            Log.e(TAG, "Can't deserialize event data", e);
+        } catch (Exception e) {
+            Log.e(TAG, "Error at tracking time", e);
+        }
+    }
+
     /**
      * Push events to sending queue.
      *
@@ -271,18 +363,7 @@ public final class CxenseSdk extends Cxense {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void pushEvents(@NonNull Event... events) {
-        executor.execute((() -> {
-            for (Event event : events) {
-                try {
-                    long value = putEventRecordInDatabase(event.toEventRecord());
-                } catch (JsonProcessingException e) {
-                    // TODO: May be we need to rethrow new exception?
-                    Log.e(TAG, "Can't serialize event data", e);
-                } catch (Exception e) {
-                    Log.e(TAG, "Error at pushing event", e);
-                }
-            }
-        }));
+        postRunnable(() -> putEvents(events));
     }
 
     /**
@@ -304,35 +385,24 @@ public final class CxenseSdk extends Cxense {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess", "SameParameterValue"}) // Public API.
     public void trackActiveTime(final String eventId, final long activeTime) {
-        executor.execute((() -> {
-            try {
-                EventRecord record = getEventFromDatabase(eventId);
-                // Only for page view events
-                if (record == null)
-                    return;
-                EventRecord newRecord = new EventRecord(record);
-                // some black magic with map
-                long time = activeTime;
-                if (time == 0)
-                    time = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - newRecord.timestamp);
-                newRecord.spentTime = time;
+        postRunnable(() -> putEventTime(eventId, activeTime));
+    }
 
-                Map<String, String> eventMap = unpackMap(newRecord.data);
-                eventMap.put(PageViewEvent.ACTIVE_RND, eventMap.get(PageViewEvent.RND));
-                eventMap.put(PageViewEvent.ACTIVE_TIME, eventMap.get(PageViewEvent.TIME));
-                eventMap.put(PageViewEvent.ACTIVE_SPENT_TIME, "" + activeTime);
-                newRecord.data = packObject(eventMap);
+    /**
+     * Returns the default user used by all widgets if the user hasn't been specifically set on a widget
+     *
+     * @return the default user
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public ContentUser getDefaultUser() {
+        if (defaultUser == null) {
+            defaultUser = new ContentUser(getUserId());
+        }
+        return defaultUser;
+    }
 
-                putEventRecordInDatabase(newRecord);
-            } catch (JsonProcessingException e) {
-                Log.e(TAG, "Can't serialize event data", e);
-            } catch (IOException e) {
-                // TODO: May be we need to rethrow new exception?
-                Log.e(TAG, "Can't deserialize event data", e);
-            } catch (Exception e) {
-                Log.e(TAG, "Error at tracking time", e);
-            }
-        }));
+    void getWidgetItems(WidgetRequest request, LoadCallback<List<WidgetItem>> listener) {
+        apiInstance.getWidgetData(request).enqueue(transform(listener, data -> data.items));
     }
 
     void initSendTaskSchedule() {
@@ -367,15 +437,8 @@ public final class CxenseSdk extends Cxense {
      */
     @Nullable
     String getApplicationName() {
-        try {
-            Resources resources = appContext.getResources();
-            CharSequence appName = resources.getText(
-                    resources.getIdentifier("app_name", "string", appContext.getPackageName()));
-            return appName.toString();
-        } catch (Resources.NotFoundException e) {
-            Log.e(TAG, "Problems during application name search", e);
-        }
-        return null;
+        CharSequence label = appContext.getPackageManager().getApplicationLabel(appContext.getApplicationInfo());
+        return label != null ? label.toString() : null;
     }
 
     String packObject(Object data) throws JsonProcessingException {
@@ -418,8 +481,8 @@ public final class CxenseSdk extends Cxense {
         return new EventRecord(values.get(0));
     }
 
-    private static class SendTask implements Runnable {
-        private void sendDmpEvents(@NonNull List<EventRecord> events) {
+    static class SendTask implements Runnable {
+        void sendDmpEvents(@NonNull List<EventRecord> events) {
             if (events.isEmpty())
                 return;
             try {
@@ -441,7 +504,7 @@ public final class CxenseSdk extends Cxense {
             }
         }
 
-        private void sendPageViewEvents(@NonNull List<EventRecord> events) {
+        void sendPageViewEvents(@NonNull List<EventRecord> events) {
             CxenseSdk cxense = CxenseSdk.getInstance();
             for (EventRecord event : events) {
                 try {

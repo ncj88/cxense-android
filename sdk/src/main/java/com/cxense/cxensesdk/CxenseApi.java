@@ -10,6 +10,8 @@ import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserExternalDataResponse;
 import com.cxense.cxensesdk.model.UserIdentity;
 import com.cxense.cxensesdk.model.UserSegmentRequest;
+import com.cxense.cxensesdk.model.WidgetRequest;
+import com.cxense.cxensesdk.model.WidgetResponse;
 
 import java.util.Map;
 
@@ -19,6 +21,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.QueryMap;
+import retrofit2.http.Url;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-03).
@@ -51,4 +54,10 @@ public interface CxenseApi {
 
     @GET("https://scomcluster.cxense.com/Repo/rep.gif")
     Call<ResponseBody> track(@QueryMap Map<String, String> options);
+
+    @POST("public/widget/data")
+    Call<WidgetResponse> getWidgetData(@Body WidgetRequest request);
+
+    @GET
+    Call<Void> trackUrlClick(@Url String url);
 }

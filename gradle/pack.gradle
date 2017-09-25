@@ -6,17 +6,12 @@ task copySample(type: Copy) {
 }
 
 task packZip(type: Zip, dependsOn: ['javadoc', 'copySample']) {
+    println "${projectDir}/docs/"
     baseName = "Cxense${sdkPublicName}SDK-Android"
     from (copySample.destinationDir) {
         into("sample")
     }
-    from "${buildDir}/docs/"
-    from("${buildDir}/outputs/aar/${project.name}-release.aar") {
-        rename {
-            "Cxense${sdkPublicName}SDK-${android.defaultConfig.versionName}.aar"
-        }
-    }
-    from "$rootDir/gradle/cxense.gradle"
+    from "${projectDir}/src/docs/"
 }
 
 rootProject.afterReleaseBuild.dependsOn packZip
