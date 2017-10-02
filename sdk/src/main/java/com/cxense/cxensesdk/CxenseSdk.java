@@ -151,6 +151,12 @@ public final class CxenseSdk extends Cxense {
 
     @NonNull
     @Override
+    protected String getSdkVersion() {
+        return BuildConfig.VERSION_NAME;
+    }
+
+    @NonNull
+    @Override
     public String getUserAgent() {
         return String.format("cx-sdk/%s %s", BuildConfig.VERSION_NAME, getDefaultUserAgent());
     }
