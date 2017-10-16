@@ -514,11 +514,19 @@ public final class CxenseSdk extends Cxense {
             CxenseSdk cxense = CxenseSdk.getInstance();
             for (EventRecord event : events) {
                 try {
-                    Response<ResponseBody> response = cxense.apiInstance.track(cxense.unpackMap(event.data)).execute();
+                    Map<String, String> data = cxense.unpackMap(event.data);
+                    String ckp = data.get(PageViewEvent.CKP);
+                    String id = cxense.getUserId();
+                    if (TextUtils.isEmpty(ckp) && !TextUtils.isEmpty(id)) {
+                        data.put(PageViewEvent.CKP, id);
+                        event.data = cxense.packObject(data);
+                        event.ckp = id;
+                    }
+                    Response<ResponseBody> response = cxense.apiInstance.track(data).execute();
                     if (response.isSuccessful()) {
                         event.isSent = true;
-                        cxense.putEventRecordInDatabase(event);
                     }
+                    cxense.putEventRecordInDatabase(event);
                 } catch (IOException e) {
                     // TODO: May be we need to rethrow new exception?
                     Log.e(TAG, "Can't deserialize event data", e);
