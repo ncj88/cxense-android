@@ -51,7 +51,7 @@ public class SendTaskTest extends BaseTest {
         doReturn(false).when(configuration).isRestricted(any());
         CxenseApi api = mock(CxenseApi.class);
         when(api.pushEvents(any())).thenReturn(call);
-        when(api.track(any())).thenReturn(call);
+        when(api.trackInsightEvent(any())).thenReturn(call);
         Whitebox.setInternalState(cxense, "apiInstance", api);
         Whitebox.setInternalState(cxense, "configuration", configuration);
     }

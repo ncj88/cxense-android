@@ -12,6 +12,7 @@ import android.util.Log;
 import com.cxense.Cxense;
 import com.cxense.LoadCallback;
 import com.cxense.Preconditions;
+import com.cxense.cxensesdk.converter.PixelConverterFactory;
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.BaseUserIdentity;
@@ -42,7 +43,9 @@ import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 /**
  * Singleton class used as a facade to the Cxense services
@@ -65,7 +68,6 @@ public final class CxenseSdk extends Cxense {
     private CxenseApi apiInstance;
     private ScheduledFuture<?> scheduled;
     private ContentUser defaultUser;
-
     /**
      * @param context {@code Context} instance from {@code Activity}/{@code ContentProvider}/etc.
      */
@@ -127,14 +129,22 @@ public final class CxenseSdk extends Cxense {
         CxenseSdk.getInstance().apiInstance.trackUrlClick(url).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                Log.d("REMOVE", response.toString());
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
-                Log.e("REMOVE", throwable.getMessage(), throwable);
             }
         });
+    }
+
+    @Override
+    protected Retrofit buildRetrofit() {
+        return new Retrofit.Builder()
+                .baseUrl(getBaseUrl())
+                .addConverterFactory(getConverterFactory())
+                .addConverterFactory(PixelConverterFactory.create())
+                .client(okHttpClient)
+                .build();
     }
 
     @NonNull
@@ -522,7 +532,7 @@ public final class CxenseSdk extends Cxense {
                         event.data = cxense.packObject(data);
                         event.ckp = id;
                     }
-                    Response<ResponseBody> response = cxense.apiInstance.track(data).execute();
+                    Response<ResponseBody> response = cxense.apiInstance.trackInsightEvent(data).execute();
                     if (response.isSuccessful()) {
                         event.isSent = true;
                     }

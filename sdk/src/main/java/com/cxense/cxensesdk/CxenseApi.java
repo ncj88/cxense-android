@@ -53,7 +53,10 @@ public interface CxenseApi {
     Call<Void> pushEvents(@Body EventDataRequest request);
 
     @GET("https://scomcluster.cxense.com/Repo/rep.gif")
-    Call<ResponseBody> track(@QueryMap Map<String, String> options);
+    Call<ResponseBody> trackInsightEvent(@QueryMap Map<String, String> options);
+
+    @GET("https://scomcluster.cxense.com/dmp/push.gif")
+    Call<ResponseBody> trackDmpEvent(@QueryMap Map<String, String> options);
 
     @POST("public/widget/data")
     Call<WidgetResponse> getWidgetData(@Body WidgetRequest request);
