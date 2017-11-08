@@ -31,4 +31,20 @@ public final class CustomParameter {
         this.name = name;
         this.item = item;
     }
+
+    /**
+     * Gets parameter name
+     * @return parameter name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Gets parameter value
+     * @return parameter value
+     */
+    public String getItem() {
+        return item;
+    }
 }

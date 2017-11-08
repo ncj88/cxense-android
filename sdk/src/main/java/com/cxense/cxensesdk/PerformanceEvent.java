@@ -1,7 +1,10 @@
 package com.cxense.cxensesdk;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
+import android.util.Pair;
 
+import com.cxense.Function;
 import com.cxense.Preconditions;
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.CustomParameter;
@@ -13,7 +16,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,23 +29,32 @@ import java.util.concurrent.TimeUnit;
  */
 
 public final class PerformanceEvent extends Event {
-    @JsonProperty("time")
+    static final String TIME = "time";
+    static final String USER_IDS = "userIds";
+    static final String PRND = "prnd";
+    static final String RND = "rnd";
+    static final String SITE_ID = "siteId";
+    static final String ORIGIN = "origin";
+    static final String TYPE = "type";
+    static final String SEGMENT_IDS = "segmentIds";
+    static final String CUSTOM_PARAMETERS = "customParameters";
+    @JsonProperty(TIME)
     private Long time;
-    @JsonProperty("userIds")
+    @JsonProperty(USER_IDS)
     private List<UserIdentity> identities;
-    @JsonProperty("prnd")
+    @JsonProperty(PRND)
     private String prnd;
-    @JsonProperty("rnd")
+    @JsonProperty(RND)
     private String rnd;
-    @JsonProperty("siteId")
+    @JsonProperty(SITE_ID)
     private String siteId;
-    @JsonProperty("origin")
+    @JsonProperty(ORIGIN)
     private String origin;
-    @JsonProperty("type")
+    @JsonProperty(TYPE)
     private String type;
-    @JsonProperty("segmentIds")
+    @JsonProperty(SEGMENT_IDS)
     private List<String> segments;
-    @JsonProperty("customParameters")
+    @JsonProperty(CUSTOM_PARAMETERS)
     private List<CustomParameter> customParameters;
 
     private PerformanceEvent(Builder builder) {
@@ -65,6 +80,40 @@ public final class PerformanceEvent extends Event {
         record.rnd = rnd;
         record.eventType = type;
         return record;
+    }
+
+    private <T> Pair<String, String> convertInnerObject(String name, List<T> data, Function<T, String> getName, Function<T, String> getValue) {
+        List<String> innerData = new ArrayList<>();
+        int lastParameterIndex = data.size() - 1;
+        for (int i = 0; i < lastParameterIndex; i++) {
+            T obj = data.get(i);
+            innerData.add(String.format(Locale.getDefault(), "%s:%s", getName.apply(obj), getValue.apply(obj)));
+        }
+        String key = String.format(Locale.getDefault(), "%s/%s/%s", name, TextUtils.join("/", innerData), getName.apply(data.get(lastParameterIndex)));
+        return new Pair<>(key, getValue.apply(data.get(lastParameterIndex)));
+    }
+
+    @Override
+    Map<String, String> toQueryMap() {
+        Map<String, String> result = new HashMap<>();
+        if (time != null)
+            result.put(TIME, "" + TimeUnit.SECONDS.toMillis(time));
+        result.put(PRND, escapeString(prnd));
+        result.put(RND, escapeString(rnd));
+        result.put(SITE_ID, escapeString(siteId));
+        result.put(ORIGIN, escapeString(origin));
+        result.put(TYPE, escapeString(type));
+        if (customParameters != null && !customParameters.isEmpty()){
+            Pair<String, String> cp = convertInnerObject(CUSTOM_PARAMETERS, customParameters, CustomParameter::getName, CustomParameter::getItem);
+            result.put(cp.first, cp.second);
+        }
+        if (identities != null && !identities.isEmpty()) {
+            Pair<String, String> ids = convertInnerObject(USER_IDS, identities, UserIdentity::getType, UserIdentity::getId);
+            result.put(ids.first, ids.second);
+        }
+        if (segments != null && !segments.isEmpty())
+            result.put(SEGMENT_IDS, TextUtils.join(",", segments));
+        return result;
     }
 
     /**

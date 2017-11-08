@@ -12,7 +12,6 @@ import android.util.Log;
 import com.cxense.Cxense;
 import com.cxense.LoadCallback;
 import com.cxense.Preconditions;
-import com.cxense.cxensesdk.converter.PixelConverterFactory;
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.BaseUserIdentity;
@@ -32,6 +31,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,9 +43,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Converter;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 /**
  * Singleton class used as a facade to the Cxense services
@@ -68,6 +66,7 @@ public final class CxenseSdk extends Cxense {
     private CxenseApi apiInstance;
     private ScheduledFuture<?> scheduled;
     private ContentUser defaultUser;
+
     /**
      * @param context {@code Context} instance from {@code Activity}/{@code ContentProvider}/etc.
      */
@@ -135,16 +134,6 @@ public final class CxenseSdk extends Cxense {
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
             }
         });
-    }
-
-    @Override
-    protected Retrofit buildRetrofit() {
-        return new Retrofit.Builder()
-                .baseUrl(getBaseUrl())
-                .addConverterFactory(getConverterFactory())
-                .addConverterFactory(PixelConverterFactory.create())
-                .client(okHttpClient)
-                .build();
     }
 
     @NonNull
@@ -501,22 +490,45 @@ public final class CxenseSdk extends Cxense {
         void sendDmpEvents(@NonNull List<EventRecord> events) {
             if (events.isEmpty())
                 return;
-            try {
-                CxenseSdk cxense = CxenseSdk.getInstance();
-                List<String> data = new ArrayList<>();
-                for (EventRecord record : events) {
-                    data.add(record.data);
+            CxenseSdk cxense = CxenseSdk.getInstance();
+            CxenseConfiguration configuration = cxense.getConfiguration();
+            if (configuration.isDmpAuthorized()) {
+                try {
+                    List<String> data = new ArrayList<>();
+                    for (EventRecord record : events) {
+                        data.add(record.data);
+                    }
+                    Response<Void> response = cxense.apiInstance.pushEvents(new EventDataRequest(data)).execute();
+                    if (!response.isSuccessful())
+                        return;
+                    for (EventRecord event : events) {
+                        event.isSent = true;
+                        cxense.putEventRecordInDatabase(event);
+                    }
+                } catch (IOException e) {
+                    // TODO: May be we need to rethrow new exception?
+                    Log.e(TAG, "Can't push dmp events data", e);
                 }
-                Response<Void> response = cxense.apiInstance.pushEvents(new EventDataRequest(data)).execute();
-                if (!response.isSuccessful())
-                    return;
+            } else {
                 for (EventRecord event : events) {
-                    event.isSent = true;
-                    cxense.putEventRecordInDatabase(event);
+                    try {
+                        Map<String, String> data = cxense.unpackMap(event.data);
+                        String segmentsValue = data.get(PerformanceEvent.SEGMENT_IDS);
+                        data.remove(PerformanceEvent.SEGMENT_IDS);
+                        List<String> segments = new ArrayList<>();
+                        if (!TextUtils.isEmpty(segmentsValue)) {
+                            segments.addAll(Arrays.asList(segmentsValue.split(",")));
+                        }
+                        Response<ResponseBody> response = cxense.apiInstance.trackDmpEvent(configuration.getDmpPushPersistentId(), segments, data).execute();
+                        if (response.isSuccessful()) {
+                            event.isSent = true;
+                        }
+                        cxense.putEventRecordInDatabase(event);
+                    } catch (IOException e) {
+                        // TODO: May be we need to rethrow new exception?
+                        Log.e(TAG, "Can't deserialize event data", e);
+                    }
                 }
-            } catch (IOException e) {
-                // TODO: May be we need to rethrow new exception?
-                Log.e(TAG, "Can't push dmp events data", e);
             }
         }
 

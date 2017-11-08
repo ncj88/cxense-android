@@ -51,9 +51,9 @@ public class PageViewEventTest extends BaseTest {
         Map<String, String> eventMap = new HashMap<>();
         eventMap.put(PageViewEvent.CKP, "ckp");
         eventMap.put(PageViewEvent.RND, "rnd");
-        doReturn(eventMap).when(event).toMap();
+        doReturn(eventMap).when(event).toQueryMap();
         assertNotNull(event.toEventRecord());
-        verify(event).toMap();
+        verify(event).toQueryMap();
         verify(cxense).packObject(any());
     }
 
@@ -159,7 +159,7 @@ public class PageViewEventTest extends BaseTest {
         Whitebox.setInternalState(event, "customParameters", params);
         Whitebox.setInternalState(event, "customUserParameters", params);
         Whitebox.setInternalState(event, "externalUserIds", externalUserIds);
-        Map<String, String> result = event.toMap();
+        Map<String, String> result = event.toQueryMap();
         assertThat(result, allOf(
                 hasKey(PageViewEvent.SITE_ID),
                 hasKey(PageViewEvent.VERSION),
