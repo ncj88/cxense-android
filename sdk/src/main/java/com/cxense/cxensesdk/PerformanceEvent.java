@@ -57,8 +57,11 @@ public final class PerformanceEvent extends Event {
     @JsonProperty(CUSTOM_PARAMETERS)
     private List<CustomParameter> customParameters;
 
+    private PerformanceEvent() {
+    }
+
     private PerformanceEvent(Builder builder) {
-        super();
+        this();
         time = builder.time;
         identities = Collections.unmodifiableList(builder.identities);
         prnd = builder.prnd;
@@ -82,15 +85,13 @@ public final class PerformanceEvent extends Event {
         return record;
     }
 
-    private <T> Pair<String, String> convertInnerObject(String name, List<T> data, Function<T, String> getName, Function<T, String> getValue) {
+    private <T> Pair<String, String> convertInnerObject(String objectName, T obj, String nameKey, String valueKey, Function<T, String> getName, Function<T, String> getValue) {
         List<String> innerData = new ArrayList<>();
-        int lastParameterIndex = data.size() - 1;
-        for (int i = 0; i < lastParameterIndex; i++) {
-            T obj = data.get(i);
-            innerData.add(String.format(Locale.getDefault(), "%s:%s", getName.apply(obj), getValue.apply(obj)));
-        }
-        String key = String.format(Locale.getDefault(), "%s/%s/%s", name, TextUtils.join("/", innerData), getName.apply(data.get(lastParameterIndex)));
-        return new Pair<>(key, getValue.apply(data.get(lastParameterIndex)));
+        innerData.add(objectName);
+        innerData.add(String.format(Locale.getDefault(), "%s:%s", nameKey, getName.apply(obj)));
+        innerData.add(valueKey);
+        String key = TextUtils.join("/", innerData);
+        return new Pair<>(key, getValue.apply(obj));
     }
 
     @Override
@@ -103,13 +104,13 @@ public final class PerformanceEvent extends Event {
         result.put(SITE_ID, escapeString(siteId));
         result.put(ORIGIN, escapeString(origin));
         result.put(TYPE, escapeString(type));
-        if (customParameters != null && !customParameters.isEmpty()){
-            Pair<String, String> cp = convertInnerObject(CUSTOM_PARAMETERS, customParameters, CustomParameter::getName, CustomParameter::getItem);
-            result.put(cp.first, cp.second);
+        for (CustomParameter cp : customParameters) {
+            Pair<String, String> pair = convertInnerObject(CUSTOM_PARAMETERS, cp, CustomParameter.GROUP, CustomParameter.ITEM, CustomParameter::getName, CustomParameter::getItem);
+            result.put(pair.first, pair.second);
         }
-        if (identities != null && !identities.isEmpty()) {
-            Pair<String, String> ids = convertInnerObject(USER_IDS, identities, UserIdentity::getType, UserIdentity::getId);
-            result.put(ids.first, ids.second);
+        for (UserIdentity uid : identities) {
+            Pair<String, String> pair = convertInnerObject(USER_IDS, uid, UserIdentity.TYPE, UserIdentity.ID, UserIdentity::getType, UserIdentity::getId);
+            result.put(pair.first, pair.second);
         }
         if (segments != null && !segments.isEmpty())
             result.put(SEGMENT_IDS, TextUtils.join(",", segments));

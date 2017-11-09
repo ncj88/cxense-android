@@ -450,11 +450,13 @@ public final class CxenseSdk extends Cxense {
         return mapper.writeValueAsString(data);
     }
 
+    <T> T unpackObject(String data, TypeReference<T> typeReference) throws IOException {
+        return mapper.readValue(data, typeReference);
+    }
+
     Map<String, String> unpackMap(String data) throws IOException {
-        TypeReference<HashMap<String, String>> typeRef
-                = new TypeReference<HashMap<String, String>>() {
-        };
-        return mapper.readValue(data, typeRef);
+        return unpackObject(data, new TypeReference<HashMap<String, String>>() {
+        });
     }
 
     long putEventRecordInDatabase(EventRecord record) {
@@ -512,7 +514,8 @@ public final class CxenseSdk extends Cxense {
             } else {
                 for (EventRecord event : events) {
                     try {
-                        Map<String, String> data = cxense.unpackMap(event.data);
+                        Map<String, String> data = cxense.unpackObject(event.data, new TypeReference<PerformanceEvent>() {
+                        }).toQueryMap();
                         String segmentsValue = data.get(PerformanceEvent.SEGMENT_IDS);
                         data.remove(PerformanceEvent.SEGMENT_IDS);
                         List<String> segments = new ArrayList<>();
