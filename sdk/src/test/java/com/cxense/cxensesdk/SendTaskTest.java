@@ -49,6 +49,7 @@ public class SendTaskTest extends BaseTest {
         sendTask = spy(new CxenseSdk.SendTask());
         configuration = spy(new CxenseConfiguration());
         doReturn(false).when(configuration).isRestricted(any());
+        doReturn(true).when(configuration).isDmpAuthorized();
         CxenseApi api = mock(CxenseApi.class);
         when(api.pushEvents(any())).thenReturn(call);
         when(api.trackInsightEvent(any())).thenReturn(call);

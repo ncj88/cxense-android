@@ -493,8 +493,7 @@ public final class CxenseSdk extends Cxense {
             if (events.isEmpty())
                 return;
             CxenseSdk cxense = CxenseSdk.getInstance();
-            CxenseConfiguration configuration = cxense.getConfiguration();
-            if (configuration.isDmpAuthorized()) {
+            if (cxense.configuration.isDmpAuthorized()) {
                 try {
                     List<String> data = new ArrayList<>();
                     for (EventRecord record : events) {
@@ -522,7 +521,7 @@ public final class CxenseSdk extends Cxense {
                         if (!TextUtils.isEmpty(segmentsValue)) {
                             segments.addAll(Arrays.asList(segmentsValue.split(",")));
                         }
-                        Response<ResponseBody> response = cxense.apiInstance.trackDmpEvent(configuration.getDmpPushPersistentId(), segments, data).execute();
+                        Response<ResponseBody> response = cxense.apiInstance.trackDmpEvent(cxense.configuration.getDmpPushPersistentId(), segments, data).execute();
                         if (response.isSuccessful()) {
                             event.isSent = true;
                         }
