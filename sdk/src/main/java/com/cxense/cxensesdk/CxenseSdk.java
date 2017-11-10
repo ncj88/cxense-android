@@ -31,6 +31,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -127,12 +128,10 @@ public final class CxenseSdk extends Cxense {
         CxenseSdk.getInstance().apiInstance.trackUrlClick(url).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                Log.d("REMOVE", response.toString());
             }
 
             @Override
             public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
-                Log.e("REMOVE", throwable.getMessage(), throwable);
             }
         });
     }
@@ -451,11 +450,13 @@ public final class CxenseSdk extends Cxense {
         return mapper.writeValueAsString(data);
     }
 
+    <T> T unpackObject(String data, TypeReference<T> typeReference) throws IOException {
+        return mapper.readValue(data, typeReference);
+    }
+
     Map<String, String> unpackMap(String data) throws IOException {
-        TypeReference<HashMap<String, String>> typeRef
-                = new TypeReference<HashMap<String, String>>() {
-        };
-        return mapper.readValue(data, typeRef);
+        return unpackObject(data, new TypeReference<HashMap<String, String>>() {
+        });
     }
 
     long putEventRecordInDatabase(EventRecord record) {
@@ -491,22 +492,45 @@ public final class CxenseSdk extends Cxense {
         void sendDmpEvents(@NonNull List<EventRecord> events) {
             if (events.isEmpty())
                 return;
-            try {
-                CxenseSdk cxense = CxenseSdk.getInstance();
-                List<String> data = new ArrayList<>();
-                for (EventRecord record : events) {
-                    data.add(record.data);
+            CxenseSdk cxense = CxenseSdk.getInstance();
+            if (cxense.configuration.isDmpAuthorized()) {
+                try {
+                    List<String> data = new ArrayList<>();
+                    for (EventRecord record : events) {
+                        data.add(record.data);
+                    }
+                    Response<Void> response = cxense.apiInstance.pushEvents(new EventDataRequest(data)).execute();
+                    if (!response.isSuccessful())
+                        return;
+                    for (EventRecord event : events) {
+                        event.isSent = true;
+                        cxense.putEventRecordInDatabase(event);
+                    }
+                } catch (IOException e) {
+                    // TODO: May be we need to rethrow new exception?
+                    Log.e(TAG, "Can't push dmp events data", e);
                 }
-                Response<Void> response = cxense.apiInstance.pushEvents(new EventDataRequest(data)).execute();
-                if (!response.isSuccessful())
-                    return;
+            } else {
                 for (EventRecord event : events) {
-                    event.isSent = true;
-                    cxense.putEventRecordInDatabase(event);
+                    try {
+                        Map<String, String> data = cxense.unpackObject(event.data, new TypeReference<PerformanceEvent>() {
+                        }).toQueryMap();
+                        String segmentsValue = data.get(PerformanceEvent.SEGMENT_IDS);
+                        data.remove(PerformanceEvent.SEGMENT_IDS);
+                        List<String> segments = new ArrayList<>();
+                        if (!TextUtils.isEmpty(segmentsValue)) {
+                            segments.addAll(Arrays.asList(segmentsValue.split(",")));
+                        }
+                        Response<ResponseBody> response = cxense.apiInstance.trackDmpEvent(cxense.configuration.getDmpPushPersistentId(), segments, data).execute();
+                        if (response.isSuccessful()) {
+                            event.isSent = true;
+                        }
+                        cxense.putEventRecordInDatabase(event);
+                    } catch (IOException e) {
+                        // TODO: May be we need to rethrow new exception?
+                        Log.e(TAG, "Can't deserialize event data", e);
+                    }
                 }
-            } catch (IOException e) {
-                // TODO: May be we need to rethrow new exception?
-                Log.e(TAG, "Can't push dmp events data", e);
             }
         }
 
@@ -522,7 +546,7 @@ public final class CxenseSdk extends Cxense {
                         event.data = cxense.packObject(data);
                         event.ckp = id;
                     }
-                    Response<ResponseBody> response = cxense.apiInstance.track(data).execute();
+                    Response<ResponseBody> response = cxense.apiInstance.trackInsightEvent(data).execute();
                     if (response.isSuccessful()) {
                         event.isSent = true;
                     }

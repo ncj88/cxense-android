@@ -119,7 +119,7 @@ public final class PageViewEvent extends Event {
 
     @Override
     public EventRecord toEventRecord() throws JsonProcessingException {
-        Map<String, String> eventMap = toMap();
+        Map<String, String> eventMap = toQueryMap();
         EventRecord record = new EventRecord();
         record.customId = eventId;
         record.data = CxenseSdk.getInstance().packObject(eventMap);
@@ -238,12 +238,7 @@ public final class PageViewEvent extends Event {
         return userLocation;
     }
 
-    @NonNull
-    private String escapeString(@Nullable String str) {
-        return str != null ? str : "";
-    }
-
-    Map<String, String> toMap() {
+    Map<String, String> toQueryMap() {
         CxenseSdk cxense = CxenseSdk.getInstance();
         Calendar calendar = Calendar.getInstance();
         long offset = TimeUnit.MILLISECONDS.toMinutes(calendar.getTimeZone().getOffset(calendar.getTimeInMillis()));

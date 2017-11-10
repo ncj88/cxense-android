@@ -21,6 +21,7 @@ import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -51,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
 
         CxenseConfiguration config = CxenseSdk.getInstance().getConfiguration();
         config.setDispatchPeriod(CxenseConfiguration.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
-        config.setUsername(BuildConfig.USERNAME);
         config.setApiKey(BuildConfig.API_KEY);
+        config.setDmpPushPersistentId(BuildConfig.PERSISTED_ID);
     }
 
     @Override
@@ -176,7 +177,10 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
 
         PerformanceEvent.Builder builder = new PerformanceEvent.Builder(Collections.singletonList(identity), BuildConfig.SITE_ID, "cxd-origin", "tap")
                 .setPrnd(UUID.randomUUID().toString())
-                .addCustomParameter(new CustomParameter("cxd-interests", "TEST"));
+                .addCustomParameters(Arrays.asList(
+                        new CustomParameter("cxd-interests", "TEST"),
+                        new CustomParameter("cxd-test", "TEST")
+                ));
         cxenseSdk.pushEvents(builder.setRnd("123").build(), builder.setRnd("12345").build());
     }
 

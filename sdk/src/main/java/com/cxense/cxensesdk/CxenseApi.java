@@ -13,6 +13,7 @@ import com.cxense.cxensesdk.model.UserSegmentRequest;
 import com.cxense.cxensesdk.model.WidgetRequest;
 import com.cxense.cxensesdk.model.WidgetResponse;
 
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
@@ -20,6 +21,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
 import retrofit2.http.Url;
 
@@ -53,7 +55,10 @@ public interface CxenseApi {
     Call<Void> pushEvents(@Body EventDataRequest request);
 
     @GET("https://scomcluster.cxense.com/Repo/rep.gif")
-    Call<ResponseBody> track(@QueryMap Map<String, String> options);
+    Call<ResponseBody> trackInsightEvent(@QueryMap Map<String, String> options);
+
+    @GET("https://scomcluster.cxense.com/dmp/push.gif")
+    Call<ResponseBody> trackDmpEvent(@Query("persisted") String persistentId, @Query(PerformanceEvent.SEGMENT_IDS) List<String> segments, @QueryMap Map<String, String> options);
 
     @POST("public/widget/data")
     Call<WidgetResponse> getWidgetData(@Body WidgetRequest request);
