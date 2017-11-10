@@ -14,6 +14,7 @@ android {
         buildConfigField "String", "SITE_ID", '"PUT_SITE_ID_HERE"'
         buildConfigField "String", "USERNAME", '"PUT_USERNAME_HERE"'
         buildConfigField "String", "API_KEY", '"PUT_API_KEY_HERE"'
+        buildConfigField "String", "PERSISTED_ID", '"PUT_PERSISTED_ID_HERE"'
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {

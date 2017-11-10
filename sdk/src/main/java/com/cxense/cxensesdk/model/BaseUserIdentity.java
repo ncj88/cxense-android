@@ -13,9 +13,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 
 public class BaseUserIdentity {
-    @JsonProperty("id")
+    public static final String ID = "id";
+    public static final String TYPE = "type";
+    @JsonProperty(ID)
     String id;
-    @JsonProperty("type")
+    @JsonProperty(TYPE)
     String type;
 
     protected BaseUserIdentity() {

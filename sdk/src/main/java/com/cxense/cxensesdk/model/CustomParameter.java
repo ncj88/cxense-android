@@ -12,12 +12,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 
 public final class CustomParameter {
-    @JsonProperty("group")
+    public static final String GROUP = "group";
+    public static final String ITEM = "item";
+    private static final String TYPE = "type";
+    @JsonProperty(GROUP)
     String name;
-    @JsonProperty("type")
+    @JsonProperty(TYPE)
     String type;
-    @JsonProperty("item")
+    @JsonProperty(ITEM)
     String item;
+
+    private CustomParameter() {
+    }
 
     /**
      * Create new instance of customer-defined parameter
@@ -30,5 +36,23 @@ public final class CustomParameter {
         Preconditions.checkStringForNullOrEmpty(item, "item");
         this.name = name;
         this.item = item;
+    }
+
+    /**
+     * Gets parameter name
+     *
+     * @return parameter name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Gets parameter value
+     *
+     * @return parameter value
+     */
+    public String getItem() {
+        return item;
     }
 }
