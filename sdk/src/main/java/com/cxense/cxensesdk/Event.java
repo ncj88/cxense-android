@@ -13,8 +13,24 @@ import java.util.Map;
  */
 
 public abstract class Event {
+    String eventId;
+
+    Event(String eventId) {
+        this.eventId = eventId;
+    }
+
     public abstract EventRecord toEventRecord() throws JsonProcessingException;
+
     abstract Map<String, String> toQueryMap();
+
+    /**
+     * Gets custom event id, that used for tracking locally.
+     *
+     * @return event id
+     */
+    public String getEventId() {
+        return eventId;
+    }
 
     @NonNull
     String escapeString(@Nullable String str) {

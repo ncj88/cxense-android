@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +45,7 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 /**
  * Singleton class used as a facade to the Cxense services
@@ -66,6 +68,13 @@ public final class CxenseSdk extends Cxense {
     private CxenseApi apiInstance;
     private ScheduledFuture<?> scheduled;
     private ContentUser defaultUser;
+    private DispatchEventsCallback sendCallback = statuses -> {
+        for (EventStatus eventStatus : statuses) {
+            if (eventStatus.exception != null) {
+                Log.e(TAG, String.format(Locale.getDefault(), "Error at sending event with id '%s'", eventStatus.eventId), eventStatus.exception);
+            }
+        }
+    };
 
     /**
      * @param context {@code Context} instance from {@code Activity}/{@code ContentProvider}/etc.
@@ -406,6 +415,42 @@ public final class CxenseSdk extends Cxense {
         return defaultUser;
     }
 
+    /**
+     * Forces sending events from queue to server.
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public void flushEventQueue() {
+        postRunnable(sendTask);
+    }
+
+    /**
+     * Returns current event queue status
+     *
+     * @return queue status
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
+    public QueueStatus getQueueStatus() {
+        List<ContentValues> values = databaseHelper.query(EventRecord.TABLE_NAME,
+                new String[]{EventRecord.EVENT_CUSTOM_ID, EventRecord.IS_SENT}, null,
+                null, null, null, EventRecord.TIME + " ASC");
+        List<EventStatus> statuses = new ArrayList<>();
+        for (ContentValues cv : values) {
+            EventRecord record = new EventRecord(cv);
+            statuses.add(new EventStatus(record.customId, record.isSent));
+        }
+        return new QueueStatus(statuses);
+    }
+
+    /**
+     * Sets callback for each dispatching of events
+     *
+     * @param callback callback instance
+     */
+    public void setDispatchEventsCallback(DispatchEventsCallback callback) {
+        sendCallback = callback;
+    }
+
     void getWidgetItems(WidgetRequest request, LoadCallback<List<WidgetItem>> listener) {
         apiInstance.getWidgetData(request).enqueue(transform(listener, data -> data.items));
     }
@@ -488,30 +533,45 @@ public final class CxenseSdk extends Cxense {
         return new EventRecord(values.get(0));
     }
 
+    public interface DispatchEventsCallback {
+        void onSend(List<EventStatus> statuses);
+    }
+
     static class SendTask implements Runnable {
+        private EventStatus createStatus(EventRecord record, Exception exc) {
+            return new EventStatus(record.customId, record.isSent, exc);
+        }
+
         void sendDmpEvents(@NonNull List<EventRecord> events) {
             if (events.isEmpty())
                 return;
             CxenseSdk cxense = CxenseSdk.getInstance();
+            List<EventStatus> statuses = new ArrayList<>();
             if (cxense.configuration.isDmpAuthorized()) {
+                Exception exception = null;
                 try {
                     List<String> data = new ArrayList<>();
                     for (EventRecord record : events) {
                         data.add(record.data);
                     }
                     Response<Void> response = cxense.apiInstance.pushEvents(new EventDataRequest(data)).execute();
-                    if (!response.isSuccessful())
-                        return;
-                    for (EventRecord event : events) {
-                        event.isSent = true;
-                        cxense.putEventRecordInDatabase(event);
+                    if (response.isSuccessful()) {
+                        for (EventRecord event : events) {
+                            event.isSent = true;
+                            cxense.putEventRecordInDatabase(event);
+                        }
                     }
+                    exception = cxense.parseError(response);
                 } catch (IOException e) {
-                    // TODO: May be we need to rethrow new exception?
-                    Log.e(TAG, "Can't push dmp events data", e);
+                    exception = e;
+                } finally {
+                    for (EventRecord event : events) {
+                        statuses.add(new EventStatus(event.customId, event.isSent, exception));
+                    }
                 }
             } else {
                 for (EventRecord event : events) {
+                    EventStatus status = null;
                     try {
                         Map<String, String> data = cxense.unpackObject(event.data, new TypeReference<PerformanceEvent>() {
                         }).toQueryMap();
@@ -526,17 +586,23 @@ public final class CxenseSdk extends Cxense {
                             event.isSent = true;
                         }
                         cxense.putEventRecordInDatabase(event);
+                        status = createStatus(event, cxense.parseError(response));
                     } catch (IOException e) {
-                        // TODO: May be we need to rethrow new exception?
-                        Log.e(TAG, "Can't deserialize event data", e);
+                        status = createStatus(event, e);
+                    } finally {
+                        statuses.add(status);
                     }
                 }
             }
+            if (cxense.sendCallback != null)
+                cxense.sendCallback.onSend(statuses);
         }
 
         void sendPageViewEvents(@NonNull List<EventRecord> events) {
             CxenseSdk cxense = CxenseSdk.getInstance();
+            List<EventStatus> statuses = new ArrayList<>();
             for (EventRecord event : events) {
+                EventStatus status = null;
                 try {
                     Map<String, String> data = cxense.unpackMap(event.data);
                     String ckp = data.get(PageViewEvent.CKP);
@@ -551,11 +617,15 @@ public final class CxenseSdk extends Cxense {
                         event.isSent = true;
                     }
                     cxense.putEventRecordInDatabase(event);
+                    status = createStatus(event, cxense.parseError(response));
                 } catch (IOException e) {
-                    // TODO: May be we need to rethrow new exception?
-                    Log.e(TAG, "Can't deserialize event data", e);
+                    status = createStatus(event, e);
+                } finally {
+                    statuses.add(status);
                 }
             }
+            if (cxense.sendCallback != null)
+                cxense.sendCallback.onSend(statuses);
         }
 
         @Override

@@ -58,10 +58,11 @@ public final class PerformanceEvent extends Event {
     private List<CustomParameter> customParameters;
 
     private PerformanceEvent() {
+        super(null);
     }
 
     private PerformanceEvent(Builder builder) {
-        this();
+        super(builder.eventId);
         time = builder.time;
         identities = Collections.unmodifiableList(builder.identities);
         prnd = builder.prnd;
@@ -76,6 +77,7 @@ public final class PerformanceEvent extends Event {
     @Override
     public EventRecord toEventRecord() throws JsonProcessingException {
         EventRecord record = new EventRecord();
+        record.customId = eventId;
         record.data = CxenseSdk.getInstance().packObject(this);
         // event time in seconds, but timestamp in milliseconds
         record.timestamp = time != null ? TimeUnit.SECONDS.toMillis(time) : System.currentTimeMillis();
@@ -212,15 +214,16 @@ public final class PerformanceEvent extends Event {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess, UnusedReturnValue"}) // Public API.
     public static class Builder {
-        Long time;
-        List<UserIdentity> identities;
-        String prnd;
-        String rnd;
-        String siteId;
-        String origin;
-        String type;
-        List<String> segments;
-        List<CustomParameter> customParameters;
+        private String eventId;
+        private Long time;
+        private List<UserIdentity> identities;
+        private String prnd;
+        private String rnd;
+        private String siteId;
+        private String origin;
+        private String type;
+        private List<String> segments;
+        private List<CustomParameter> customParameters;
 
         /**
          * Initialize Builder with required parameters
@@ -242,6 +245,17 @@ public final class PerformanceEvent extends Event {
 
         void setTime(long milliseconds) {
             this.time = TimeUnit.MILLISECONDS.toSeconds(milliseconds);
+        }
+
+        /**
+         * Sets custom event id, that used for tracking locally.
+         *
+         * @param eventId event id
+         * @return Builder instance
+         */
+        public Builder setEventId(String eventId) {
+            this.eventId = eventId;
+            return this;
         }
 
         /**

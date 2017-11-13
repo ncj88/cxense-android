@@ -4,4 +4,7 @@
     <item
         android:id="@+id/run"
         android:title="@string/run_methods" />
+    <item
+        android:id="@+id/flush"
+        android:title="@string/flush_queue" />
 </menu>

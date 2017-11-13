@@ -214,6 +214,7 @@ public final class CxenseConfiguration {
 
     /**
      * Gets persistent query id for pushing DMP Performance events without authorization
+     *
      * @return persistent query id
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
@@ -223,6 +224,7 @@ public final class CxenseConfiguration {
 
     /**
      * Sets persistent query id for pushing DMP Performance events without authorization
+     *
      * @param persistentId the persistent query id
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
@@ -232,6 +234,7 @@ public final class CxenseConfiguration {
 
     /**
      * Checks, that we use username and api key or persistent id
+     *
      * @return True, if username and api key filled
      */
     boolean isDmpAuthorized() {

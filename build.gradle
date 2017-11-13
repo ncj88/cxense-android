@@ -44,7 +44,7 @@ ext {
     compileSourceVersion = JavaVersion.VERSION_1_8
     compileTargetVersion = JavaVersion.VERSION_1_8
 
-    cxenseVersion = '3.3.3'
+    cxenseVersion = '3.3.4'
     junitVersion = '4.12'
     powermockVersion = '1.7.0'
     hamcrestVersion = '1.3'

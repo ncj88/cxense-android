@@ -2,7 +2,6 @@ package com.cxense.cxensesdk;
 
 import android.location.Location;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
@@ -73,7 +72,6 @@ public final class PageViewEvent extends Event {
     static final String DEFAULT_EVENT_TYPE = "pgv";
     static final int DEFAULT_API_VERSION = 1;
 
-    private String eventId;
     private String usi;
     /**
      * Which version of the API is this requested targeted.
@@ -95,13 +93,12 @@ public final class PageViewEvent extends Event {
     private Map<String, String> customUserParameters;
 
     PageViewEvent(Builder builder) {
-        super();
+        super(builder.eventId);
 
         version = DEFAULT_API_VERSION;
         date = new Date();
         usi = CxenseSdk.getInstance().getUserId();
 
-        eventId = builder.eventId;
         type = builder.type;
         accountId = builder.accountId;
         siteId = builder.siteId;
@@ -128,15 +125,6 @@ public final class PageViewEvent extends Event {
         record.rnd = eventMap.get(PageViewEvent.RND);
         record.eventType = DEFAULT_EVENT_TYPE;
         return record;
-    }
-
-    /**
-     * Gets custom event id, that used for tracking locally.
-     *
-     * @return event id
-     */
-    public String getEventId() {
-        return eventId;
     }
 
     /**
