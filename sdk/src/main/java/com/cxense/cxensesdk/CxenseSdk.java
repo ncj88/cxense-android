@@ -420,7 +420,7 @@ public final class CxenseSdk extends Cxense {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void flushEventQueue() {
-        postRunnable(sendTask);
+        sendTask.run();
     }
 
     /**
