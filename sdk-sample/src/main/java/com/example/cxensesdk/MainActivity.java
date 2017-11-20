@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import com.cxense.LoadCallback;
 import com.cxense.cxensesdk.CxenseConfiguration;
 import com.cxense.cxensesdk.CxenseSdk;
+import com.cxense.cxensesdk.EventStatus;
 import com.cxense.cxensesdk.PerformanceEvent;
 import com.cxense.cxensesdk.model.CustomParameter;
 import com.cxense.cxensesdk.model.User;
@@ -21,6 +22,7 @@ import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -44,15 +46,35 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        recyclerView = findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         MainAdapter adapter = new MainAdapter(animals, this);
         recyclerView.setAdapter(adapter);
 
         CxenseConfiguration config = CxenseSdk.getInstance().getConfiguration();
         config.setDispatchPeriod(CxenseConfiguration.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
-        config.setUsername(BuildConfig.USERNAME);
         config.setApiKey(BuildConfig.API_KEY);
+        config.setDmpPushPersistentId(BuildConfig.PERSISTED_ID);
+    }
+
+    @Override
+    protected void onPause() {
+        CxenseSdk.getInstance().setDispatchEventsCallback(null);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        CxenseSdk.getInstance().setDispatchEventsCallback(statuses -> {
+            List<String> sent = new ArrayList<>(), notSent = new ArrayList<>();
+            for (EventStatus s : statuses) {
+                if (s.isSent)
+                    sent.add(s.eventId);
+                else notSent.add(s.eventId);
+            }
+            showText(String.format(Locale.getDefault(), "Sent: '%s'\nNot sent: '%s'", TextUtils.join(", ", sent), TextUtils.join(", ", notSent)));
+        });
     }
 
     @Override
@@ -66,6 +88,9 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
         switch (item.getItemId()) {
             case R.id.run:
                 runMethods();
+                return true;
+            case R.id.flush:
+                CxenseSdk.getInstance().flushEventQueue();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -176,7 +201,10 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
 
         PerformanceEvent.Builder builder = new PerformanceEvent.Builder(Collections.singletonList(identity), BuildConfig.SITE_ID, "cxd-origin", "tap")
                 .setPrnd(UUID.randomUUID().toString())
-                .addCustomParameter(new CustomParameter("cxd-interests", "TEST"));
+                .addCustomParameters(Arrays.asList(
+                        new CustomParameter("cxd-interests", "TEST"),
+                        new CustomParameter("cxd-test", "TEST")
+                ));
         cxenseSdk.pushEvents(builder.setRnd("123").build(), builder.setRnd("12345").build());
     }
 

@@ -41,6 +41,7 @@ public class SendTaskTest extends BaseTest {
     private CxenseConfiguration configuration;
     private CxenseSdk.SendTask sendTask;
     private Call call;
+    private CxenseSdk.DispatchEventsCallback sendCallback;
 
     @Before
     public void setUp() throws Exception {
@@ -48,12 +49,19 @@ public class SendTaskTest extends BaseTest {
         call = mock(Call.class);
         sendTask = spy(new CxenseSdk.SendTask());
         configuration = spy(new CxenseConfiguration());
+        sendCallback = spy(new CxenseSdk.DispatchEventsCallback() {
+            @Override
+            public void onSend(List<EventStatus> statuses) {
+            }
+        });
         doReturn(false).when(configuration).isRestricted(any());
+        doReturn(true).when(configuration).isDmpAuthorized();
         CxenseApi api = mock(CxenseApi.class);
         when(api.pushEvents(any())).thenReturn(call);
-        when(api.track(any())).thenReturn(call);
+        when(api.trackInsightEvent(any())).thenReturn(call);
         Whitebox.setInternalState(cxense, "apiInstance", api);
         Whitebox.setInternalState(cxense, "configuration", configuration);
+        Whitebox.setInternalState(cxense, "sendCallback", sendCallback);
     }
 
     @Test
@@ -66,12 +74,17 @@ public class SendTaskTest extends BaseTest {
         when(call.execute()).thenReturn(Response.success(body));
         sendTask.sendDmpEvents(Arrays.asList(record, new EventRecord()));
         verify(cxense, times(2)).putEventRecordInDatabase(any());
+        verify(sendCallback).onSend(any());
     }
 
     @Test
     public void sendDmpEventsUnsuccessful() throws Exception {
+        EventRecord record = new EventRecord();
+        record.data = "{}";
         ResponseBody body = mock(ResponseBody.class);
         when(call.execute()).thenReturn(Response.error(404, body));
+        sendTask.sendDmpEvents(Arrays.asList(record, new EventRecord()));
+        verify(sendCallback).onSend(any());
     }
 
     @Test
@@ -85,6 +98,7 @@ public class SendTaskTest extends BaseTest {
         when(cxense.unpackMap(isNull())).thenThrow(new IOException());
         sendTask.sendPageViewEvents(Arrays.asList(record, new EventRecord()));
         verify(cxense).putEventRecordInDatabase(any());
+        verify(sendCallback).onSend(any());
     }
 
     @Test

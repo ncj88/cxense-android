@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 
 import com.cxense.Preconditions;
 
@@ -47,6 +48,7 @@ public final class CxenseConfiguration {
     private NetworkRestriction networkRestriction = NetworkRestriction.NONE;
     private DispatchMode dispatchMode = DispatchMode.ONLINE;
     private long outdatePeriod = DEFAULT_OUTDATED_PERIOD;
+    private String dmpPushPersistentId;
 
     CxenseConfiguration() {
     }
@@ -208,6 +210,35 @@ public final class CxenseConfiguration {
         if (millis < MIN_OUTDATE_PERIOD)
             throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds", TimeUnit.MILLISECONDS.toSeconds(MIN_OUTDATE_PERIOD)));
         this.outdatePeriod = millis;
+    }
+
+    /**
+     * Gets persistent query id for pushing DMP Performance events without authorization
+     *
+     * @return persistent query id
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public String getDmpPushPersistentId() {
+        return dmpPushPersistentId;
+    }
+
+    /**
+     * Sets persistent query id for pushing DMP Performance events without authorization
+     *
+     * @param persistentId the persistent query id
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public void setDmpPushPersistentId(String persistentId) {
+        this.dmpPushPersistentId = persistentId;
+    }
+
+    /**
+     * Checks, that we use username and api key or persistent id
+     *
+     * @return True, if username and api key filled
+     */
+    boolean isDmpAuthorized() {
+        return !TextUtils.isEmpty(username) && !TextUtils.isEmpty(apiKey);
     }
 
     /**
