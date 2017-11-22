@@ -636,8 +636,8 @@ public final class CxenseSdk extends Cxense {
                 if (cxense.configuration.getDispatchMode() == CxenseConfiguration.DispatchMode.OFFLINE || cxense.configuration.isRestricted(cxense.appContext))
                     return;
 
-                sendDmpEvents(cxense.getNotSubmittedEvents(false));
                 sendPageViewEvents(cxense.getNotSubmittedEvents(true));
+                sendDmpEvents(cxense.getNotSubmittedEvents(false));
 
             } catch (Exception e) {
                 Log.e(TAG, "Error at sending data", e);

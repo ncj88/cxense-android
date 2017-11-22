@@ -78,6 +78,7 @@ public final class PageViewEvent extends Event {
      */
     private int version;
     private String type;
+    private String rnd;
     private int accountId = 0;
     private String siteId;
     private String contentId;
@@ -98,6 +99,7 @@ public final class PageViewEvent extends Event {
         version = DEFAULT_API_VERSION;
         date = new Date();
         usi = CxenseSdk.getInstance().getUserId();
+        rnd = String.format(Locale.US, "%d%d", Calendar.getInstance().getTimeInMillis(), (int) (Math.random() * 10E8));
 
         type = builder.type;
         accountId = builder.accountId;
@@ -134,6 +136,15 @@ public final class PageViewEvent extends Event {
      */
     public String getType() {
         return type;
+    }
+
+    /**
+     * Gets Rnd of event
+     *
+     * @return Rnd
+     */
+    public String getRnd() {
+        return rnd;
     }
 
     /**
@@ -267,7 +278,7 @@ public final class PageViewEvent extends Event {
         // Device color depth.
         result.put(COLOR, "32"); // Android uses ARGB_8888 32bit from version 2.3 (API 10)
         result.put(DENSITY, "" + dm.density);
-        result.put(RND, String.format(Locale.US, "%d%d", calendar.getTimeInMillis(), (int) (Math.random() * 10E8)));
+        result.put(RND, rnd);
         // Is Java enabled
         result.put(JAVA, "0"); // No, we have not Java 😁
         result.put(LANGUAGE, lang);
