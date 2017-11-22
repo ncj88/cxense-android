@@ -17,9 +17,11 @@ import com.cxense.cxensesdk.CxenseSdk;
 import com.cxense.cxensesdk.EventStatus;
 import com.cxense.cxensesdk.PerformanceEvent;
 import com.cxense.cxensesdk.model.CustomParameter;
+import com.cxense.cxensesdk.model.SegmentsResponse;
 import com.cxense.cxensesdk.model.User;
 import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
+import com.cxense.cxensesdk.model.UserSegmentRequest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,10 +117,22 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
     private void runMethods() {
         String id = "some_user_id";
         String type = "cxd";
+        String segmentsPersistentId = "some_persistemt_id";
         CxenseSdk cxenseSdk = CxenseSdk.getInstance();
         UserIdentity identity = new UserIdentity(id, type);
         List<UserIdentity> identities = new ArrayList<>();
         identities.add(identity);
+        cxenseSdk.executePersistedQuery(CxenseSdk.ENDPOINT_USER_SEGMENTS, segmentsPersistentId, new UserSegmentRequest(Collections.singletonList(new UserIdentity(id, type)), null), new LoadCallback<SegmentsResponse>() {
+            @Override
+            public void onSuccess(SegmentsResponse segmentsResponse) {
+                showText(TextUtils.join(" ", segmentsResponse.ids));
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                showError(throwable);
+            }
+        });
         cxenseSdk.getUserSegmentIds(identities, Collections.singletonList(BuildConfig.SITE_ID), new LoadCallback<List<String>>() {
             @Override
             public void onSuccess(List<String> data) {

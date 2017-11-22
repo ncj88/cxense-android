@@ -1,8 +1,8 @@
 package com.cxense.cxensesdk.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
-import com.cxense.Preconditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class UserExternalData extends UserIdentity {
          *
          * @param identity user identifier with type and id
          */
-        public Builder(@NonNull UserIdentity identity) {
+        public Builder(@Nullable UserIdentity identity) {
             items = new ArrayList<>();
             setIdentity(identity);
         }
@@ -70,8 +70,7 @@ public class UserExternalData extends UserIdentity {
          * @param identity user identifier with type and id
          * @return builder instance
          */
-        public Builder setIdentity(@NonNull UserIdentity identity) {
-            Preconditions.checkForNull(identity, "identity");
+        public Builder setIdentity(@Nullable UserIdentity identity) {
             this.identity = identity;
             return this;
         }

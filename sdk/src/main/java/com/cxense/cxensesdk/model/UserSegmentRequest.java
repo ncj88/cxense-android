@@ -1,6 +1,6 @@
 package com.cxense.cxensesdk.model;
 
-import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -19,8 +19,10 @@ public final class UserSegmentRequest {
     @JsonProperty("identities")
     List<UserIdentity> identities;
 
-    public UserSegmentRequest(@NonNull List<UserIdentity> identities, @NonNull List<String> siteGroups) {
-        this.siteGroups = new ArrayList<>(siteGroups);
-        this.identities = new ArrayList<>(identities);
+    public UserSegmentRequest(@Nullable List<UserIdentity> identities, @Nullable List<String> siteGroups) {
+        if (siteGroups != null)
+            this.siteGroups = new ArrayList<>(siteGroups);
+        if (identities != null)
+            this.identities = new ArrayList<>(identities);
     }
 }

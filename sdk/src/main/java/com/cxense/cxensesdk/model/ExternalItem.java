@@ -13,7 +13,7 @@ import java.util.Locale;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-final class ExternalItem {
+public final class ExternalItem {
     private static final int GROUP_NAME_MAX_LENGTH = 30;
     private static final int ITEM_NAME_MAX_LENGTH = 40;
     private static final String ERROR_MSG = "'%s' can contains only letters and digits, max length is %d";

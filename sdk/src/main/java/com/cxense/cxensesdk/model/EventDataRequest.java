@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk.model;
 
+import android.support.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 
@@ -17,7 +19,14 @@ public final class EventDataRequest {
     @JsonRawValue
     List<String> events;
 
-    public EventDataRequest(List<String> events) {
-        this.events = new ArrayList<>(events);
+    /**
+     * Create new event packet
+     *
+     * @param events list of json serialized events
+     */
+    public EventDataRequest(@Nullable List<String> events) {
+        this.events = new ArrayList<>();
+        if (events != null)
+            this.events.addAll(events);
     }
 }

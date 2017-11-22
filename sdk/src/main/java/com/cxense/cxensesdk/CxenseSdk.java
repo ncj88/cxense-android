@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,6 +56,14 @@ import retrofit2.Response;
  */
 
 public final class CxenseSdk extends Cxense {
+    public static final String ENDPOINT_USER_SEGMENTS = "profile/user/segment";
+    public static final String ENDPOINT_USER_PROFILE = "profile/user";
+    public static final String ENDPOINT_READ_USER_EXTERNAL_DATA = "profile/user/external/read";
+    public static final String ENDPOINT_UPDATE_USER_EXTERNAL_DATA = "profile/user/external/update";
+    public static final String ENDPOINT_DELETE_USER_EXTERNAL_DATA = "profile/user/external/delete";
+    public static final String ENDPOINT_READ_USER_EXTERNAL_LINK = "profile/user/external/link";
+    public static final String ENDPOINT_UPDATE_USER_EXTERNAL_LINK = "profile/user/external/link/update";
+    public static final String ENDPOINT_PUSH_DMP_EVENTS = "dmp/push";
     /**
      * Default "base url" for url-less mode
      */
@@ -449,6 +458,33 @@ public final class CxenseSdk extends Cxense {
      */
     public void setDispatchEventsCallback(DispatchEventsCallback callback) {
         sendCallback = callback;
+    }
+
+    private <T> Callback<ResponseBody> createGenericCallback(LoadCallback<T> callback) {
+        return transform(new LoadCallback<ResponseBody>() {
+            @Override
+            public void onSuccess(ResponseBody responseBody) {
+                try {
+                    Class<T> clazz = (Class<T>) ((ParameterizedType) callback.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+                    callback.onSuccess(mapper.readValue(responseBody.charStream(), clazz));
+                } catch (Exception e) {
+                    callback.onError(e);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                callback.onError(throwable);
+            }
+        });
+    }
+
+    public <T> void executePersistedQuery(String url, String persistentQueryId, LoadCallback<T> callback) {
+        apiInstance.getPersisted(url, persistentQueryId).enqueue(createGenericCallback(callback));
+    }
+
+    public <T, V> void executePersistedQuery(String url, String persistentQueryId, V data, LoadCallback<T> callback) {
+        apiInstance.postPersisted(url, persistentQueryId, data).enqueue(createGenericCallback(callback));
     }
 
     void getWidgetItems(WidgetRequest request, LoadCallback<List<WidgetItem>> listener) {

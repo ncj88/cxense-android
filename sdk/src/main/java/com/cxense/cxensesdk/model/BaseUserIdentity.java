@@ -1,9 +1,7 @@
 package com.cxense.cxensesdk.model;
 
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.cxense.Preconditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -29,7 +27,7 @@ public class BaseUserIdentity {
      * @param id   user identifier value (my be null for users group)
      * @param type user identifier type
      */
-    public BaseUserIdentity(@Nullable String id, @NonNull String type) {
+    public BaseUserIdentity(@Nullable String id, @Nullable String type) {
         this(type);
         this.id = id;
     }
@@ -39,9 +37,8 @@ public class BaseUserIdentity {
      *
      * @param type user identifier type
      */
-    public BaseUserIdentity(@NonNull String type) {
+    public BaseUserIdentity(@Nullable String type) {
         this();
-        Preconditions.checkStringForNullOrEmpty(type, "type");
         this.type = type;
     }
 
