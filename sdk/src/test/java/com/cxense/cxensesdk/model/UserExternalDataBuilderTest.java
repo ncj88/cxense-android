@@ -38,11 +38,6 @@ public class UserExternalDataBuilderTest extends BaseTest {
         assertThat(identity, is((UserIdentity) Whitebox.getInternalState(builder, "identity")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void setIdentityNull() throws Exception {
-        builder.setIdentity(null);
-    }
-
     @Test
     public void addExternalItem() throws Exception {
         List<ExternalItem> items = Whitebox.getInternalState(builder, "items");

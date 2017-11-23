@@ -19,35 +19,14 @@ import java.util.concurrent.TimeUnit;
  */
 
 public final class CxenseConfiguration {
-    /**
-     * Default dispatch period for events in milliseconds
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public static final long DEFAULT_DISPATCH_PERIOD = TimeUnit.SECONDS.toMillis(300);
-    /**
-     * Minimum dispatch period for events in milliseconds
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public static final long MIN_DISPATCH_PERIOD = TimeUnit.SECONDS.toMillis(10);
-    /**
-     * Default outdate period for events in milliseconds
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public static final long DEFAULT_OUTDATED_PERIOD = TimeUnit.DAYS.toMillis(7);
-    /**
-     * Minimum outdate period for events in milliseconds
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public static final long MIN_OUTDATE_PERIOD = TimeUnit.MINUTES.toMillis(10);
-
     static final long DISPATCH_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);
     private String username;
     private String apiKey;
     private boolean isAutoMetaInfoTrackingEnabled = true;
-    private long dispatchPeriod = DEFAULT_DISPATCH_PERIOD;
+    private long dispatchPeriod = CxenseConstants.DEFAULT_DISPATCH_PERIOD;
     private NetworkRestriction networkRestriction = NetworkRestriction.NONE;
     private DispatchMode dispatchMode = DispatchMode.ONLINE;
-    private long outdatePeriod = DEFAULT_OUTDATED_PERIOD;
+    private long outdatePeriod = CxenseConstants.DEFAULT_OUTDATED_PERIOD;
     private String dmpPushPersistentId;
 
     CxenseConfiguration() {
@@ -176,13 +155,13 @@ public final class CxenseConfiguration {
      *
      * @param period the dispatch period
      * @param unit   the time unit of the period parameter
-     * @throws IllegalArgumentException if period smaller then {@link #MIN_DISPATCH_PERIOD}
+     * @throws IllegalArgumentException if period smaller then CxenseConstants.MIN_DISPATCH_PERIOD
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void setDispatchPeriod(long period, TimeUnit unit) {
         long millis = unit.toMillis(period);
-        if (millis < MIN_DISPATCH_PERIOD)
-            throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds", TimeUnit.MILLISECONDS.toSeconds(MIN_DISPATCH_PERIOD)));
+        if (millis < CxenseConstants.MIN_DISPATCH_PERIOD)
+            throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds", TimeUnit.MILLISECONDS.toSeconds(CxenseConstants.MIN_DISPATCH_PERIOD)));
         dispatchPeriod = millis;
         CxenseSdk.getInstance().initSendTaskSchedule();
     }
@@ -202,13 +181,13 @@ public final class CxenseConfiguration {
      *
      * @param period the dispatch period
      * @param unit   the time unit of the period parameter
-     * @throws IllegalArgumentException if period smaller than {@link #MIN_OUTDATE_PERIOD}
+     * @throws IllegalArgumentException if period smaller than CxenseConstants.MIN_DISPATCH_PERIOD
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void setOutdatedPeriod(long period, TimeUnit unit) {
         long millis = unit.toMillis(period);
-        if (millis < MIN_OUTDATE_PERIOD)
-            throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds", TimeUnit.MILLISECONDS.toSeconds(MIN_OUTDATE_PERIOD)));
+        if (millis < CxenseConstants.MIN_OUTDATE_PERIOD)
+            throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds", TimeUnit.MILLISECONDS.toSeconds(CxenseConstants.MIN_OUTDATE_PERIOD)));
         this.outdatePeriod = millis;
     }
 

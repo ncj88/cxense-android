@@ -1,8 +1,7 @@
 package com.cxense.cxensesdk.model;
 
 import android.support.annotation.NonNull;
-
-import com.cxense.Preconditions;
+import android.support.annotation.Nullable;
 
 /**
  * User identity object.
@@ -15,7 +14,7 @@ public class UserIdentity extends BaseUserIdentity {
         super();
     }
 
-    protected UserIdentity(String type) {
+    protected UserIdentity(@Nullable String type) {
         super(type);
     }
 
@@ -25,9 +24,8 @@ public class UserIdentity extends BaseUserIdentity {
      * @param id   user identifier
      * @param type user identifier type
      */
-    public UserIdentity(@NonNull String id, @NonNull String type) {
+    public UserIdentity(@Nullable String id, @Nullable String type) {
         super(id, type);
-        Preconditions.checkStringForNullOrEmpty(id, "id");
     }
 
     /**

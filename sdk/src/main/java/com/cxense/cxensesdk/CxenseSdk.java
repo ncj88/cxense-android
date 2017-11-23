@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -447,8 +448,55 @@ public final class CxenseSdk extends Cxense {
      *
      * @param callback callback instance
      */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void setDispatchEventsCallback(DispatchEventsCallback callback) {
         sendCallback = callback;
+    }
+
+    private <T> Callback<ResponseBody> createGenericCallback(LoadCallback<T> callback) {
+        return transform(new LoadCallback<ResponseBody>() {
+            @Override
+            public void onSuccess(ResponseBody responseBody) {
+                try {
+                    Class<T> clazz = (Class<T>) ((ParameterizedType) callback.getClass().getGenericInterfaces()[0]).getActualTypeArguments()[0];
+                    callback.onSuccess(mapper.readValue(responseBody.charStream(), clazz));
+                } catch (Exception e) {
+                    callback.onError(e);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                callback.onError(throwable);
+            }
+        });
+    }
+
+    /**
+     * Executes persisted query to Cxense API endpoint. You can find some popular endpoints in {@link CxenseConstants}
+     *
+     * @param url               API endpoint
+     * @param persistentQueryId query id
+     * @param callback          callback for response data
+     * @param <T>               response type
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public <T> void executePersistedQuery(String url, String persistentQueryId, LoadCallback<T> callback) {
+        apiInstance.getPersisted(url, persistentQueryId).enqueue(createGenericCallback(callback));
+    }
+
+    /**
+     * Executes persisted query to Cxense API endpoint. You can find some popular endpoints in {@link CxenseConstants}
+     *
+     * @param url               API endpoint
+     * @param persistentQueryId query id
+     * @param data              data for sending as request body
+     * @param callback          callback for response data
+     * @param <T>               response type
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public <T> void executePersistedQuery(String url, String persistentQueryId, Object data, LoadCallback<T> callback) {
+        apiInstance.postPersisted(url, persistentQueryId, data).enqueue(createGenericCallback(callback));
     }
 
     void getWidgetItems(WidgetRequest request, LoadCallback<List<WidgetItem>> listener) {
