@@ -56,14 +56,6 @@ import retrofit2.Response;
  */
 
 public final class CxenseSdk extends Cxense {
-    public static final String ENDPOINT_USER_SEGMENTS = "profile/user/segment";
-    public static final String ENDPOINT_USER_PROFILE = "profile/user";
-    public static final String ENDPOINT_READ_USER_EXTERNAL_DATA = "profile/user/external/read";
-    public static final String ENDPOINT_UPDATE_USER_EXTERNAL_DATA = "profile/user/external/update";
-    public static final String ENDPOINT_DELETE_USER_EXTERNAL_DATA = "profile/user/external/delete";
-    public static final String ENDPOINT_READ_USER_EXTERNAL_LINK = "profile/user/external/link";
-    public static final String ENDPOINT_UPDATE_USER_EXTERNAL_LINK = "profile/user/external/link/update";
-    public static final String ENDPOINT_PUSH_DMP_EVENTS = "dmp/push";
     /**
      * Default "base url" for url-less mode
      */
@@ -456,6 +448,7 @@ public final class CxenseSdk extends Cxense {
      *
      * @param callback callback instance
      */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void setDispatchEventsCallback(DispatchEventsCallback callback) {
         sendCallback = callback;
     }
@@ -479,11 +472,30 @@ public final class CxenseSdk extends Cxense {
         });
     }
 
+    /**
+     * Executes persisted query to Cxense API endpoint. You can find some popular endpoints in {@link CxenseConstants}
+     *
+     * @param url               API endpoint
+     * @param persistentQueryId query id
+     * @param callback          callback for response data
+     * @param <T>               response type
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public <T> void executePersistedQuery(String url, String persistentQueryId, LoadCallback<T> callback) {
         apiInstance.getPersisted(url, persistentQueryId).enqueue(createGenericCallback(callback));
     }
 
-    public <T, V> void executePersistedQuery(String url, String persistentQueryId, V data, LoadCallback<T> callback) {
+    /**
+     * Executes persisted query to Cxense API endpoint. You can find some popular endpoints in {@link CxenseConstants}
+     *
+     * @param url               API endpoint
+     * @param persistentQueryId query id
+     * @param data              data for sending as request body
+     * @param callback          callback for response data
+     * @param <T>               response type
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public <T> void executePersistedQuery(String url, String persistentQueryId, Object data, LoadCallback<T> callback) {
         apiInstance.postPersisted(url, persistentQueryId, data).enqueue(createGenericCallback(callback));
     }
 

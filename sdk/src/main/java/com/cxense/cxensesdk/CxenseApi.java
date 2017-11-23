@@ -31,28 +31,28 @@ import retrofit2.http.Url;
 
 public interface CxenseApi {
 
-    @POST(CxenseSdk.ENDPOINT_USER_SEGMENTS)
+    @POST(CxenseConstants.ENDPOINT_USER_SEGMENTS)
     Call<SegmentsResponse> getUserSegments(@Body UserSegmentRequest request);
 
-    @POST(CxenseSdk.ENDPOINT_USER_PROFILE)
+    @POST(CxenseConstants.ENDPOINT_USER_PROFILE)
     Call<User> getUser(@Body UserDataRequest request);
 
-    @POST(CxenseSdk.ENDPOINT_READ_USER_EXTERNAL_DATA)
+    @POST(CxenseConstants.ENDPOINT_READ_USER_EXTERNAL_DATA)
     Call<UserExternalDataResponse> getUserExternalData(@Body BaseUserIdentity identity);
 
-    @POST(CxenseSdk.ENDPOINT_UPDATE_USER_EXTERNAL_DATA)
+    @POST(CxenseConstants.ENDPOINT_UPDATE_USER_EXTERNAL_DATA)
     Call<Void> updateUserExternalData(@Body UserExternalData externalData);
 
-    @POST(CxenseSdk.ENDPOINT_DELETE_USER_EXTERNAL_DATA)
+    @POST(CxenseConstants.ENDPOINT_DELETE_USER_EXTERNAL_DATA)
     Call<Void> deleteExternalUserData(@Body UserIdentity identity);
 
-    @POST(CxenseSdk.ENDPOINT_READ_USER_EXTERNAL_LINK)
+    @POST(CxenseConstants.ENDPOINT_READ_USER_EXTERNAL_LINK)
     Call<UserIdentity> getUserExternalLink(@Body CxenseUserIdentity identity);
 
-    @POST(CxenseSdk.ENDPOINT_UPDATE_USER_EXTERNAL_LINK)
+    @POST(CxenseConstants.ENDPOINT_UPDATE_USER_EXTERNAL_LINK)
     Call<UserIdentity> updateUserExternalLink(@Body CxenseUserIdentity identity);
 
-    @POST(CxenseSdk.ENDPOINT_PUSH_DMP_EVENTS)
+    @POST(CxenseConstants.ENDPOINT_PUSH_DMP_EVENTS)
     Call<Void> pushEvents(@Body EventDataRequest request);
 
     @GET("https://scomcluster.cxense.com/Repo/rep.gif")
