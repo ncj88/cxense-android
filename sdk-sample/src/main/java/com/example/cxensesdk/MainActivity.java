@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import com.cxense.LoadCallback;
 import com.cxense.cxensesdk.CxenseConfiguration;
+import com.cxense.cxensesdk.CxenseConstants;
 import com.cxense.cxensesdk.CxenseSdk;
 import com.cxense.cxensesdk.EventStatus;
 import com.cxense.cxensesdk.PerformanceEvent;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
         recyclerView.setAdapter(adapter);
 
         CxenseConfiguration config = CxenseSdk.getInstance().getConfiguration();
-        config.setDispatchPeriod(CxenseConfiguration.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
+        config.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
         config.setApiKey(BuildConfig.API_KEY);
         config.setDmpPushPersistentId(BuildConfig.PERSISTED_ID);
     }
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
         UserIdentity identity = new UserIdentity(id, type);
         List<UserIdentity> identities = new ArrayList<>();
         identities.add(identity);
-        cxenseSdk.executePersistedQuery(CxenseSdk.ENDPOINT_USER_SEGMENTS, segmentsPersistentId, new UserSegmentRequest(Collections.singletonList(new UserIdentity(id, type)), null), new LoadCallback<SegmentsResponse>() {
+        cxenseSdk.executePersistedQuery(CxenseConstants.ENDPOINT_USER_SEGMENTS, segmentsPersistentId, new UserSegmentRequest(Collections.singletonList(new UserIdentity(id, type)), null), new LoadCallback<SegmentsResponse>() {
             @Override
             public void onSuccess(SegmentsResponse segmentsResponse) {
                 showText(TextUtils.join(" ", segmentsResponse.ids));
