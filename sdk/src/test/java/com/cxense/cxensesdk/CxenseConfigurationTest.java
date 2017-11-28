@@ -89,7 +89,8 @@ public class CxenseConfigurationTest extends BaseTest {
     @Test
     public void setDispatchMode() throws Exception {
         configuration.setDispatchMode(CxenseConfiguration.DispatchMode.OFFLINE);
-        assertEquals(CxenseConfiguration.DispatchMode.OFFLINE, Whitebox.getInternalState(configuration, "dispatchMode"));
+        assertEquals(CxenseConfiguration.DispatchMode.OFFLINE,
+                Whitebox.getInternalState(configuration, "dispatchMode"));
     }
 
     @Test
@@ -100,7 +101,8 @@ public class CxenseConfigurationTest extends BaseTest {
     @Test
     public void setNetworkRestriction() throws Exception {
         configuration.setNetworkRestriction(CxenseConfiguration.NetworkRestriction.WIFI);
-        assertEquals(CxenseConfiguration.NetworkRestriction.WIFI, Whitebox.getInternalState(configuration, "networkRestriction"));
+        assertEquals(CxenseConfiguration.NetworkRestriction.WIFI,
+                Whitebox.getInternalState(configuration, "networkRestriction"));
     }
 
     @Test

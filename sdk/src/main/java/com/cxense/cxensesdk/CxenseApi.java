@@ -59,7 +59,9 @@ public interface CxenseApi {
     Call<ResponseBody> trackInsightEvent(@QueryMap Map<String, String> options);
 
     @GET("https://scomcluster.cxense.com/dmp/push.gif")
-    Call<ResponseBody> trackDmpEvent(@Query("persisted") String persistentId, @Query(PerformanceEvent.SEGMENT_IDS) List<String> segments, @QueryMap Map<String, String> options);
+    Call<ResponseBody> trackDmpEvent(@Query("persisted") String persistentId,
+                                     @Query(PerformanceEvent.SEGMENT_IDS) List<String> segments,
+                                     @QueryMap Map<String, String> options);
 
     @POST("public/widget/data")
     Call<WidgetResponse> getWidgetData(@Body WidgetRequest request);

@@ -178,7 +178,8 @@ public class CxenseSdkTest extends BaseTest {
 
     @Test
     public void getUser() throws Exception {
-        doNothing().when(cxense).getUser(any(UserIdentity.class), anyList(), anyBoolean(), anyList(), any(LoadCallback.class));
+        doNothing().when(cxense).getUser(any(UserIdentity.class), anyList(), anyBoolean(), anyList(),
+                any(LoadCallback.class));
         cxense.getUser(new UserIdentity("id", "type"), callback);
         verify(cxense).getUser(any(UserIdentity.class), isNull(), isNull(), isNull(), any(LoadCallback.class));
     }
@@ -321,7 +322,8 @@ public class CxenseSdkTest extends BaseTest {
     public void initSendTaskSchedule() throws Exception {
         ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
         ScheduledFuture<?> scheduled = mock(ScheduledFuture.class);
-        doReturn(scheduled).when(executor).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
+        doReturn(scheduled).when(executor).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(),
+                any(TimeUnit.class));
         Whitebox.setInternalState(cxense, "executor", executor);
         cxense.initSendTaskSchedule();
         verify(executor).scheduleWithFixedDelay(any(Runnable.class), anyLong(), anyLong(), any(TimeUnit.class));
@@ -380,23 +382,29 @@ public class CxenseSdkTest extends BaseTest {
 
     @Test
     public void getNotSubmittedEvents() throws Exception {
-        doReturn(Collections.singletonList(new ContentValues())).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        doReturn(Collections.singletonList(new ContentValues())).when(databaseHelper).query(eq(EventRecord.TABLE_NAME),
+                eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
         assertThat(cxense.getNotSubmittedEvents(true), hasSize(1));
-        verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(),
+                any(String[].class), isNull(), isNull(), anyString());
     }
 
     @Test
     public void getEventFromDatabase() throws Exception {
-        doReturn(Collections.singletonList(new ContentValues())).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        doReturn(Collections.singletonList(new ContentValues())).when(databaseHelper).query(eq(EventRecord.TABLE_NAME),
+                eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
         assertNotNull(cxense.getEventFromDatabase("id"));
-        verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(),
+                any(String[].class), isNull(), isNull(), anyString());
     }
 
     @Test
     public void getEventFromDatabaseEmpty() throws Exception {
-        doReturn(new ArrayList<>()).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        doReturn(new ArrayList<>()).when(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS),
+                anyString(), any(String[].class), isNull(), isNull(), anyString());
         assertNull(cxense.getEventFromDatabase("id"));
-        verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(), any(String[].class), isNull(), isNull(), anyString());
+        verify(databaseHelper).query(eq(EventRecord.TABLE_NAME), eq(EventRecord.COLUMNS), anyString(),
+                any(String[].class), isNull(), isNull(), anyString());
     }
 
 }

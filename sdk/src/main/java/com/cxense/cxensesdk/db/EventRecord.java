@@ -21,7 +21,8 @@ public final class EventRecord extends DatabaseObject {
     public static final String IS_SENT = "isSent";
 
     public static final String TABLE_NAME = "event";
-    public static final String[] COLUMNS = {_ID, EVENT_CUSTOM_ID, EVENT, TIME, CKP, RND, EVENT_TYPE, SPENT_TIME, IS_SENT};
+    public static final String[] COLUMNS = {_ID, EVENT_CUSTOM_ID, EVENT, TIME, CKP, RND, EVENT_TYPE, SPENT_TIME,
+            IS_SENT};
 
     /**
      * Contains customer event id

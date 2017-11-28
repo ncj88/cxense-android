@@ -244,8 +244,10 @@ public final class PageViewEvent extends Event {
         DisplayMetrics dm = CxenseSdk.getInstance().getDisplayMetrics();
         String resolution = String.format(Locale.US, "%dx%d", dm.widthPixels, dm.heightPixels);
         Locale locale = Locale.getDefault();
-        String lang = String.format(Locale.US, "%s_%s", escapeString(locale.getLanguage()), escapeString(locale.getCountry()));
-        String locationUrl = contentId != null ? String.format(CxenseSdk.DEFAULT_URL_LESS_BASE_URL, siteId, contentId) : location;
+        String lang = String.format(Locale.US, "%s_%s", escapeString(locale.getLanguage()),
+                escapeString(locale.getCountry()));
+        String locationUrl = contentId != null ? String.format(CxenseSdk.DEFAULT_URL_LESS_BASE_URL, siteId, contentId)
+                : location;
 
         Map<String, String> result = new HashMap<>();
         int i = 0;
@@ -501,13 +503,16 @@ public final class PageViewEvent extends Event {
         }
 
         /**
-         * Adds external user id for this event. The external user type should be the key and the external user id the value.
-         * You can add a maximum of {@link #MAX_EXTERNAL_USER_IDS} external user ids, if you add more, then last will be used.
+         * Adds external user id for this event. The external user type should be the key and the external user id the
+         * value.
+         * You can add a maximum of {@link #MAX_EXTERNAL_USER_IDS} external user ids, if you add more, then last will be
+         * used.
          *
          * @param userType external user type
          * @param userId   external user id
-         * @throws IllegalArgumentException if external user type has a length less than 1 or greater than 10 characters,
-         *                                  if external user id has a length less than 1 or greater than 40 characters.
+         * @throws IllegalArgumentException if external user type has a length less than 1 or greater than 10
+         *                                  characters or if external user id has a length less than 1 or greater than
+         *                                  40 characters.
          */
         public Builder addExternalUserId(String userType, String userId) {
             externalUserIds.add(new ExternalUserId(userType, userId));

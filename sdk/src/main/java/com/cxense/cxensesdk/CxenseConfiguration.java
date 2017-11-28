@@ -161,7 +161,8 @@ public final class CxenseConfiguration {
     public void setDispatchPeriod(long period, TimeUnit unit) {
         long millis = unit.toMillis(period);
         if (millis < CxenseConstants.MIN_DISPATCH_PERIOD)
-            throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds", TimeUnit.MILLISECONDS.toSeconds(CxenseConstants.MIN_DISPATCH_PERIOD)));
+            throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds",
+                    TimeUnit.MILLISECONDS.toSeconds(CxenseConstants.MIN_DISPATCH_PERIOD)));
         dispatchPeriod = millis;
         CxenseSdk.getInstance().initSendTaskSchedule();
     }
@@ -187,7 +188,8 @@ public final class CxenseConfiguration {
     public void setOutdatedPeriod(long period, TimeUnit unit) {
         long millis = unit.toMillis(period);
         if (millis < CxenseConstants.MIN_OUTDATE_PERIOD)
-            throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds", TimeUnit.MILLISECONDS.toSeconds(CxenseConstants.MIN_OUTDATE_PERIOD)));
+            throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds",
+                    TimeUnit.MILLISECONDS.toSeconds(CxenseConstants.MIN_OUTDATE_PERIOD)));
         this.outdatePeriod = millis;
     }
 
@@ -226,7 +228,7 @@ public final class CxenseConfiguration {
      * @return true if the given restriction is limited by the connection
      */
     boolean isRestricted(Context context) {
-        final ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         final NetworkInfo activeNetworkInfo = manager.getActiveNetworkInfo();
 
         if (activeNetworkInfo == null || !activeNetworkInfo.isConnected()) {
@@ -242,10 +244,11 @@ public final class CxenseConfiguration {
             return false; // All calls are allowed on Wi-Fi
         }
 
-        final TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         switch (telephonyManager.getNetworkType()) {
             case TelephonyManager.NETWORK_TYPE_GPRS:
-                return (networkRestriction == NetworkRestriction.MOBILE || networkRestriction == NetworkRestriction.WIFI);
+                return (networkRestriction == NetworkRestriction.MOBILE
+                        || networkRestriction == NetworkRestriction.WIFI);
             case TelephonyManager.NETWORK_TYPE_HSDPA:
             case TelephonyManager.NETWORK_TYPE_HSPA:
             case TelephonyManager.NETWORK_TYPE_HSPAP:

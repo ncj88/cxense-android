@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk.model;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -21,7 +22,8 @@ public final class UserDataRequest extends UserIdentity {
     @JsonProperty("identityTypes")
     List<String> identityTypes;
 
-    public UserDataRequest(@NonNull UserIdentity identity, List<String> groups, Boolean recent, List<String> identityTypes) {
+    public UserDataRequest(@NonNull UserIdentity identity, @Nullable List<String> groups, Boolean recent,
+                           @Nullable List<String> identityTypes) {
         super(identity);
         isRecent = recent;
         if (groups != null)
