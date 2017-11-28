@@ -27,8 +27,10 @@ public final class ExternalItem {
 
     ExternalItem(@NonNull String group, @NonNull String item) {
         this();
-        Preconditions.checkStringForRegex(group, "group", String.format(Locale.US, "^[\\w]{1,%d}$", GROUP_NAME_MAX_LENGTH), ERROR_MSG, "group", GROUP_NAME_MAX_LENGTH);
-        Preconditions.checkStringForRegex(item, "item", String.format(Locale.US, "^[\\w]{1,%d}$", ITEM_NAME_MAX_LENGTH), ERROR_MSG, "item", ITEM_NAME_MAX_LENGTH);
+        Preconditions.checkStringForRegex(group, "group", String.format(Locale.US, "^[\\w]{1,%d}$",
+                GROUP_NAME_MAX_LENGTH), ERROR_MSG, "group", GROUP_NAME_MAX_LENGTH);
+        Preconditions.checkStringForRegex(item, "item", String.format(Locale.US, "^[\\w]{1,%d}$",
+                ITEM_NAME_MAX_LENGTH), ERROR_MSG, "item", ITEM_NAME_MAX_LENGTH);
         this.group = group;
         this.item = item;
     }

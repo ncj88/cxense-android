@@ -39,7 +39,8 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 @PrepareForTest({CxenseAuthenticator.class, Route.class, Response.class})
 @PowerMockIgnore({"javax.crypto.*"})
 public class CxenseAuthenticatorTest {
-    private static final String HEADER = "username=testUser date=1970-01-01T04:00:00.001+0400 hmac-sha256-hex=C266EF8D0CF01BE4ADA9DC6E4D4DBB9870DE3BD3A20BB3E060326D691597382A";
+    private static final String HEADER = "username=testUser date=1970-01-01T04:00:00.001+0400 " +
+            "hmac-sha256-hex=C266EF8D0CF01BE4ADA9DC6E4D4DBB9870DE3BD3A20BB3E060326D691597382A";
     private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("UTC");
     private Date date;
     private CxenseAuthenticator authenticator;

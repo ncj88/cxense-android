@@ -87,7 +87,8 @@ public final class PerformanceEvent extends Event {
         return record;
     }
 
-    private <T> Pair<String, String> convertInnerObject(String objectName, T obj, String nameKey, String valueKey, Function<T, String> getName, Function<T, String> getValue) {
+    private <T> Pair<String, String> convertInnerObject(String objectName, T obj, String nameKey, String valueKey,
+                                                        Function<T, String> getName, Function<T, String> getValue) {
         List<String> innerData = new ArrayList<>();
         innerData.add(objectName);
         innerData.add(String.format(Locale.getDefault(), "%s:%s", nameKey, getName.apply(obj)));
@@ -107,11 +108,13 @@ public final class PerformanceEvent extends Event {
         result.put(ORIGIN, escapeString(origin));
         result.put(TYPE, escapeString(type));
         for (CustomParameter cp : customParameters) {
-            Pair<String, String> pair = convertInnerObject(CUSTOM_PARAMETERS, cp, CustomParameter.GROUP, CustomParameter.ITEM, CustomParameter::getName, CustomParameter::getItem);
+            Pair<String, String> pair = convertInnerObject(CUSTOM_PARAMETERS, cp, CustomParameter.GROUP,
+                    CustomParameter.ITEM, CustomParameter::getName, CustomParameter::getItem);
             result.put(pair.first, pair.second);
         }
         for (UserIdentity uid : identities) {
-            Pair<String, String> pair = convertInnerObject(USER_IDS, uid, UserIdentity.TYPE, UserIdentity.ID, UserIdentity::getType, UserIdentity::getId);
+            Pair<String, String> pair = convertInnerObject(USER_IDS, uid, UserIdentity.TYPE, UserIdentity.ID,
+                    UserIdentity::getType, UserIdentity::getId);
             result.put(pair.first, pair.second);
         }
         if (segments != null && !segments.isEmpty())
@@ -228,12 +231,15 @@ public final class PerformanceEvent extends Event {
         /**
          * Initialize Builder with required parameters
          *
-         * @param identities List of known user identities to identify the user. Note that different users must be fed as different events.
+         * @param identities List of known user identities to identify the user. Note that different users must be fed
+         *                   as different events.
          * @param siteId     The analytics site identifier to be associated with the events.
-         * @param origin     Differentiates various DMP applications used by the customer. Must be prefixed by the customer prefix.
+         * @param origin     Differentiates various DMP applications used by the customer. Must be prefixed by the
+         *                   customer prefix.
          * @param type       Differentiates various event types, e.g., "click", "impression", "conversion", etc.
          */
-        public Builder(@NonNull Collection<UserIdentity> identities, @NonNull String siteId, @NonNull String origin, @NonNull String type) {
+        public Builder(@NonNull Collection<UserIdentity> identities, @NonNull String siteId, @NonNull String origin,
+                       @NonNull String type) {
             this.identities = new ArrayList<>();
             this.segments = new ArrayList<>();
             this.customParameters = new ArrayList<>();
@@ -307,7 +313,8 @@ public final class PerformanceEvent extends Event {
 
         /**
          * Sets an alternative specification for page view event id.
-         * In order to link DMP events to page views this value must be identical to the rnd value of the page view event.
+         * In order to link DMP events to page views this value must be identical to the rnd value of the page view
+         * event.
          *
          * @param prnd A value uniquely identifying the page request
          * @return Builder instance
@@ -348,7 +355,8 @@ public final class PerformanceEvent extends Event {
          * @return Builder instance
          */
         public Builder setOrigin(String origin) {
-            Preconditions.checkStringForRegex(origin, "origin", "\\w{3}-\\w+", "'%s' must be prefixed by the customer prefix.", "origin");
+            Preconditions.checkStringForRegex(origin, "origin", "\\w{3}-\\w+", "'%s' must be " +
+                    "prefixed by the customer prefix.", "origin");
             this.origin = origin;
             return this;
         }

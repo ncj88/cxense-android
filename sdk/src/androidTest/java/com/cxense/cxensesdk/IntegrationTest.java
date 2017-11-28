@@ -35,7 +35,8 @@ public class IntegrationTest {
     private static final String API_USER = BuildConfig.CX_USER;
     private static final String API_KEY = BuildConfig.CX_KEY;
     private static final String SITE_ID = BuildConfig.CX_SITE_ID;
-    private static final String JSON_QUERY = "{\"start\": %d, \"stop\": %d, \"siteId\": \"%s\", \"count\": 1000, \"fields\":[\"eventId\", \"userId\", \"customParameters\"]%s}";
+    private static final String JSON_QUERY = "{\"start\": %d, \"stop\": %d, \"siteId\": \"%s\", \"count\": 1000," +
+            " \"fields\":[\"eventId\", \"userId\", \"customParameters\"]%s}";
     private final Object syncObject = new Object();
     private CxenseSdk cxense;
     private OkHttpClient okHttpClient;
@@ -49,7 +50,7 @@ public class IntegrationTest {
         cxense.initSendTaskSchedule();
         cxense.setUserId("VERY-RANDOM-USER-ID");
         final CxenseConfiguration configuration = cxense.getConfiguration();
-        configuration.setDispatchPeriod(CxenseConfiguration.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
+        configuration.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
         configuration.setUsername(API_USER);
         configuration.setApiKey(API_KEY);
 
@@ -72,7 +73,8 @@ public class IntegrationTest {
         }
         // Wait for backend....
         Thread.sleep(5000);
-        String json = String.format(Locale.US, JSON_QUERY, start, end, SITE_ID, TextUtils.isEmpty(jsonFilter) ? "" : ", \"filters\": " + jsonFilter);
+        String json = String.format(Locale.US, JSON_QUERY, start, end, SITE_ID, TextUtils.isEmpty(jsonFilter) ? ""
+                : ", \"filters\": " + jsonFilter);
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
         Request request = new Request.Builder()
                 .url(url)
@@ -97,7 +99,8 @@ public class IntegrationTest {
     @Test
     public void trackPerformanceEvent() throws Exception {
         UserIdentity identity = new UserIdentity("VERY-RANDOM-USER-ID", "cxd");
-        PerformanceEvent.Builder builder = new PerformanceEvent.Builder(Collections.singletonList(identity), SITE_ID, "cxd-origin", "tap")
+        PerformanceEvent.Builder builder = new PerformanceEvent.Builder(Collections.singletonList(identity), SITE_ID,
+                "cxd-origin", "tap")
                 .addCustomParameter(new CustomParameter("cxd-interests", "TEST"));
         sendAndCheck("https://api.cxense.com/dmp/traffic/data", "", builder.setPrnd("123").build(), builder.setPrnd("12345").build());
     }
