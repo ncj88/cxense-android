@@ -480,8 +480,8 @@ public final class PageViewEvent extends Event {
          * @return Builder instance
          */
         public Builder addCustomParameter(@NonNull String name, @NonNull String value) {
-            Preconditions.checkStringForNullOrEmpty(name, "name");
-            Preconditions.checkStringNotNullMaxLength(value, "value", MAX_CUSTOM_PARAMETER_LENGTH);
+            Preconditions.checkStringNotNullMaxLength(name, "name", MAX_CUSTOM_PARAMETER_LENGTH);
+            Preconditions.checkStringForNullOrEmpty(value, "value");
             customParameters.put(name, value);
             return this;
         }
@@ -494,8 +494,8 @@ public final class PageViewEvent extends Event {
          * @return Builder instance
          */
         public Builder addCustomUserParameter(String name, @NonNull String value) {
-            Preconditions.checkStringForNullOrEmpty(name, "name");
-            Preconditions.checkStringNotNullMaxLength(value, "value", MAX_CUSTOM_PARAMETER_LENGTH);
+            Preconditions.checkStringNotNullMaxLength(name, "name", MAX_CUSTOM_PARAMETER_LENGTH);
+            Preconditions.checkStringForNullOrEmpty(value, "value");
             customUserParameters.put(name, value);
             return this;
         }
