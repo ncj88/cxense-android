@@ -32,7 +32,8 @@ public final class PageViewEvent extends Event {
     /**
      * Max length for custom parameter value.
      */
-    public static final int MAX_CUSTOM_PARAMETER_LENGTH = 20;
+    public static final int MAX_CUSTOM_PARAMETER_KEY_LENGTH = 20;
+    public static final int MAX_CUSTOM_PARAMETER_VALUE_LENGTH = 256;
     static final String CUSTOM_PARAMETER_PREFIX = "cp_";
     static final String CUSTOM_USER_PARAMETER_PREFIX = "cp_u_";
     // Map keys constants
@@ -482,8 +483,8 @@ public final class PageViewEvent extends Event {
          * @return Builder instance
          */
         public Builder addCustomParameter(@NonNull String name, @NonNull String value) {
-            Preconditions.checkStringNotNullMaxLength(name, "name", MAX_CUSTOM_PARAMETER_LENGTH);
-            Preconditions.checkStringForNullOrEmpty(value, "value");
+            Preconditions.checkStringNotNullMaxLength(name, "name", MAX_CUSTOM_PARAMETER_KEY_LENGTH);
+            Preconditions.checkStringNotNullMaxLength(value, "value", MAX_CUSTOM_PARAMETER_VALUE_LENGTH);
             customParameters.put(name, value);
             return this;
         }
@@ -496,8 +497,8 @@ public final class PageViewEvent extends Event {
          * @return Builder instance
          */
         public Builder addCustomUserParameter(String name, @NonNull String value) {
-            Preconditions.checkStringNotNullMaxLength(name, "name", MAX_CUSTOM_PARAMETER_LENGTH);
-            Preconditions.checkStringForNullOrEmpty(value, "value");
+            Preconditions.checkStringNotNullMaxLength(name, "name", MAX_CUSTOM_PARAMETER_KEY_LENGTH);
+            Preconditions.checkStringNotNullMaxLength(value, "value", MAX_CUSTOM_PARAMETER_VALUE_LENGTH);
             customUserParameters.put(name, value);
             return this;
         }
