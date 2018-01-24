@@ -81,7 +81,8 @@ public class PerformanceEventBuilderTest extends BaseTest {
     @Test
     public void addIdentities() throws Exception {
         List<UserIdentity> identities = Whitebox.getInternalState(builder, "identities");
-        List<UserIdentity> newIdentities = Arrays.asList(new UserIdentity("id", "type"), new UserIdentity("id", "type"));
+        List<UserIdentity> newIdentities = Arrays.asList(new UserIdentity("id", "type"),
+                new UserIdentity("id", "type"));
         int size = identities.size();
         assertThat(builder, is(builder.addIdentities(newIdentities)));
         assertEquals(size + newIdentities.size(), identities.size());
@@ -167,7 +168,8 @@ public class PerformanceEventBuilderTest extends BaseTest {
     @Test
     public void addCustomParameters() throws Exception {
         List<CustomParameter> customParameters = Whitebox.getInternalState(builder, "customParameters");
-        List<CustomParameter> newCustomParameters = Arrays.asList(new CustomParameter("name", "item"), new CustomParameter("name2", "item2"));
+        List<CustomParameter> newCustomParameters = Arrays.asList(new CustomParameter("name", "item"),
+                new CustomParameter("name2", "item2"));
         int size = customParameters.size();
         assertThat(builder, is(builder.addCustomParameters(newCustomParameters)));
         assertEquals(size + newCustomParameters.size(), customParameters.size());

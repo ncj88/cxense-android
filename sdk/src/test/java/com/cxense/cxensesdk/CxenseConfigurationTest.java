@@ -89,7 +89,8 @@ public class CxenseConfigurationTest extends BaseTest {
     @Test
     public void setDispatchMode() throws Exception {
         configuration.setDispatchMode(CxenseConfiguration.DispatchMode.OFFLINE);
-        assertEquals(CxenseConfiguration.DispatchMode.OFFLINE, Whitebox.getInternalState(configuration, "dispatchMode"));
+        assertEquals(CxenseConfiguration.DispatchMode.OFFLINE,
+                Whitebox.getInternalState(configuration, "dispatchMode"));
     }
 
     @Test
@@ -100,41 +101,42 @@ public class CxenseConfigurationTest extends BaseTest {
     @Test
     public void setNetworkRestriction() throws Exception {
         configuration.setNetworkRestriction(CxenseConfiguration.NetworkRestriction.WIFI);
-        assertEquals(CxenseConfiguration.NetworkRestriction.WIFI, Whitebox.getInternalState(configuration, "networkRestriction"));
+        assertEquals(CxenseConfiguration.NetworkRestriction.WIFI,
+                Whitebox.getInternalState(configuration, "networkRestriction"));
     }
 
     @Test
     public void getDispatchPeriod() throws Exception {
-        assertEquals(CxenseConfiguration.DEFAULT_DISPATCH_PERIOD, configuration.getDispatchPeriod());
+        assertEquals(CxenseConstants.DEFAULT_DISPATCH_PERIOD, configuration.getDispatchPeriod());
     }
 
     @Test
     public void setDispatchPeriod() throws Exception {
-        configuration.setDispatchPeriod(CxenseConfiguration.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
+        configuration.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
         long value = Whitebox.getInternalState(configuration, "dispatchPeriod");
-        assertEquals(CxenseConfiguration.MIN_DISPATCH_PERIOD, value);
+        assertEquals(CxenseConstants.MIN_DISPATCH_PERIOD, value);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setDispatchPeriodBad() throws Exception {
-        configuration.setDispatchPeriod(CxenseConfiguration.MIN_DISPATCH_PERIOD - 1, TimeUnit.MILLISECONDS);
+        configuration.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD - 1, TimeUnit.MILLISECONDS);
     }
 
     @Test
     public void getOutdatePeriod() throws Exception {
-        assertEquals(CxenseConfiguration.DEFAULT_OUTDATED_PERIOD, configuration.getOutdatePeriod());
+        assertEquals(CxenseConstants.DEFAULT_OUTDATED_PERIOD, configuration.getOutdatePeriod());
     }
 
     @Test
     public void setOutdatedPeriod() throws Exception {
-        configuration.setOutdatedPeriod(CxenseConfiguration.MIN_OUTDATE_PERIOD, TimeUnit.MILLISECONDS);
+        configuration.setOutdatedPeriod(CxenseConstants.MIN_OUTDATE_PERIOD, TimeUnit.MILLISECONDS);
         long value = Whitebox.getInternalState(configuration, "outdatePeriod");
-        assertEquals(CxenseConfiguration.MIN_OUTDATE_PERIOD, value);
+        assertEquals(CxenseConstants.MIN_OUTDATE_PERIOD, value);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void setOutdatedPeriodBad() throws Exception {
-        configuration.setOutdatedPeriod(CxenseConfiguration.MIN_OUTDATE_PERIOD - 1, TimeUnit.MILLISECONDS);
+        configuration.setOutdatedPeriod(CxenseConstants.MIN_OUTDATE_PERIOD - 1, TimeUnit.MILLISECONDS);
     }
 
     @Test

@@ -155,9 +155,16 @@ public class PageViewEventBuilderTest extends BaseTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void addCustomParameterLongName() throws Exception {
-        char[] chars = new char[PageViewEvent.MAX_CUSTOM_PARAMETER_LENGTH + 1];
+        char[] chars = new char[PageViewEvent.MAX_CUSTOM_PARAMETER_KEY_LENGTH + 1];
         Arrays.fill(chars, ' ');
         builder.addCustomParameter(new String(chars), "any");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void addCustomParameterLongValue() throws Exception {
+        char[] chars = new char[PageViewEvent.MAX_CUSTOM_PARAMETER_VALUE_LENGTH + 1];
+        Arrays.fill(chars, ' ');
+        builder.addCustomParameter("any", new String(chars));
     }
 
     @Test
@@ -179,9 +186,16 @@ public class PageViewEventBuilderTest extends BaseTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void addCustomUserParameterLongName() throws Exception {
-        char[] chars = new char[PageViewEvent.MAX_CUSTOM_PARAMETER_LENGTH + 1];
+        char[] chars = new char[PageViewEvent.MAX_CUSTOM_PARAMETER_KEY_LENGTH + 1];
         Arrays.fill(chars, ' ');
         builder.addCustomUserParameter(new String(chars), "any");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void addCustomUserParameterLongValue() throws Exception {
+        char[] chars = new char[PageViewEvent.MAX_CUSTOM_PARAMETER_VALUE_LENGTH + 1];
+        Arrays.fill(chars, ' ');
+        builder.addCustomUserParameter("any", new String(chars));
     }
 
     @Test

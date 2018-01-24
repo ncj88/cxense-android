@@ -30,6 +30,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.io.IOException;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -71,7 +72,8 @@ public final class CxenseSdk extends Cxense {
     private DispatchEventsCallback sendCallback = statuses -> {
         for (EventStatus eventStatus : statuses) {
             if (eventStatus.exception != null) {
-                Log.e(TAG, String.format(Locale.getDefault(), "Error at sending event with id '%s'", eventStatus.eventId), eventStatus.exception);
+                Log.e(TAG, String.format(Locale.getDefault(), "Error at sending event with id '%s'",
+                        eventStatus.eventId), eventStatus.exception);
             }
         }
     };
@@ -212,7 +214,8 @@ public final class CxenseSdk extends Cxense {
                                   final LoadCallback<List<String>> callback) throws CxenseException {
         Preconditions.checkForNull(identities, "identities");
         Preconditions.checkForNull(siteGroupIds, "siteGroupIds");
-        apiInstance.getUserSegments(new UserSegmentRequest(identities, siteGroupIds)).enqueue(transform(callback, data -> data.ids));
+        apiInstance.getUserSegments(new UserSegmentRequest(identities, siteGroupIds))
+                .enqueue(transform(callback, data -> data.ids));
     }
 
     /**
@@ -231,9 +234,12 @@ public final class CxenseSdk extends Cxense {
      * Asynchronously retrieves a suitably authorized slice of a given user's interest profile
      *
      * @param identity      user identifier with type and id
-     * @param groups        a list of strings that specify profile item groups to keep in the returned profile. If not specified, all groups available for the user will be returned
-     * @param recent        flag whether to only return the most recent user profile information. This can be used to return quickly if response time is important
-     * @param identityTypes a list of external customer identifier types. If an external customer identifier exists for the user, it will be included in the response
+     * @param groups        a list of strings that specify profile item groups to keep in the returned profile.
+     *                      If not specified, all groups available for the user will be returned
+     * @param recent        flag whether to only return the most recent user profile information. This can be used to
+     *                      return quickly if response time is important
+     * @param identityTypes a list of external customer identifier types. If an external customer identifier exists for
+     *                      the user, it will be included in the response
      * @param callback      a callback with {@link User} profile
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess", "SameParameterValue"}) // Public API.
@@ -271,7 +277,8 @@ public final class CxenseSdk extends Cxense {
                                     @NonNull String type,
                                     LoadCallback<List<UserExternalData>> callback)
             throws CxenseException {
-        apiInstance.getUserExternalData(new BaseUserIdentity(id, type)).enqueue(transform(callback, data -> data.items));
+        apiInstance.getUserExternalData(new BaseUserIdentity(id, type))
+                .enqueue(transform(callback, data -> data.items));
     }
 
     /**
@@ -447,8 +454,56 @@ public final class CxenseSdk extends Cxense {
      *
      * @param callback callback instance
      */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void setDispatchEventsCallback(DispatchEventsCallback callback) {
         sendCallback = callback;
+    }
+
+    private <T> Callback<ResponseBody> createGenericCallback(LoadCallback<T> callback) {
+        return transform(new LoadCallback<ResponseBody>() {
+            @Override
+            public void onSuccess(ResponseBody responseBody) {
+                try {
+                    Class<T> clazz = (Class<T>) ((ParameterizedType) callback.getClass().getGenericInterfaces()[0])
+                            .getActualTypeArguments()[0];
+                    callback.onSuccess(mapper.readValue(responseBody.charStream(), clazz));
+                } catch (Exception e) {
+                    callback.onError(e);
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                callback.onError(throwable);
+            }
+        });
+    }
+
+    /**
+     * Executes persisted query to Cxense API endpoint. You can find some popular endpoints in {@link CxenseConstants}
+     *
+     * @param url               API endpoint
+     * @param persistentQueryId query id
+     * @param callback          callback for response data
+     * @param <T>               response type
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public <T> void executePersistedQuery(String url, String persistentQueryId, LoadCallback<T> callback) {
+        apiInstance.getPersisted(url, persistentQueryId).enqueue(createGenericCallback(callback));
+    }
+
+    /**
+     * Executes persisted query to Cxense API endpoint. You can find some popular endpoints in {@link CxenseConstants}
+     *
+     * @param url               API endpoint
+     * @param persistentQueryId query id
+     * @param data              data for sending as request body
+     * @param callback          callback for response data
+     * @param <T>               response type
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public <T> void executePersistedQuery(String url, String persistentQueryId, Object data, LoadCallback<T> callback) {
+        apiInstance.postPersisted(url, persistentQueryId, data).enqueue(createGenericCallback(callback));
     }
 
     void getWidgetItems(WidgetRequest request, LoadCallback<List<WidgetItem>> listener) {
@@ -458,7 +513,8 @@ public final class CxenseSdk extends Cxense {
     void initSendTaskSchedule() {
         if (scheduled != null)
             scheduled.cancel(false);
-        scheduled = executor.scheduleWithFixedDelay(sendTask, CxenseConfiguration.DISPATCH_INITIAL_DELAY, configuration.getDispatchPeriod(), TimeUnit.MILLISECONDS);
+        scheduled = executor.scheduleWithFixedDelay(sendTask, CxenseConfiguration.DISPATCH_INITIAL_DELAY,
+                configuration.getDispatchPeriod(), TimeUnit.MILLISECONDS);
     }
 
     DisplayMetrics getDisplayMetrics() {
@@ -509,11 +565,13 @@ public final class CxenseSdk extends Cxense {
     }
 
     void deleteOutdatedEvents() {
-        databaseHelper.delete(EventRecord.TABLE_NAME, EventRecord.TIME + " < ?", new String[]{"" + (System.currentTimeMillis() - configuration.getOutdatePeriod())});
+        databaseHelper.delete(EventRecord.TABLE_NAME, EventRecord.TIME + " < ?",
+                new String[]{"" + (System.currentTimeMillis() - configuration.getOutdatePeriod())});
     }
 
     List<EventRecord> getNotSubmittedEvents(boolean needPageViewEvents) {
-        String selection = EventRecord.IS_SENT + " = 0 AND " + EventRecord.EVENT_TYPE + (needPageViewEvents ? " = ?" : " <> ?");
+        String selection = EventRecord.IS_SENT + " = 0 AND " + EventRecord.EVENT_TYPE
+                + (needPageViewEvents ? " = ?" : " <> ?");
         List<ContentValues> values = databaseHelper.query(EventRecord.TABLE_NAME, EventRecord.COLUMNS,
                 selection, new String[]{PageViewEvent.DEFAULT_EVENT_TYPE}, null, null, EventRecord.TIME + " ASC");
         List<EventRecord> records = new ArrayList<>();
@@ -573,15 +631,18 @@ public final class CxenseSdk extends Cxense {
                 for (EventRecord event : events) {
                     EventStatus status = null;
                     try {
-                        Map<String, String> data = cxense.unpackObject(event.data, new TypeReference<PerformanceEvent>() {
-                        }).toQueryMap();
+                        Map<String, String> data = cxense.unpackObject(event.data,
+                                new TypeReference<PerformanceEvent>() {
+                                }).toQueryMap();
                         String segmentsValue = data.get(PerformanceEvent.SEGMENT_IDS);
                         data.remove(PerformanceEvent.SEGMENT_IDS);
                         List<String> segments = new ArrayList<>();
                         if (!TextUtils.isEmpty(segmentsValue)) {
                             segments.addAll(Arrays.asList(segmentsValue.split(",")));
                         }
-                        Response<ResponseBody> response = cxense.apiInstance.trackDmpEvent(cxense.configuration.getDmpPushPersistentId(), segments, data).execute();
+                        Response<ResponseBody> response = cxense.apiInstance.trackDmpEvent(
+                                cxense.configuration.getDmpPushPersistentId(), segments, data
+                        ).execute();
                         if (response.isSuccessful()) {
                             event.isSent = true;
                         }
@@ -633,7 +694,8 @@ public final class CxenseSdk extends Cxense {
             try {
                 CxenseSdk cxense = CxenseSdk.getInstance();
                 cxense.deleteOutdatedEvents();
-                if (cxense.configuration.getDispatchMode() == CxenseConfiguration.DispatchMode.OFFLINE || cxense.configuration.isRestricted(cxense.appContext))
+                if (cxense.configuration.getDispatchMode() == CxenseConfiguration.DispatchMode.OFFLINE
+                        || cxense.configuration.isRestricted(cxense.appContext))
                     return;
 
                 sendPageViewEvents(cxense.getNotSubmittedEvents(true));
