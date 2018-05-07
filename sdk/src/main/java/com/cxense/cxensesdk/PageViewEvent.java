@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import com.cxense.ArrayFixedSizeQueue;
+import com.cxense.ConsentOption;
 import com.cxense.Preconditions;
 import com.cxense.cxensesdk.db.EventRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -69,6 +71,7 @@ public final class PageViewEvent extends Event {
     static final String ACTIVE_SPENT_TIME = "aatm";
     static final String EXTERNAL_USER_KEY = "eit";
     static final String EXTERNAL_USER_VALUE = "eid";
+    static final String CONSENT = "con";
 
     static final String DEFAULT_EVENT_TYPE = "pgv";
     static final int DEFAULT_API_VERSION = 1;
@@ -308,6 +311,12 @@ public final class PageViewEvent extends Event {
             if (userLocation.hasSpeed())
                 result.put(SPEED, "" + userLocation.getSpeed());
         }
+        Set<ConsentOption> options = cxense.getConsentOptions();
+        List<String> values = new ArrayList<>();
+        for (ConsentOption option : options) {
+            values.add(option.getValue());
+        }
+        result.put(CONSENT, TextUtils.join(",", values));
         return result;
     }
 

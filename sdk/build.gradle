@@ -7,7 +7,7 @@ ext {
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.1'
+    buildToolsVersion '27.0.3'
 
 
     defaultConfig {
@@ -55,7 +55,7 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
 
-    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
 }
 
