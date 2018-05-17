@@ -10,14 +10,16 @@ public final class WidgetRequest {
     public String widgetId;
     public ContentUser user;
     public WidgetContext context;
+    public String con;
 
     public WidgetRequest() {
     }
 
-    public WidgetRequest(String widgetId, WidgetContext widgetContext, ContentUser widgetUser) {
+    public WidgetRequest(String widgetId, WidgetContext widgetContext, ContentUser widgetUser, String consent) {
         this();
         this.widgetId = widgetId;
         user = widgetUser;
         context = widgetContext;
+        con = consent;
     }
 }

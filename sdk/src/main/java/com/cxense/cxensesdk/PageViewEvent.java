@@ -307,16 +307,11 @@ public final class PageViewEvent extends Event {
             if (userLocation.hasAltitude())
                 result.put(ALTITUDE, "" + userLocation.getAltitude());
             if (userLocation.hasBearing())
-                result.put(HEADING, "" + userLocation.getBearing());
+            result.put(HEADING, "" + userLocation.getBearing());
             if (userLocation.hasSpeed())
                 result.put(SPEED, "" + userLocation.getSpeed());
         }
-        Set<ConsentOption> options = cxense.getConsentOptions();
-        List<String> values = new ArrayList<>();
-        for (ConsentOption option : options) {
-            values.add(option.getValue());
-        }
-        result.put(CONSENT, TextUtils.join(",", values));
+        result.put(CONSENT, cxense.getConsentOptionsAsString());
         return result;
     }
 
