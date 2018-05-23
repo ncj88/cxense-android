@@ -313,7 +313,7 @@ public class CxenseSdkTest extends BaseTest {
         Whitebox.setInternalState(cxense, "apiInstance", api);
         ContentUser user = new ContentUser();
         user.likes = new UserPreference(Arrays.asList("first", "second"), 1);
-        WidgetRequest request = new WidgetRequest("id", null, user);
+        WidgetRequest request = new WidgetRequest("id", null, user, new ArrayList<>());
         LoadCallback callback = mock(LoadCallback.class);
         cxense.getWidgetItems(request, callback);
     }

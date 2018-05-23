@@ -56,6 +56,8 @@ public final class PerformanceEvent extends Event {
     private List<String> segments;
     @JsonProperty(CUSTOM_PARAMETERS)
     private List<CustomParameter> customParameters;
+    @JsonProperty("consent")
+    private List<String> consentOptions;
 
     private PerformanceEvent() {
         super(null);
@@ -72,6 +74,7 @@ public final class PerformanceEvent extends Event {
         type = builder.type;
         segments = Collections.unmodifiableList(builder.segments);
         customParameters = Collections.unmodifiableList(builder.customParameters);
+        consentOptions = CxenseSdk.getInstance().getConsentOptionsValues();
     }
 
     @Override
@@ -119,6 +122,8 @@ public final class PerformanceEvent extends Event {
         }
         if (segments != null && !segments.isEmpty())
             result.put(SEGMENT_IDS, TextUtils.join(",", segments));
+        if (!consentOptions.isEmpty())
+            result.put("con", TextUtils.join(",", consentOptions));
         return result;
     }
 
