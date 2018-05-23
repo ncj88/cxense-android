@@ -49,6 +49,6 @@ public final class Widget {
         CxenseSdk cxense = CxenseSdk.getInstance();
         if (user == null)
             user = cxense.getDefaultUser();
-        cxense.getWidgetItems(new WidgetRequest(id, widgetContext, user, cxense.getConsentOptionsAsString()), listener);
+        cxense.getWidgetItems(new WidgetRequest(id, widgetContext, user, cxense.getConsentOptionsValues()), listener);
     }
 }

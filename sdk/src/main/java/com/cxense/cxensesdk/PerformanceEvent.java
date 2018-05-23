@@ -38,7 +38,6 @@ public final class PerformanceEvent extends Event {
     static final String TYPE = "type";
     static final String SEGMENT_IDS = "segmentIds";
     static final String CUSTOM_PARAMETERS = "customParameters";
-    static final String CONSENT = "con";
     @JsonProperty(TIME)
     private Long time;
     @JsonProperty(USER_IDS)
@@ -57,8 +56,8 @@ public final class PerformanceEvent extends Event {
     private List<String> segments;
     @JsonProperty(CUSTOM_PARAMETERS)
     private List<CustomParameter> customParameters;
-    @JsonProperty(CONSENT)
-    private String consentOptions;
+    @JsonProperty("consent")
+    private List<String> consentOptions;
 
     private PerformanceEvent() {
         super(null);
@@ -75,7 +74,7 @@ public final class PerformanceEvent extends Event {
         type = builder.type;
         segments = Collections.unmodifiableList(builder.segments);
         customParameters = Collections.unmodifiableList(builder.customParameters);
-        consent = CxenseSdk.getInstance().getConsentOptionsAsString();
+        consentOptions = CxenseSdk.getInstance().getConsentOptionsValues();
     }
 
     @Override
@@ -123,7 +122,8 @@ public final class PerformanceEvent extends Event {
         }
         if (segments != null && !segments.isEmpty())
             result.put(SEGMENT_IDS, TextUtils.join(",", segments));
-        result.put(CONSENT, consentOptions);
+        if (!consentOptions.isEmpty())
+            result.put("con", TextUtils.join(",", consentOptions));
         return result;
     }
 
