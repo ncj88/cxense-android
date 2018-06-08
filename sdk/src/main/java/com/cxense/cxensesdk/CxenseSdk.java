@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.cxense.ConsentOption;
 import com.cxense.Cxense;
 import com.cxense.LoadCallback;
 import com.cxense.Preconditions;
@@ -33,10 +34,12 @@ import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -214,6 +217,11 @@ public final class CxenseSdk extends Cxense {
                                   final LoadCallback<List<String>> callback) throws CxenseException {
         Preconditions.checkForNull(identities, "identities");
         Preconditions.checkForNull(siteGroupIds, "siteGroupIds");
+        Set<ConsentOption> consentOptions = getConsentOptions();
+        if (consentOptions.contains(ConsentOption.CONSENT_REQUIRED) && !consentOptions.contains(ConsentOption.SEGMENT_ALLOWED)) {
+            callback.onSuccess(Collections.emptyList());
+            return;
+        }
         apiInstance.getUserSegments(new UserSegmentRequest(identities, siteGroupIds))
                 .enqueue(transform(callback, data -> data.ids));
     }
@@ -698,6 +706,9 @@ public final class CxenseSdk extends Cxense {
                         || cxense.configuration.isRestricted(cxense.appContext))
                     return;
 
+                Set<ConsentOption> consentOptions = cxense.getConsentOptions();
+                if (consentOptions.contains(ConsentOption.CONSENT_REQUIRED) && !consentOptions.contains(ConsentOption.PV_ALLOWED))
+                    return;
                 sendPageViewEvents(cxense.getNotSubmittedEvents(true));
                 sendDmpEvents(cxense.getNotSubmittedEvents(false));
 
