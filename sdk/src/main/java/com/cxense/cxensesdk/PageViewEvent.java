@@ -6,7 +6,6 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
 import com.cxense.ArrayFixedSizeQueue;
-import com.cxense.ConsentOption;
 import com.cxense.Preconditions;
 import com.cxense.cxensesdk.db.EventRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -311,7 +309,9 @@ public final class PageViewEvent extends Event {
             if (userLocation.hasSpeed())
                 result.put(SPEED, "" + userLocation.getSpeed());
         }
-        result.put(CONSENT, cxense.getConsentOptionsAsString());
+        String consent = cxense.getConsentOptionsAsString();
+        if (consent != null)
+            result.put(CONSENT, consent);
         return result;
     }
 
