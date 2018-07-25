@@ -171,6 +171,18 @@ public class CxenseSdkTest extends BaseTest {
     }
 
     @Test
+    public void executeGetPersistedQuery() throws Exception {
+        cxense.executePersistedQuery("url", "queryId", callback);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
+    public void executePostPersistedQuery() throws Exception {
+        cxense.executePersistedQuery("url", "queryId", new Object(), callback);
+        verify(call).enqueue(any(Callback.class));
+    }
+
+    @Test
     public void getUserSegmentIds() throws Exception {
         cxense.getUserSegmentIds(Collections.emptyList(), Collections.emptyList(), callback);
         verify(call).enqueue(any(Callback.class));
