@@ -2,7 +2,7 @@ package com.cxense.cxensesdk;
 
 import android.support.annotation.NonNull;
 
-import com.cxense.exceptions.CxenseException;
+import com.cxense.cxensesdk.exceptions.CxenseException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

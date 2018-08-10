@@ -1,6 +1,5 @@
 package com.cxense.cxensesdk;
 
-import com.cxense.LoadCallback;
 import com.cxense.cxensesdk.model.ContentUser;
 import com.cxense.cxensesdk.model.WidgetContext;
 import com.cxense.cxensesdk.model.WidgetItem;

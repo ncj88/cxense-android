@@ -5,8 +5,6 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
-import com.cxense.ArrayFixedSizeQueue;
-import com.cxense.Preconditions;
 import com.cxense.cxensesdk.db.EventRecord;
 import com.fasterxml.jackson.core.JsonProcessingException;
 

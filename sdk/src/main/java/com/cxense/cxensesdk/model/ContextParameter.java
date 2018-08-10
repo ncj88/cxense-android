@@ -1,7 +1,5 @@
 package com.cxense.cxensesdk.model;
 
-import com.cxense.KeyValueParameter;
-
 /**
  * Context parameter that replace the placeholders are passed from the widget data request.
  *

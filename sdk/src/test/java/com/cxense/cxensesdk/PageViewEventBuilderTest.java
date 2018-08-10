@@ -2,8 +2,6 @@ package com.cxense.cxensesdk;
 
 import android.location.Location;
 
-import com.cxense.ArrayFixedSizeQueue;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;

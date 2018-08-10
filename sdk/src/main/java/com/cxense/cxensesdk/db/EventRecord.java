@@ -2,8 +2,6 @@ package com.cxense.cxensesdk.db;
 
 import android.content.ContentValues;
 
-import com.cxense.db.DatabaseObject;
-
 /**
  * Database class for events
  *
