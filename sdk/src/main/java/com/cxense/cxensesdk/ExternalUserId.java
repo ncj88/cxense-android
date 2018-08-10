@@ -1,7 +1,6 @@
 package com.cxense.cxensesdk;
 
-import com.cxense.KeyValueParameter;
-import com.cxense.Preconditions;
+import com.cxense.cxensesdk.model.KeyValueParameter;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).

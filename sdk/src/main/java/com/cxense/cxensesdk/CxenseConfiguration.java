@@ -7,8 +7,6 @@ import android.support.annotation.NonNull;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
-import com.cxense.Preconditions;
-
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 

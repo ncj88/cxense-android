@@ -6,42 +6,66 @@ import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
-import com.cxense.LoadCallback;
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.db.EventRecord;
+import com.cxense.cxensesdk.exceptions.BadRequestException;
+import com.cxense.cxensesdk.exceptions.CxenseException;
+import com.cxense.cxensesdk.exceptions.ForbiddenException;
+import com.cxense.cxensesdk.exceptions.NotAuthorizedException;
 import com.cxense.cxensesdk.model.ContentUser;
 import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
 import com.cxense.cxensesdk.model.UserPreference;
 import com.cxense.cxensesdk.model.WidgetItem;
 import com.cxense.cxensesdk.model.WidgetRequest;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
 
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 import static org.hamcrest.CoreMatchers.startsWith;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -63,13 +87,17 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-19).
  */
-@PrepareForTest({DatabaseHelper.class})
+@PrepareForTest({DatabaseHelper.class, Retrofit.class})
 @PowerMockIgnore("javax.net.ssl.*")
 public class CxenseSdkTest extends BaseTest {
+    private static final String MOCK_URL = "http://example.com";
     private DatabaseHelper databaseHelper;
     private Call call;
     private LoadCallback callback;
     private PackageManager pm;
+    private ApiError error;
+    private Converter errorConverter;
+    private ResponseBody errorBody;
 
     @Before
     public void setUp() throws Exception {
@@ -90,6 +118,12 @@ public class CxenseSdkTest extends BaseTest {
         EventRecord record = new EventRecord();
         whenNew(EventRecord.class).withAnyArguments().thenReturn(record);
 
+        errorConverter = mock(Converter.class);
+        errorBody = mock(ResponseBody.class);
+        error = new ApiError();
+        error.error = "Some text";
+        when(errorConverter.convert(any(ResponseBody.class))).thenReturn(error);
+
         Whitebox.setInternalState(cxense, "apiInstance", api);
         Whitebox.setInternalState(cxense, "databaseHelper", databaseHelper);
     }
@@ -98,6 +132,204 @@ public class CxenseSdkTest extends BaseTest {
     protected void initCxenseSdk() throws Exception {
         cxense = spy(new CxenseSdk(context));
         Whitebox.setInternalState(CxenseSdk.class, "instance", cxense);
+    }
+
+    @Test
+    public void throwIfUninitialized() throws Exception {
+        CxenseSdk.throwIfUninitialized(cxense);
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void throwIfUninitializedNull() throws Exception {
+        CxenseSdk.throwIfUninitialized(null);
+    }
+
+    @Test
+    public void getDefaultUserAgent() throws Exception {
+        assertNotNull(cxense.getDefaultUserAgent());
+    }
+
+    @Test
+    public void createMapper() throws Exception {
+        ObjectMapper mapper = cxense.buildMapper();
+        assertNotNull(mapper);
+        JsonInclude.Include valueInclusion = mapper.getSerializationConfig()
+                .getDefaultPropertyInclusion().getValueInclusion();
+        assertEquals(JsonInclude.Include.NON_NULL, valueInclusion);
+    }
+
+    @Test
+    public void getConverterFactory() throws Exception {
+        cxense.mapper = mock(ObjectMapper.class);
+        Converter.Factory factory = cxense.getConverterFactory();
+        assertNotNull(factory);
+    }
+
+    @Test
+    public void buildHttpClient() throws Exception {
+        OkHttpClient client = cxense.buildHttpClient();
+        assertNotNull(client);
+        assertNotNull(client.authenticator());
+        List<Interceptor> interceptors = client.interceptors();
+        assertThat(interceptors, hasSize(greaterThanOrEqualTo(3)));
+        long connectTimeout = client.connectTimeoutMillis();
+        assertThat(connectTimeout, greaterThanOrEqualTo(TimeUnit.SECONDS.toMillis(10)));
+        long readTimeout = client.readTimeoutMillis();
+        assertThat(readTimeout, greaterThanOrEqualTo(TimeUnit.SECONDS.toMillis(10)));
+    }
+
+    @Test
+    public void buildRetrofit() throws Exception {
+        cxense.mapper = mock(ObjectMapper.class);
+        cxense.okHttpClient = mock(OkHttpClient.class);
+        when(cxense.getBaseUrl()).thenReturn(MOCK_URL);
+        Retrofit retrofit = cxense.buildRetrofit();
+        assertNotNull(retrofit);
+        verify(cxense).getConverterFactory();
+        OkHttpClient client = (OkHttpClient) retrofit.callFactory();
+        assertEquals(cxense.okHttpClient, client);
+    }
+
+    @Test
+    public void buildExecutor() throws Exception {
+        assertNotNull(cxense.buildExecutor());
+    }
+
+    @Test
+    public void transform() throws Exception {
+        LoadCallback callback = mock(LoadCallback.class);
+        assertNotNull(cxense.transform(callback));
+    }
+
+    @Test
+    public void transformFullArgs() throws Exception {
+        LoadCallback callback = mock(LoadCallback.class);
+        Function function = mock(Function.class);
+        assertNotNull(cxense.transform(callback, function));
+        verify(cxense).transform(any(LoadCallback.class));
+    }
+
+    @Test
+    public void parseError() throws Exception {
+        mockErrorParsing();
+        Response response = Response.error(400, errorBody);
+        CxenseException result = cxense.parseError(response);
+        assertThat(result, both(isA(CxenseException.class)).and(notNullValue()));
+        assertThat(result.getMessage(), equalTo(error.error));
+    }
+
+    @Test
+    public void parseErrorException() throws Exception {
+        mockErrorParsing();
+        Response response = Response.error(400, errorBody);
+        when(errorConverter.convert(any(ResponseBody.class))).thenThrow(new IOException());
+        CxenseException result = cxense.parseError(response);
+        assertThat(result, both(isA(CxenseException.class)).and(notNullValue()));
+    }
+
+    @Test
+    public void parseErrorResponseSuccesfull() throws Exception {
+        mockErrorParsing();
+        Response response = Response.success(mock(ResponseBody.class));
+        assertNull(cxense.parseError(response));
+    }
+
+    @Test
+    public void onResponse400() throws Exception {
+        checkException(400, BadRequestException.class);
+    }
+
+    @Test
+    public void onResponse401() throws Exception {
+        checkException(401, NotAuthorizedException.class);
+    }
+
+    @Test
+    public void onResponse403() throws Exception {
+        checkException(403, ForbiddenException.class);
+    }
+
+    @Test
+    public void onResponse4XX() throws Exception {
+        checkException(418, CxenseException.class);
+    }
+
+
+    private void mockErrorParsing() throws Exception {
+        cxense.retrofit = mock(Retrofit.class);
+        when(cxense.retrofit.responseBodyConverter(any(Type.class), any(Annotation[].class)))
+                .thenReturn(errorConverter);
+    }
+
+    private void checkException(int code, Class<? extends CxenseException> clazz) throws Exception {
+        mockErrorParsing();
+        Response response = Response.error(code, mock(ResponseBody.class));
+        assertThat(cxense.parseError(response), instanceOf(clazz));
+    }
+
+    @Test
+    public void getUserId() throws Exception {
+        assertEquals(cxense.userId, cxense.getUserId());
+    }
+
+    @Test
+    public void setUserId() throws Exception {
+        String id = "VeryVeryVeryGoodId";
+        cxense.setUserId(id);
+        assertEquals(id, cxense.userId);
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    @Test(expected = IllegalArgumentException.class)
+    public void setUserIdNull() throws Exception {
+        cxense.setUserId(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void setUserIdBad() throws Exception {
+        cxense.setUserId("BadId");
+    }
+
+    @Test
+    public void getDefaultUserId() throws Exception {
+        String id = "ID";
+        cxense.advertisingInfo = new AdvertisingIdClient.Info(id, false);
+        assertEquals(id, cxense.getDefaultUserId());
+    }
+
+    @Test
+    public void getDefaultUserIdNull() throws Exception {
+        cxense.advertisingInfo = null;
+        assertNull(cxense.getDefaultUserId());
+    }
+
+    @Test
+    public void isLimitAdTrackingEnabled() throws Exception {
+        cxense.advertisingInfo = new AdvertisingIdClient.Info("id", false);
+        assertFalse(cxense.isLimitAdTrackingEnabled());
+    }
+
+    @Test
+    public void isLimitAdTrackingEnabledTrue() throws Exception {
+        cxense.advertisingInfo = new AdvertisingIdClient.Info("id", true);
+        assertTrue(cxense.isLimitAdTrackingEnabled());
+    }
+
+    @Test
+    public void isLimitAdTrackingEnabledNullInfo() throws Exception {
+        cxense.advertisingInfo = null;
+        assertFalse(cxense.isLimitAdTrackingEnabled());
+    }
+
+    @Test
+    public void postRunnable() throws Exception {
+        ScheduledExecutorService executor = mock(ScheduledExecutorService.class);
+        Mockito.doNothing().when(executor).execute(any(Runnable.class));
+        Whitebox.setInternalState(cxense, "executor", executor);
+        Runnable runnable = () -> {
+        };
+        cxense.postRunnable(runnable);
+        verify(executor).execute(runnable);
     }
 
     @Test
@@ -131,12 +363,6 @@ public class CxenseSdkTest extends BaseTest {
     @Test
     public void getUserAgent() throws Exception {
         assertThat(cxense.getUserAgent(), startsWith("cx-sdk/"));
-    }
-
-    @Test
-    public void buildHttpClient() throws Exception {
-        OkHttpClient httpClient = cxense.buildHttpClient();
-        assertNotNull(httpClient.authenticator());
     }
 
     @Test
