@@ -3,18 +3,21 @@ package com.cxense.cxensesdk;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
-import com.cxense.ConsentOption;
-import com.cxense.Cxense;
-import com.cxense.LoadCallback;
-import com.cxense.Preconditions;
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.db.EventRecord;
+import com.cxense.cxensesdk.exceptions.BadRequestException;
+import com.cxense.cxensesdk.exceptions.CxenseException;
+import com.cxense.cxensesdk.exceptions.ForbiddenException;
+import com.cxense.cxensesdk.exceptions.NotAuthorizedException;
 import com.cxense.cxensesdk.model.BaseUserIdentity;
 import com.cxense.cxensesdk.model.ContentUser;
 import com.cxense.cxensesdk.model.CxenseUserIdentity;
@@ -26,29 +29,42 @@ import com.cxense.cxensesdk.model.UserIdentity;
 import com.cxense.cxensesdk.model.UserSegmentRequest;
 import com.cxense.cxensesdk.model.WidgetItem;
 import com.cxense.cxensesdk.model.WidgetRequest;
-import com.cxense.exceptions.CxenseException;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Authenticator;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Converter;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 
 /**
@@ -58,7 +74,7 @@ import retrofit2.Response;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-03).
  */
 
-public final class CxenseSdk extends Cxense {
+public final class CxenseSdk {
     /**
      * Default "base url" for url-less mode
      */
@@ -80,13 +96,67 @@ public final class CxenseSdk extends Cxense {
             }
         }
     };
+    private static final long DELAY = 300;
+    /**
+     * Current App Context for SDK
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected final Context appContext;
+    /**
+     * ScheduledExecutorService instance
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected final ScheduledExecutorService executor;
+    private final Runnable getAdvertisingInfoTask;
+    /**
+     * Default Object <-> JSON Mapper
+     */
+    protected ObjectMapper mapper;
+    /**
+     * OkHttpClient instance
+     *
+     * @see #buildHttpClient()
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected OkHttpClient okHttpClient;
+    /**
+     * Retrofit instance.
+     *
+     * @see #buildRetrofit()
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected Retrofit retrofit;
+    /**
+     * User advertising information from Google Play Services.
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected AdvertisingIdClient.Info advertisingInfo;
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected String userId;
+    private Set<ConsentOption> consentOptions = new HashSet<>();
 
     /**
      * @param context {@code Context} instance from {@code Activity}/{@code ContentProvider}/etc.
      */
-    @SuppressWarnings("WeakerAccess") // Internal API.
     protected CxenseSdk(@NonNull Context context) {
-        super(context);
+        appContext = context.getApplicationContext();
+        mapper = buildMapper();
+        okHttpClient = buildHttpClient();
+        retrofit = buildRetrofit();
+        executor = buildExecutor();
+        getAdvertisingInfoTask = () -> {
+            try {
+                advertisingInfo = AdvertisingIdClient.getAdvertisingIdInfo(appContext);
+                userId = getDefaultUserId();
+            } catch (IOException | GooglePlayServicesRepairableException e) {
+                Log.e(TAG, e.getMessage(), e);
+                initAdvertisingIdTask();
+            } catch (GooglePlayServicesNotAvailableException e) {
+                Log.e(TAG, e.getMessage(), e);
+            }
+        };
+        initAdvertisingIdTask();
+
         apiInstance = retrofit.create(CxenseApi.class);
         configuration = new CxenseConfiguration();
         databaseHelper = new DatabaseHelper(context);
@@ -94,8 +164,294 @@ public final class CxenseSdk extends Cxense {
         initSendTaskSchedule();
     }
 
-    public static void init(Context context) {
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected static void throwIfUninitialized(CxenseSdk instance) {
+        if (instance == null)
+            throw new IllegalStateException("The Cxense SDK instance is not initialized! Make " +
+                    "sure to call init before calling other methods.");
+    }
+
+    static void init(Context context) {
         instance = new CxenseSdk(context);
+    }
+
+    /**
+     * Gets default user-agent from Android
+     *
+     * @return system default user-agent
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected String getDefaultUserAgent() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                return WebSettings.getDefaultUserAgent(appContext);
+            }
+            return new WebView(appContext).getSettings().getUserAgentString();
+        } catch (Exception e) {
+            /*
+            This block is needed as attempt to avoid problem with Android System WebView
+            service's update during which any requests to WebViews will be finished
+            with android.content.pm.PackageManager$NameNotFoundException.
+
+            What is important here, that 'user-agent' is required param in Cxense Insight API,
+            so, we need to provide it. We can use 'http.agent' property's value here, but
+            it provides less details about device than WebView. That is why property's value
+            is used without defaultUserAgent field's initialization.
+
+            Best practise here - always using WebView's 'user-agent' string.
+
+            Bug in Android issue tracker can be found here:
+            https://code.google.com/p/android/issues/detail?id=175124
+
+            Good explanation of the problem can be found here:
+            https://bugs.chromium.org/p/chromium/issues/detail?id=506369
+             */
+            Log.e(TAG, e.getMessage(), e);
+        }
+        return System.getProperty("http.agent", "");
+    }
+
+    /**
+     * Builds and returns default object mapper for Jackson. You may override it in descendant.
+     *
+     * @return {@link ObjectMapper} instance
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected ObjectMapper buildMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return mapper;
+    }
+
+    /**
+     * Builds and returns default converter factory (Jackson) for {@code Retrofit}. You may override it in descendant.
+     *
+     * @return converter factory for {@code Retrofit}
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    @NonNull
+    protected Converter.Factory getConverterFactory() {
+        return JacksonConverterFactory.create(mapper);
+    }
+
+    /**
+     * Builds and returns default {@code OkHttpClient} for {@code Retrofit}.
+     * If you override it, don't forget to add some interceptors.
+     *
+     * @return {@code OkHttpClient} instance.
+     * @see SdkInterceptor
+     * @see UserAgentInterceptor
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected OkHttpClient buildHttpClient() {
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        interceptor.setLevel(BuildConfig.DEBUG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE);
+        return new OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(10, TimeUnit.SECONDS)
+                .addInterceptor(new SdkInterceptor(getSdkName(), getSdkVersion()))
+                .addInterceptor(new UserAgentInterceptor(getUserAgent()))
+                .addInterceptor(interceptor)
+                .authenticator(getAuthenticator())
+                .build();
+    }
+
+    /**
+     * Builds and returns default {@code Retrofit} instance.
+     * It uses {@link #getBaseUrl()}, {@link #getConverterFactory()}, {@link #buildHttpClient()} for building.
+     *
+     * @return {@code Retrofit} instance
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected Retrofit buildRetrofit() {
+        return new Retrofit.Builder()
+                .baseUrl(getBaseUrl())
+                .addConverterFactory(getConverterFactory())
+                .client(okHttpClient)
+                .build();
+    }
+
+    /**
+     * Creates and returns {@code ScheduledExecutorService} instance.
+     *
+     * @return {@code ScheduledExecutorService} instance.
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected ScheduledExecutorService buildExecutor() {
+        return Executors.newSingleThreadScheduledExecutor();
+    }
+
+    /**
+     * Transforms {@link LoadCallback} to {@link Callback}
+     *
+     * @param callback LoadCallback instance
+     * @param <T>      Successful response type.
+     * @return Callback instance
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected <T> Callback<T> transform(final LoadCallback<T> callback) {
+        return new ApiCallback<>(callback, this);
+    }
+
+    /**
+     * Transforms {@link LoadCallback} to {@link Callback} using {@link Function}
+     *
+     * @param callback LoadCallback instance
+     * @param function Function for apply from T to U
+     * @param <T>      Successful response type.
+     * @param <U>      Callback type.
+     * @return Callback instance
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    protected <T, U> Callback<T> transform(final LoadCallback<U> callback, final Function<T, U> function) {
+        return transform(new LoadCallback<T>() {
+            @Override
+            public void onSuccess(T data) {
+                if (callback != null)
+                    callback.onSuccess(function.apply(data));
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                if (callback != null)
+                    callback.onError(throwable);
+            }
+        });
+    }
+
+    /**
+     * Parse {@link Response} to {@link CxenseException} object
+     *
+     * @param response Retrofit response
+     * @return CxenseException instance, if response is unsuccessful, else null
+     */
+    @SuppressWarnings("WeakerAccess") // Internal API.
+    @Nullable
+    protected CxenseException parseError(@NonNull Response<?> response) {
+        if (response.isSuccessful())
+            return null;
+        try {
+            Converter<ResponseBody, ApiError> converter = retrofit.responseBodyConverter(ApiError.class,
+                    new Annotation[0]);
+            ApiError apiError;
+            try {
+                apiError = converter.convert(response.errorBody());
+            } catch (IOException ex) {
+                apiError = new ApiError();
+            }
+            String message = apiError.error != null ? apiError.error : "";
+            switch (response.code()) {
+                case 400:
+                    return new BadRequestException(message);
+                case 401:
+                    return new NotAuthorizedException(message);
+                case 403:
+                    return new ForbiddenException(message);
+                default:
+                    return new CxenseException(message);
+            }
+        } catch (Exception e) {
+            return new CxenseException(e.getMessage());
+        }
+    }
+
+    /**
+     * Retrieves the user id used by this SDK.
+     *
+     * @return current user id
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public String getUserId() {
+        return userId;
+    }
+
+    /**
+     * Sets the user id used by this SDK. Must be at least 16 characters long.
+     * Allowed characters are: A-Z, a-z, 0-9, "_", "-", "+" and ".".
+     *
+     * @param id new user id
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public void setUserId(@NonNull String id) {
+        Preconditions.checkStringForRegex(id, "id", "^[\\w-+.]{16,}$",
+                "The user id must be at least 16 characters long. Allowed characters are: " +
+                        "A-Z, a-z, 0-9, \"_\", \"-\", \"+\" and \".\".");
+        userId = id;
+    }
+
+    /**
+     * Retrieves the default user id for SDK.
+     *
+     * @return advertising ID (if available)
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @Nullable
+    public String getDefaultUserId() {
+        return advertisingInfo != null ? advertisingInfo.getId() : null;
+    }
+
+    /**
+     * Retrieves whether the user has limit ad tracking enabled or not.
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public boolean isLimitAdTrackingEnabled() {
+        return advertisingInfo != null && advertisingInfo.isLimitAdTrackingEnabled();
+    }
+
+    /**
+     * Returns current consent options for user
+     *
+     * @return current consent options
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public Set<ConsentOption> getConsentOptions() {
+        return Collections.unmodifiableSet(consentOptions);
+    }
+
+    /**
+     * Set consent options for user data
+     *
+     * @param options new options
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public void setConsentOptions(ConsentOption... options) {
+        consentOptions = new HashSet<>(Arrays.asList(options));
+    }
+
+    /**
+     * Returns current consent options for user as string values
+     *
+     * @return current consent options string values
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public List<String> getConsentOptionsValues() {
+        List<String> values = new ArrayList<>();
+        for (ConsentOption option : consentOptions) {
+            values.add(option.getValue());
+        }
+        return values;
+    }
+
+    /**
+     * Returns current consent options for user as comma-delimited string
+     *
+     * @return comma-delimited string with current consent options
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public String getConsentOptionsAsString() {
+        if (consentOptions.isEmpty())
+            return null;
+        return TextUtils.join(",", getConsentOptionsValues());
+    }
+
+    void postRunnable(Runnable runnable) {
+        executor.execute(runnable);
+    }
+
+    private void initAdvertisingIdTask() {
+        executor.schedule(getAdvertisingInfoTask, DELAY, TimeUnit.MILLISECONDS);
     }
 
     /**
@@ -150,33 +506,43 @@ public final class CxenseSdk extends Cxense {
         });
     }
 
+    /**
+     * Gets base url for Retrofit. You must override it in descendant.
+     *
+     * @return base url for {@code Retrofit} instance.
+     */
     @NonNull
-    @Override
-    protected String getBaseUrl() {
+    String getBaseUrl() {
         return BuildConfig.SDK_ENDPOINT;
     }
 
+    /**
+     * Gets sdk name for analytics. You must override it in descendant.
+     *
+     * @return sdk name for analytics.
+     */
     @NonNull
-    @Override
-    protected String getSdkName() {
+    String getSdkName() {
         return BuildConfig.SDK_NAME;
     }
 
+    /**
+     * Gets sdk version for analytics. You must override it in descendant.
+     *
+     * @return sdk version for analytics.
+     */
     @NonNull
-    @Override
-    protected String getSdkVersion() {
+    private String getSdkVersion() {
         return BuildConfig.VERSION_NAME;
     }
 
+    /**
+     * Returns the user-agent used by the SDK
+     */
     @NonNull
-    @Override
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public String getUserAgent() {
         return String.format("cx-sdk/%s %s", BuildConfig.VERSION_NAME, getDefaultUserAgent());
-    }
-
-    @Override
-    protected OkHttpClient buildHttpClient() {
-        return super.buildHttpClient().newBuilder().authenticator(getAuthenticator()).build();
     }
 
     @SuppressWarnings("WeakerAccess")

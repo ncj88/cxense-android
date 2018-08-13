@@ -2,7 +2,7 @@ package com.cxense.cxensesdk.model;
 
 import android.support.annotation.NonNull;
 
-import com.cxense.Preconditions;
+import com.cxense.cxensesdk.Preconditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Locale;

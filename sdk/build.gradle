@@ -48,11 +48,16 @@ android {
 }
 
 dependencies {
-    api "com.cxpublic.cx-android-sdk:cx-core:$cxenseVersion"
+    api "com.android.support:support-annotations:$appCompatVersion"
+    implementation "com.google.android.gms:play-services-ads:$playServicesVersion"
+    api "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    api "com.squareup.retrofit2:converter-jackson:$retrofitVersion"
+    api "com.squareup.okhttp3:logging-interceptor:$okHttpVersion"
 
     testImplementation "org.powermock:powermock-module-junit4:$powermockVersion"
     testImplementation "org.powermock:powermock-api-mockito2:$powermockVersion"
     testImplementation "junit:junit:$junitVersion"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$okHttpVersion"
     testImplementation "org.hamcrest:hamcrest-library:$hamcrestVersion"
 
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

@@ -11,11 +11,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.cxense.LoadCallback;
 import com.cxense.cxensesdk.CxenseConfiguration;
 import com.cxense.cxensesdk.CxenseConstants;
 import com.cxense.cxensesdk.CxenseSdk;
 import com.cxense.cxensesdk.EventStatus;
+import com.cxense.cxensesdk.LoadCallback;
 import com.cxense.cxensesdk.PerformanceEvent;
 import com.cxense.cxensesdk.model.CustomParameter;
 import com.cxense.cxensesdk.model.SegmentsResponse;

@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk;
 
-import com.cxense.exceptions.CxenseException;
+
+import com.cxense.cxensesdk.exceptions.CxenseException;
 
 import org.junit.Before;
 import org.junit.Test;
