@@ -34,9 +34,9 @@ public class WidgetContextTest {
 
     @Test
     public void getPageClass() throws Exception {
-        String pageClass = "pageClass";
-        Whitebox.setInternalState(widgetContext, "pageClass", pageClass);
-        assertEquals(pageClass, widgetContext.getPageClass());
+        String pageClass = "pageclass";
+        Whitebox.setInternalState(widgetContext, "pageclass", pageClass);
+        assertEquals(pageClass, widgetContext.getPageclass());
     }
 
     @Test

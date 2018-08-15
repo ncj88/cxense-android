@@ -14,7 +14,7 @@ import java.util.Map;
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public final class WidgetContext {
     private String url;
-    private String pageClass;
+    private String pageclass;
     private String sentiment;
     private boolean recommending;
     private Map<String, String> categories;
@@ -34,7 +34,7 @@ public final class WidgetContext {
     public WidgetContext(Builder builder) {
         this();
         url = builder.url;
-        pageClass = builder.pageClass;
+        pageclass = builder.pageclass;
         sentiment = builder.sentiment;
         recommending = builder.recommending;
         categories = Collections.unmodifiableMap(builder.categories);
@@ -54,12 +54,12 @@ public final class WidgetContext {
     }
 
     /**
-     * Gets the pageClass of the current page.
+     * Gets the pageclass of the current page.
      *
-     * @return the pageClass of the current page.
+     * @return the pageclass of the current page.
      */
-    public String getPageClass() {
-        return pageClass;
+    public String getPageclass() {
+        return pageclass;
     }
 
     /**
@@ -129,7 +129,7 @@ public final class WidgetContext {
 
     public static class Builder {
         String url;
-        String pageClass;
+        String pageclass;
         String sentiment;
         boolean recommending;
         Map<String, String> categories = new HashMap<>();
@@ -159,13 +159,13 @@ public final class WidgetContext {
         }
 
         /**
-         * Set pageClass for widget.
+         * Set pageclass for widget.
          *
-         * @param pageClass the pageClass of the current page.
+         * @param pageclass the pageclass of the current page.
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setPageClass(String pageClass) {
-            this.pageClass = pageClass;
+        public WidgetContext.Builder setPageclass(String pageclass) {
+            this.pageclass = pageclass;
             return this;
         }
 
