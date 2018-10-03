@@ -1,6 +1,6 @@
 package com.cxense.cxensesdk;
 
-import com.cxense.cxensesdk.exceptions.CxenseException;
+import android.support.annotation.NonNull;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -14,27 +14,25 @@ import retrofit2.Response;
  */
 class ApiCallback<T> implements Callback<T> {
     private final LoadCallback<T> callback;
-    private final CxenseSdk cxenseInstance;
+    private final ApiErrorParser errorParser;
 
-    ApiCallback(LoadCallback<T> callback, CxenseSdk cxense) {
+    ApiCallback(LoadCallback<T> callback, ApiErrorParser errorParser) {
         this.callback = callback;
-        cxenseInstance = cxense;
+        this.errorParser = errorParser;
     }
 
     @Override
-    public void onResponse(Call<T> call, Response<T> response) {
-        if (response.isSuccessful()) {
-            if (callback != null)
-                callback.onSuccess(response.body());
+    public void onResponse(@NonNull Call<T> call, @NonNull Response<T> response) {
+        if (callback == null)
             return;
-        }
-        CxenseException exception = cxenseInstance.parseError(response);
-        if (callback != null)
-            callback.onError(exception);
+
+        if (response.isSuccessful()) {
+            callback.onSuccess(response.body());
+        } else callback.onError(errorParser.parseError(response));
     }
 
     @Override
-    public void onFailure(Call<T> call, Throwable throwable) {
+    public void onFailure(@NonNull Call<T> call, @NonNull Throwable throwable) {
         if (callback != null)
             callback.onError(throwable);
     }

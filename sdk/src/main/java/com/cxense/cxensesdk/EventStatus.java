@@ -9,12 +9,12 @@ public class EventStatus {
     public boolean isSent;
     public Exception exception;
 
-    EventStatus(String eventId, boolean isSent) {
+    public EventStatus(String eventId, boolean isSent) {
         this.eventId = eventId;
         this.isSent = isSent;
     }
 
-    EventStatus(String eventId, boolean isSent, Exception exception) {
+    public EventStatus(String eventId, boolean isSent, Exception exception) {
         this(eventId, isSent);
         this.exception = exception;
     }

@@ -1,12 +1,11 @@
-package com.cxense.cxensesdk;
+package com.cxense.cxensesdk.model;
 
 import android.location.Location;
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
-import android.util.DisplayMetrics;
 
-import com.cxense.cxensesdk.db.EventRecord;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.cxense.cxensesdk.ArrayFixedSizeQueue;
+import com.cxense.cxensesdk.DependenciesProvider;
+import com.cxense.cxensesdk.Preconditions;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Tracking page view event description.
@@ -32,54 +30,12 @@ public final class PageViewEvent extends Event {
      */
     public static final int MAX_CUSTOM_PARAMETER_KEY_LENGTH = 20;
     public static final int MAX_CUSTOM_PARAMETER_VALUE_LENGTH = 256;
-    static final String CUSTOM_PARAMETER_PREFIX = "cp_";
-    static final String CUSTOM_USER_PARAMETER_PREFIX = "cp_u_";
-    // Map keys constants
-    static final String VERSION = "ver";
-    static final String TYPE = "typ";
-    static final String ACCOUNT = "acc";
-    static final String SITE_ID = "sid";
-    static final String LOCATION = "loc";
-    static final String REFERRER = "ref";
-    static final String GOAL = "gol";
-    static final String PAGE_NAME = "pgn";
-    static final String TIME = "ltm";
-    static final String TIME_OFFSET = "tzo";
-    static final String RESOLUTION = "res";
-    static final String START_RESOLUTION = "wsz";
-    static final String COLOR = "col";
-    static final String DENSITY = "dpr";
-    static final String RND = "rnd";
-    static final String JAVA = "jav";
-    static final String LANGUAGE = "bln";
-    static final String CKP = "ckp";
-    static final String ENCODING = "chs";
-    static final String FLASH = "fls";
-    static final String NEW_USER = "new";
-    static final String LATITUDE = "plat";
-    static final String LONGITUDE = "plon";
-    static final String ACCURACY = "pacc";
-    static final String ALTITUDE = "palt";
-    static final String HEADING = "phed";
-    static final String SPEED = "pspd";
-    static final String ACTIVE_RND = "arnd";
-    static final String ACTIVE_TIME = "altm";
-    static final String ACTIVE_SPENT_TIME = "aatm";
-    static final String EXTERNAL_USER_KEY = "eit";
-    static final String EXTERNAL_USER_VALUE = "eid";
-    static final String CONSENT = "con";
+    public static final String DEFAULT_EVENT_TYPE = "pgv";
 
-    static final String DEFAULT_EVENT_TYPE = "pgv";
-    static final int DEFAULT_API_VERSION = 1;
-
-    private String usi;
-    /**
-     * Which version of the API is this requested targeted.
-     */
-    private int version;
+    private String ckp;
     private String type;
     private String rnd;
-    private int accountId = 0;
+    private int accountId;
     private String siteId;
     private String contentId;
     private String location;
@@ -93,12 +49,11 @@ public final class PageViewEvent extends Event {
     private Map<String, String> customParameters;
     private Map<String, String> customUserParameters;
 
-    PageViewEvent(Builder builder) {
+    PageViewEvent(Builder builder, String userId) {
         super(builder.eventId);
 
-        version = DEFAULT_API_VERSION;
         date = new Date();
-        usi = CxenseSdk.getInstance().getUserId();
+        ckp = userId;
         rnd = String.format(Locale.US, "%d%d", Calendar.getInstance().getTimeInMillis(), (int) (Math.random() * 10E8));
 
         type = builder.type;
@@ -116,19 +71,6 @@ public final class PageViewEvent extends Event {
         customUserParameters = Collections.unmodifiableMap(builder.customUserParameters);
     }
 
-    @Override
-    public EventRecord toEventRecord() throws JsonProcessingException {
-        Map<String, String> eventMap = toQueryMap();
-        EventRecord record = new EventRecord();
-        record.customId = eventId;
-        record.data = CxenseSdk.getInstance().packObject(eventMap);
-        record.timestamp = date.getTime();
-        record.ckp = eventMap.get(PageViewEvent.CKP);
-        record.rnd = eventMap.get(PageViewEvent.RND);
-        record.eventType = DEFAULT_EVENT_TYPE;
-        return record;
-    }
-
     /**
      * Gets type of event.
      *
@@ -136,6 +78,15 @@ public final class PageViewEvent extends Event {
      */
     public String getType() {
         return type;
+    }
+
+    /**
+     * Gets Ckp of event
+     *
+     * @return Ckp
+     */
+    public String getCkp() {
+        return ckp;
     }
 
     /**
@@ -237,80 +188,31 @@ public final class PageViewEvent extends Event {
         return userLocation;
     }
 
-    Map<String, String> toQueryMap() {
-        CxenseSdk cxense = CxenseSdk.getInstance();
-        Calendar calendar = Calendar.getInstance();
-        long offset = TimeUnit.MILLISECONDS.toMinutes(calendar.getTimeZone().getOffset(calendar.getTimeInMillis()));
-        DisplayMetrics dm = CxenseSdk.getInstance().getDisplayMetrics();
-        String resolution = String.format(Locale.US, "%dx%d", dm.widthPixels, dm.heightPixels);
-        Locale locale = Locale.getDefault();
-        String lang = String.format(Locale.US, "%s_%s", escapeString(locale.getLanguage()),
-                escapeString(locale.getCountry()));
-        String locationUrl = contentId != null ? String.format(CxenseSdk.DEFAULT_URL_LESS_BASE_URL, siteId, contentId)
-                : location;
+    /**
+     * Gets user external ids
+     *
+     * @return user external ids
+     */
+    public List<ExternalUserId> getExternalUserIds() {
+        return externalUserIds;
+    }
 
-        Map<String, String> result = new HashMap<>();
-        int i = 0;
-        for (ExternalUserId userId : externalUserIds) {
-            result.put("eit" + i, userId.key);
-            result.put("eid" + i, userId.value);
-        }
-        if (cxense.getConfiguration().isAutoMetaInfoTrackingEnabled()) {
-            // automatic app meta gathering
-            String appName = cxense.getApplicationName();
-            String appVersion = cxense.getApplicationVersion();
-            if (!TextUtils.isEmpty(appName))
-                result.put(CUSTOM_PARAMETER_PREFIX + "app", appName);
-            if (!TextUtils.isEmpty(appVersion))
-                result.put(CUSTOM_PARAMETER_PREFIX + "appv", appVersion);
-        }
-        result.put(SITE_ID, siteId);
-        result.put(VERSION, "" + version);
-        result.put(TYPE, type);
-        result.put(ACCOUNT, "" + accountId);
-        result.put(LOCATION, locationUrl);
-        result.put(REFERRER, escapeString(referrer));
-        result.put(GOAL, escapeString(goalId));
-        result.put(PAGE_NAME, escapeString(pageName));
-        result.put(TIME, "" + date.getTime());
-        // The client's timezone.
-        result.put(TIME_OFFSET, "" + offset);
-        result.put(RESOLUTION, resolution);
-        result.put(START_RESOLUTION, resolution);
-        // Device color depth.
-        result.put(COLOR, "32"); // Android uses ARGB_8888 32bit from version 2.3 (API 10)
-        result.put(DENSITY, "" + dm.density);
-        result.put(RND, rnd);
-        // Is Java enabled
-        result.put(JAVA, "0"); // No, we have not Java 😁
-        result.put(LANGUAGE, lang);
-        result.put(CKP, usi);
-        result.put(ENCODING, "UTF-8");
-        // Is Flash enabled?
-        result.put(FLASH, "0");
-        result.put(NEW_USER, isNewUser ? "1" : "0");
-        for (Map.Entry<String, String> entry : customParameters.entrySet()) {
-            result.put(CUSTOM_PARAMETER_PREFIX + entry.getKey(), entry.getValue());
-        }
-        for (Map.Entry<String, String> entry : customUserParameters.entrySet()) {
-            result.put(CUSTOM_USER_PARAMETER_PREFIX + entry.getKey(), entry.getValue());
-        }
-        if (userLocation != null) {
-            result.put(LATITUDE, "" + userLocation.getLatitude());
-            result.put(LONGITUDE, "" + userLocation.getLongitude());
-            if (userLocation.hasAccuracy())
-                result.put(ACCURACY, "" + userLocation.getAccuracy());
-            if (userLocation.hasAltitude())
-                result.put(ALTITUDE, "" + userLocation.getAltitude());
-            if (userLocation.hasBearing())
-            result.put(HEADING, "" + userLocation.getBearing());
-            if (userLocation.hasSpeed())
-                result.put(SPEED, "" + userLocation.getSpeed());
-        }
-        String consent = cxense.getConsentOptionsAsString();
-        if (consent != null)
-            result.put(CONSENT, consent);
-        return result;
+    /**
+     * Gets custom parameters
+     *
+     * @return custom parameters
+     */
+    public Map<String, String> getCustomParameters() {
+        return customParameters;
+    }
+
+    /**
+     * Gets custom user parameters
+     *
+     * @return custom user parameters
+     */
+    public Map<String, String> getCustomUserParameters() {
+        return customUserParameters;
     }
 
     /**
@@ -539,7 +441,7 @@ public final class PageViewEvent extends Event {
         public PageViewEvent build() {
             if (location == null && contentId == null)
                 throw new IllegalStateException("You should specify page location or content id");
-            return new PageViewEvent(this);
+            return new PageViewEvent(this, DependenciesProvider.getInstance().getCxenseSdk().getUserId());
         }
     }
 }

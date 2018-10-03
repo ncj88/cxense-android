@@ -11,13 +11,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.cxense.cxensesdk.CredentialsProvider;
 import com.cxense.cxensesdk.CxenseConfiguration;
 import com.cxense.cxensesdk.CxenseConstants;
 import com.cxense.cxensesdk.CxenseSdk;
 import com.cxense.cxensesdk.EventStatus;
 import com.cxense.cxensesdk.LoadCallback;
-import com.cxense.cxensesdk.PerformanceEvent;
 import com.cxense.cxensesdk.model.CustomParameter;
+import com.cxense.cxensesdk.model.PerformanceEvent;
 import com.cxense.cxensesdk.model.SegmentsResponse;
 import com.cxense.cxensesdk.model.User;
 import com.cxense.cxensesdk.model.UserExternalData;
@@ -56,8 +57,22 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
 
         CxenseConfiguration config = CxenseSdk.getInstance().getConfiguration();
         config.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
-        config.setApiKey(BuildConfig.API_KEY);
-        config.setDmpPushPersistentId(BuildConfig.PERSISTED_ID);
+        config.setCredentialsProvider(new CredentialsProvider() {
+            @Override
+            public String getUsername() {
+                return BuildConfig.USERNAME; // load it from secured store
+            }
+
+            @Override
+            public String getApiKey() {
+                return BuildConfig.API_KEY; // load it from secured store
+            }
+
+            @Override
+            public String getDmpPushPersistentId() {
+                return BuildConfig.PERSISTED_ID;
+            }
+        });
     }
 
     @Override

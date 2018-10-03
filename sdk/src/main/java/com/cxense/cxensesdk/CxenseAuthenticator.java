@@ -36,25 +36,15 @@ class CxenseAuthenticator implements Authenticator {
     private static final String CHARSET_NAME = "UTF-8";
 
     private int maxAttempts;
-    private String username;
-    private String apiKey;
+    private CxenseConfiguration cxenseConfiguration;
 
-    public CxenseAuthenticator() {
-        this("", "");
+    public CxenseAuthenticator(CxenseConfiguration cxenseConfiguration) {
+        this(cxenseConfiguration, DEFAULT_MAX_ATTEMPTS);
     }
 
-    public CxenseAuthenticator(String username, String apiKey) {
-        this(username, apiKey, DEFAULT_MAX_ATTEMPTS);
-    }
-
-    public CxenseAuthenticator(String username, String apiKey, int maxAttempts) {
+    public CxenseAuthenticator(CxenseConfiguration cxenseConfiguration, int maxAttempts) {
+        this.cxenseConfiguration = cxenseConfiguration;
         this.maxAttempts = maxAttempts;
-        updateCredentials(username, apiKey);
-    }
-
-    void updateCredentials(String username, String apiKey) {
-        this.username = username;
-        this.apiKey = apiKey;
     }
 
     String createToken(String username,
@@ -78,7 +68,8 @@ class CxenseAuthenticator implements Authenticator {
             return null; // If we've failed N times, give up.
         }
         try {
-            String token = createToken(username, apiKey);
+            CredentialsProvider credentialsProvider = cxenseConfiguration.getCredentialsProvider();
+            String token = createToken(credentialsProvider.getUsername(), credentialsProvider.getApiKey());
             return response.request().newBuilder().header(AUTH_HEADER, token).build();
         } catch (NoSuchAlgorithmException | InvalidKeyException | IllegalArgumentException e) {
             throw new CxenseException("Failed to create authenticationToken!", e);
