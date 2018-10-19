@@ -263,6 +263,11 @@ public final class DependenciesProvider {
     }
 
     @NonNull
+    public UserProvider getUserProvider() {
+        return userProvider;
+    }
+
+    @NonNull
     public CxenseConfiguration getCxenseConfiguration() {
         return cxenseConfiguration;
     }
@@ -300,6 +305,11 @@ public final class DependenciesProvider {
     @NonNull
     public EventRepository getEventRepository() {
         return eventRepository;
+    }
+
+    @NonNull
+    public DispatchEventsCallback getEventsSendCallback() {
+        return eventsSendCallback;
     }
 
     @NonNull

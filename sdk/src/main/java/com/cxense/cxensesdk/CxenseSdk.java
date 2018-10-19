@@ -89,7 +89,7 @@ public final class CxenseSdk {
      * @param item the item that contains the click-url
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public static void trackClick(@NonNull WidgetItem item) {
+    public void trackClick(@NonNull WidgetItem item) {
         trackClick(item.clickUrl);
     }
 
@@ -99,8 +99,8 @@ public final class CxenseSdk {
      * @param url the click-url
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public static void trackClick(@NonNull String url) {
-        CxenseSdk.getInstance().apiInstance.trackUrlClick(url).enqueue(new Callback<Void>() {
+    public void trackClick(@NonNull String url) {
+        apiInstance.trackUrlClick(url).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
             }

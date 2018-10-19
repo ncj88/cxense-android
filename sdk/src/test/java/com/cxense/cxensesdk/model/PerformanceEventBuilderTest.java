@@ -1,7 +1,6 @@
-package com.cxense.cxensesdk;
+package com.cxense.cxensesdk.model;
 
-import com.cxense.cxensesdk.model.CustomParameter;
-import com.cxense.cxensesdk.model.UserIdentity;
+import com.cxense.cxensesdk.BaseTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +40,12 @@ public class PerformanceEventBuilderTest extends BaseTest {
     }
 
     @Test
+    public void setEventId() {
+        builder.setEventId("id");
+        assertEquals("id", Whitebox.getInternalState(builder, "eventId"));
+    }
+
+    @Test
     public void setTime() throws Exception {
         long time = 1000;
         builder.setTime(time);
@@ -61,7 +66,7 @@ public class PerformanceEventBuilderTest extends BaseTest {
         doNothing().when(builder).setTime(anyLong());
         assertThat(builder, is(builder.setCurrentTime()));
         verify(builder).setTime(anyLong());
-        verifyStatic();
+        verifyStatic(System.class);
         System.currentTimeMillis();
     }
 

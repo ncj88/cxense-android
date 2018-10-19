@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import com.cxense.cxensesdk.ArrayFixedSizeQueue;
 import com.cxense.cxensesdk.DependenciesProvider;
 import com.cxense.cxensesdk.Preconditions;
+import com.cxense.cxensesdk.UserProvider;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -220,6 +221,7 @@ public final class PageViewEvent extends Event {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess", "SameParameterValue"}) // Public API.
     public static class Builder {
+        private final UserProvider userProvider;
         private String eventId;
         private String type = DEFAULT_EVENT_TYPE;
         private int accountId = 0;
@@ -231,14 +233,12 @@ public final class PageViewEvent extends Event {
         private String pageName;
         private boolean isNewUser;
         private Location userLocation;
-        private Map<String, String> customParameters;
-        private Map<String, String> customUserParameters;
-        private ArrayFixedSizeQueue<ExternalUserId> externalUserIds;
+        private Map<String, String> customParameters = new HashMap<>();
+        private Map<String, String> customUserParameters = new HashMap<>();
+        private ArrayFixedSizeQueue<ExternalUserId> externalUserIds = new ArrayFixedSizeQueue<>(MAX_EXTERNAL_USER_IDS);
 
-        private Builder() {
-            customParameters = new HashMap<>();
-            customUserParameters = new HashMap<>();
-            externalUserIds = new ArrayFixedSizeQueue<>(MAX_EXTERNAL_USER_IDS);
+        Builder(UserProvider userProvider) {
+            this.userProvider = userProvider;
         }
 
         /**
@@ -247,7 +247,7 @@ public final class PageViewEvent extends Event {
          * @param siteId the Cxense site identifier.
          */
         public Builder(@NonNull String siteId) {
-            this();
+            this(DependenciesProvider.getInstance().getUserProvider());
             setSiteId(siteId);
         }
 
@@ -441,7 +441,7 @@ public final class PageViewEvent extends Event {
         public PageViewEvent build() {
             if (location == null && contentId == null)
                 throw new IllegalStateException("You should specify page location or content id");
-            return new PageViewEvent(this, DependenciesProvider.getInstance().getCxenseSdk().getUserId());
+            return new PageViewEvent(this, userProvider.getUserId());
         }
     }
 }

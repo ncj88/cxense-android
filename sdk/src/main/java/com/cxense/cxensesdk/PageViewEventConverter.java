@@ -34,26 +34,26 @@ public class PageViewEventConverter extends EventConverter<PageViewEvent> {
      * Default "base url" for url-less mode
      */
     private static final String DEFAULT_URL_LESS_BASE_URL = "http://%s.content.id/%s";
-    private static final String CUSTOM_PARAMETER_PREFIX = "cp_";
+    static final String CUSTOM_PARAMETER_PREFIX = "cp_";
     private static final String CUSTOM_USER_PARAMETER_PREFIX = "cp_u_";
     private static final String DEFAULT_API_VERSION = "1";
     // Map keys constants
-    private static final String VERSION = "ver";
-    private static final String TYPE = "typ";
+    static final String VERSION = "ver";
+    static final String TYPE = "typ";
     private static final String ACCOUNT = "acc";
-    private static final String SITE_ID = "sid";
-    private static final String LOCATION = "loc";
-    private static final String REFERRER = "ref";
+    static final String SITE_ID = "sid";
+    static final String LOCATION = "loc";
+    static final String REFERRER = "ref";
     private static final String GOAL = "gol";
     private static final String PAGE_NAME = "pgn";
-    private static final String TIME_OFFSET = "tzo";
+    static final String TIME_OFFSET = "tzo";
     private static final String RESOLUTION = "res";
     private static final String START_RESOLUTION = "wsz";
     private static final String COLOR = "col";
     private static final String DENSITY = "dpr";
     private static final String JAVA = "jav";
     private static final String LANGUAGE = "bln";
-    private static final String ENCODING = "chs";
+    static final String ENCODING = "chs";
     private static final String FLASH = "fls";
     private static final String NEW_USER = "new";
     private static final String LATITUDE = "plat";

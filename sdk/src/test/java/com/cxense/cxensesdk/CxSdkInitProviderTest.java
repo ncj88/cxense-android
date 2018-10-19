@@ -7,9 +7,6 @@ import android.net.Uri;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,24 +16,18 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-31).
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({CxenseSdk.class})
-public class CxSdkInitProviderTest {
-    private Context context;
+public class CxSdkInitProviderTest extends BaseTest {
     private CxSdkInitProvider provider;
     private Uri uri;
 
     @Before
     public void setUp() throws Exception {
-        context = mock(Context.class);
-        mockStatic(CxenseSdk.class);
+        super.setUp();
         provider = spy(new CxSdkInitProvider());
         uri = mock(Uri.class);
         doReturn(context).when(provider).getContext();
@@ -44,8 +35,6 @@ public class CxSdkInitProviderTest {
 
     @Test
     public void initCxense() throws Exception {
-        Context context = mock(Context.class);
-        when(context.getApplicationContext()).thenReturn(context);
         provider.initCxense(context);
     }
 

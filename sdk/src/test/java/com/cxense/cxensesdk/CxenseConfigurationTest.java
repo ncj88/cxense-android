@@ -3,27 +3,33 @@ package com.cxense.cxensesdk;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.telephony.TelephonyManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.reflect.Whitebox;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-04).
  */
+@PrepareForTest({CxenseConfiguration.class})
 public class CxenseConfigurationTest extends BaseTest {
     private CxenseConfiguration configuration;
     private NetworkInfo info;
@@ -35,39 +41,21 @@ public class CxenseConfigurationTest extends BaseTest {
         ConnectivityManager manager = mock(ConnectivityManager.class);
         when(context.getSystemService(Context.CONNECTIVITY_SERVICE)).thenReturn(manager);
         when(manager.getActiveNetworkInfo()).thenReturn(info);
-        configuration = new CxenseConfiguration();
+        configuration = spy(new CxenseConfiguration());
     }
 
     @Test
-    public void getUsername() throws Exception {
-        assertNull(configuration.getUsername());
+    public void getCredentialsProvider() {
+        CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
+        Whitebox.setInternalState(configuration, "credentialsProvider", credentialsProvider);
+        assertEquals(credentialsProvider, configuration.getCredentialsProvider());
     }
 
     @Test
-    public void setUsername() throws Exception {
-        configuration.setUsername("some_name");
-        assertEquals("some_name", Whitebox.getInternalState(configuration, "username"));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setUsernameBad() throws Exception {
-        configuration.setUsername("");
-    }
-
-    @Test
-    public void getApiKey() throws Exception {
-        assertNull(configuration.getApiKey());
-    }
-
-    @Test
-    public void setApiKey() throws Exception {
-        configuration.setApiKey("some_key");
-        assertEquals("some_key", Whitebox.getInternalState(configuration, "apiKey"));
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void setApiKeyBad() throws Exception {
-        configuration.setApiKey("");
+    public void setCredentialsProvider() {
+        CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
+        configuration.setCredentialsProvider(credentialsProvider);
+        assertEquals(credentialsProvider, Whitebox.getInternalState(configuration, "credentialsProvider"));
     }
 
     @Test
@@ -95,14 +83,14 @@ public class CxenseConfigurationTest extends BaseTest {
 
     @Test
     public void getNetworkRestriction() throws Exception {
-        assertEquals(CxenseConfiguration.NetworkRestriction.NONE, configuration.getNetworkRestriction());
+        assertEquals(CxenseConfiguration.NetworkStatus.NONE, configuration.getMinimumNetworkStatus());
     }
 
     @Test
     public void setNetworkRestriction() throws Exception {
-        configuration.setNetworkRestriction(CxenseConfiguration.NetworkRestriction.WIFI);
-        assertEquals(CxenseConfiguration.NetworkRestriction.WIFI,
-                Whitebox.getInternalState(configuration, "networkRestriction"));
+        configuration.setMinimumNetworkStatus(CxenseConfiguration.NetworkStatus.WIFI);
+        assertEquals(CxenseConfiguration.NetworkStatus.WIFI,
+                Whitebox.getInternalState(configuration, "minimumNetworkStatus"));
     }
 
     @Test
@@ -115,6 +103,16 @@ public class CxenseConfigurationTest extends BaseTest {
         configuration.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
         long value = Whitebox.getInternalState(configuration, "dispatchPeriod");
         assertEquals(CxenseConstants.MIN_DISPATCH_PERIOD, value);
+    }
+
+    @Test
+    public void setDispatchPeriodWithListener() throws Exception {
+        CxenseConfiguration.DispatchPeriodListener listener = mock(CxenseConfiguration.DispatchPeriodListener.class);
+        configuration.setDispatchPeriodListener(listener);
+        configuration.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
+        long value = Whitebox.getInternalState(configuration, "dispatchPeriod");
+        assertEquals(CxenseConstants.MIN_DISPATCH_PERIOD, value);
+        verify(listener).onDispatchPeriodChanged(anyLong());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -140,58 +138,77 @@ public class CxenseConfigurationTest extends BaseTest {
     }
 
     @Test
-    public void isRestricted() throws Exception {
-        when(info.isConnected()).thenReturn(false);
-        assertTrue(configuration.isRestricted(context));
+    public void setConsentOptions() {
+        configuration.setConsentOptions(ConsentOption.CONSENT_REQUIRED);
+        Set<ConsentOption> consentOptions = Whitebox.getInternalState(configuration, "consentOptions");
+        assertEquals(1, consentOptions.size());
+        assertTrue(consentOptions.contains(ConsentOption.CONSENT_REQUIRED));
     }
 
     @Test
-    public void isRestrictedNone() throws Exception {
-        when(info.isConnected()).thenReturn(true);
-        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkRestriction.NONE);
-        assertFalse(configuration.isRestricted(context));
+    public void getConsentOptionsValues() {
+        Whitebox.setInternalState(configuration, "consentOptions", new HashSet<>(Collections.singletonList(ConsentOption.CONSENT_REQUIRED)));
+        assertThat(configuration.getConsentOptionsValues(), is(Collections.singletonList(ConsentOption.CONSENT_REQUIRED.getValue())));
     }
 
     @Test
-    public void isRestrictedOnWifi() throws Exception {
-        when(info.isConnected()).thenReturn(true);
-        when(info.getType()).thenReturn(ConnectivityManager.TYPE_WIFI);
-        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkRestriction.MOBILE);
-        assertFalse(configuration.isRestricted(context));
+    public void getConsentOptionsAsStringEmptyOptions() {
+        assertNull(configuration.getConsentOptionsAsString());
     }
 
-    @Test
-    public void isRestrictedOnGPRS() throws Exception {
-        when(info.isConnected()).thenReturn(true);
-        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkRestriction.MOBILE);
-        assertTrue(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_GPRS));
-    }
-
-    @Test
-    public void isRestrictedOn3gOrBetter() throws Exception {
-        when(info.isConnected()).thenReturn(true);
-        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkRestriction.WIFI);
-        assertThat(true, allOf(
-                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_HSDPA)),
-                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_HSPA)),
-                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_HSPAP)),
-                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_HSUPA)),
-                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_LTE))
-        ));
-    }
-
-    @Test
-    public void isRestrictedOnUnknown() throws Exception {
-        when(info.isConnected()).thenReturn(true);
-        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkRestriction.MOBILE);
-        assertTrue(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_EDGE));
-    }
-
-    private boolean checkRestrictionForNetwork(int networkType) {
-        TelephonyManager telephonyManager = mock(TelephonyManager.class);
-        when(telephonyManager.getNetworkType()).thenReturn(networkType);
-        when(context.getSystemService(Context.TELEPHONY_SERVICE)).thenReturn(telephonyManager);
-        return configuration.isRestricted(context);
-    }
+    //    @Test
+//    public void isRestricted() throws Exception {
+//        when(info.isConnected()).thenReturn(false);
+//        assertTrue(configuration.isRestricted(context));
+//    }
+//
+//    @Test
+//    public void isRestrictedNone() throws Exception {
+//        when(info.isConnected()).thenReturn(true);
+//        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkStatus.NONE);
+//        assertFalse(configuration.isRestricted(context));
+//    }
+//
+//    @Test
+//    public void isRestrictedOnWifi() throws Exception {
+//        when(info.isConnected()).thenReturn(true);
+//        when(info.getType()).thenReturn(ConnectivityManager.TYPE_WIFI);
+//        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkStatus.MOBILE);
+//        assertFalse(configuration.isRestricted(context));
+//    }
+//
+//    @Test
+//    public void isRestrictedOnGPRS() throws Exception {
+//        when(info.isConnected()).thenReturn(true);
+//        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkStatus.MOBILE);
+//        assertTrue(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_GPRS));
+//    }
+//
+//    @Test
+//    public void isRestrictedOn3gOrBetter() throws Exception {
+//        when(info.isConnected()).thenReturn(true);
+//        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkStatus.WIFI);
+//        assertThat(true, allOf(
+//                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_HSDPA)),
+//                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_HSPA)),
+//                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_HSPAP)),
+//                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_HSUPA)),
+//                is(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_LTE))
+//        ));
+//    }
+//
+//    @Test
+//    public void isRestrictedOnUnknown() throws Exception {
+//        when(info.isConnected()).thenReturn(true);
+//        Whitebox.setInternalState(configuration, "networkRestriction", CxenseConfiguration.NetworkStatus.MOBILE);
+//        assertTrue(checkRestrictionForNetwork(TelephonyManager.NETWORK_TYPE_EDGE));
+//    }
+//
+//    private boolean checkRestrictionForNetwork(int networkType) {
+//        TelephonyManager telephonyManager = mock(TelephonyManager.class);
+//        when(telephonyManager.getNetworkType()).thenReturn(networkType);
+//        when(context.getSystemService(Context.TELEPHONY_SERVICE)).thenReturn(telephonyManager);
+//        return configuration.isRestricted(context);
+//    }
 
 }

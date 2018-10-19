@@ -13,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -21,7 +22,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-13).
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({CxenseSdk.class, Response.class})
+@PrepareForTest({Response.class})
 public class ApiCallbackTest {
     private LoadCallback<Object> loadCallback;
     private Call<Object> call;
@@ -30,15 +31,22 @@ public class ApiCallbackTest {
 
     @Before
     public void setUp() throws Exception {
-        CxenseSdk cxense = mock(CxenseSdk.class);
+        ApiErrorParser errorParser = mock(ApiErrorParser.class);
         loadCallback = mock(LoadCallback.class);
         call = mock(Call.class);
         response = mock(Response.class);
-        callback = new ApiCallback<>(loadCallback, cxense);
+        callback = new ApiCallback<>(loadCallback, errorParser);
         ResponseBody errorBody = mock(ResponseBody.class);
         when(response.errorBody()).thenReturn(errorBody);
         CxenseException exception = new CxenseException();
-        when(cxense.parseError(any(Response.class))).thenReturn(exception);
+        when(errorParser.parseError(any(Response.class))).thenReturn(exception);
+    }
+
+    @Test
+    public void onResponseCallbackNull() {
+        callback = new ApiCallback<>(null, null);
+        callback.onResponse(call, response);
+        verify(response, never()).isSuccessful();
     }
 
     @Test
