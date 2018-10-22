@@ -22,6 +22,7 @@ import java.util.Map;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-19).
  */
 public class PerformanceEventConverter extends EventConverter<PerformanceEvent> {
+    public static final String CONSENT = "con";
     private final ObjectMapper mapper;
     private final CxenseConfiguration configuration;
 
@@ -61,7 +62,7 @@ public class PerformanceEventConverter extends EventConverter<PerformanceEvent> 
             result.put(PerformanceEvent.SEGMENT_IDS, TextUtils.join(",", segments));
         String consentOptions = configuration.getConsentOptionsAsString();
         if (consentOptions != null)
-            result.put("con", consentOptions);
+            result.put(CONSENT, consentOptions);
         return result;
     }
 
