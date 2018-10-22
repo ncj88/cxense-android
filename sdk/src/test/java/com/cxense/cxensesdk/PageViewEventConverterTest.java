@@ -76,6 +76,7 @@ public class PageViewEventConverterTest extends BaseTest {
         params.put("key", "value");
         when(event.getCustomParameters()).thenReturn(params);
         when(event.getCustomUserParameters()).thenReturn(params);
+        when(configuration.getConsentOptionsAsString()).thenReturn(ConsentOption.CONSENT_REQUIRED.getValue());
         Map<String, String> result = converter.toQueryMap(event);
         assertThat(result, allOf(
                 hasKey(PageViewEventConverter.SITE_ID),
