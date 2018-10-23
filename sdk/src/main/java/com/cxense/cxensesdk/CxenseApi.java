@@ -3,6 +3,7 @@ package com.cxense.cxensesdk;
 import com.cxense.cxensesdk.model.BaseUserIdentity;
 import com.cxense.cxensesdk.model.CxenseUserIdentity;
 import com.cxense.cxensesdk.model.EventDataRequest;
+import com.cxense.cxensesdk.model.PerformanceEvent;
 import com.cxense.cxensesdk.model.SegmentsResponse;
 import com.cxense.cxensesdk.model.User;
 import com.cxense.cxensesdk.model.UserDataRequest;

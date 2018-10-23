@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Context for {@link com.cxense.cxensesdk.Widget}. It is required for loading items.
+ * Context for Widget. It is required for loading items.
  *
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */

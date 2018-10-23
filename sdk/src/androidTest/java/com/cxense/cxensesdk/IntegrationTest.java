@@ -5,6 +5,9 @@ import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
 
 import com.cxense.cxensesdk.model.CustomParameter;
+import com.cxense.cxensesdk.model.Event;
+import com.cxense.cxensesdk.model.PageViewEvent;
+import com.cxense.cxensesdk.model.PerformanceEvent;
 import com.cxense.cxensesdk.model.UserIdentity;
 
 import org.json.JSONArray;
@@ -22,7 +25,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertThat;
@@ -44,30 +46,32 @@ public class IntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        CxenseSdk.init(InstrumentationRegistry.getTargetContext());
-        cxense = CxenseSdk.getInstance();
-        cxense.sendTask = new NotifyingSendTask(syncObject);
-        cxense.initSendTaskSchedule();
+        DependenciesProvider.init(InstrumentationRegistry.getTargetContext());
+        DependenciesProvider provider = DependenciesProvider.getInstance();
+        NotifyingSendTask sendTask = new NotifyingSendTask(syncObject, provider);
+        cxense = new CxenseSdk(provider.getExecutor(), provider.getCxenseConfiguration(),
+                provider.getAdvertisingIdProvider(), provider.getUserProvider(), provider.getApi(),
+                provider.getErrorParser(), provider.getMapper(), provider.getEventRepository(), sendTask);
         cxense.setUserId("VERY-RANDOM-USER-ID");
         final CxenseConfiguration configuration = cxense.getConfiguration();
         configuration.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
-        configuration.setUsername(API_USER);
-        configuration.setApiKey(API_KEY);
+        configuration.setCredentialsProvider(new CredentialsProvider() {
+            @Override
+            public String getUsername() {
+                return API_USER;
+            }
 
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-        okHttpClient = new OkHttpClient.Builder()
-                .connectTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS)
-                .addInterceptor(interceptor)
-                .authenticator(new CxenseAuthenticator(API_USER, API_KEY))
-                .build();
+            @Override
+            public String getApiKey() {
+                return API_USER;
+            }
+        });
         start = TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis());
         end = start + TimeUnit.HOURS.toMillis(1);
     }
 
     private void sendAndCheck(String url, String jsonFilter, Event... events) throws Exception {
-        cxense.putEvents(events);
+        cxense.pushEvents(events);
         synchronized (syncObject) {
             syncObject.wait();
         }

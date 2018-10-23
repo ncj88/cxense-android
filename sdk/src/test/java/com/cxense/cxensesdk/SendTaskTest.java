@@ -3,17 +3,19 @@ package com.cxense.cxensesdk;
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 
 import com.cxense.cxensesdk.db.EventRecord;
+import com.cxense.cxensesdk.model.EventRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.reflect.Whitebox;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -22,8 +24,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -38,30 +39,35 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @PrepareForTest({CxenseConfiguration.class})
 public class SendTaskTest extends BaseTest {
+    private EventRepository eventRepository;
     private CxenseConfiguration configuration;
-    private CxenseSdk.SendTask sendTask;
+    private ObjectMapper mapper;
+    private SendTask sendTask;
     private Call call;
-    private CxenseSdk.DispatchEventsCallback sendCallback;
+    private DispatchEventsCallback sendCallback;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         call = mock(Call.class);
-        sendTask = spy(new CxenseSdk.SendTask());
+        eventRepository = mock(EventRepository.class);
         configuration = spy(new CxenseConfiguration());
-        sendCallback = spy(new CxenseSdk.DispatchEventsCallback() {
+        mapper = mock(ObjectMapper.class);
+        sendCallback = spy(new DispatchEventsCallback() {
             @Override
             public void onSend(List<EventStatus> statuses) {
             }
         });
-        doReturn(false).when(configuration).isRestricted(any());
-        doReturn(true).when(configuration).isDmpAuthorized();
         CxenseApi api = mock(CxenseApi.class);
+        DeviceInfoProvider deviceInfoProvider = mock(DeviceInfoProvider.class);
+        sendTask = spy(new SendTask(api, eventRepository, configuration, deviceInfoProvider,
+                mock(UserProvider.class), mapper, mock(PerformanceEventConverter.class),
+                mock(ApiErrorParser.class), sendCallback));
+
+        doReturn(CxenseConfiguration.NetworkStatus.WIFI).when(deviceInfoProvider).getCurrentNetworkStatus();
+        doReturn(true).when(configuration).isApiCredentialsProvided();
         when(api.pushEvents(any())).thenReturn(call);
         when(api.trackInsightEvent(any())).thenReturn(call);
-        Whitebox.setInternalState(cxense, "apiInstance", api);
-        Whitebox.setInternalState(cxense, "configuration", configuration);
-        Whitebox.setInternalState(cxense, "sendCallback", sendCallback);
     }
 
     @Test
@@ -73,7 +79,7 @@ public class SendTaskTest extends BaseTest {
         when(body.byteStream()).thenReturn(new BufferedInputStream(new ByteArrayInputStream(new byte[2])));
         when(call.execute()).thenReturn(Response.success(body));
         sendTask.sendDmpEvents(Arrays.asList(record, new EventRecord()));
-        verify(cxense, times(2)).putEventRecordInDatabase(any());
+        verify(eventRepository, times(2)).putEventRecordInDatabase(any());
         verify(sendCallback).onSend(any());
     }
 
@@ -95,18 +101,18 @@ public class SendTaskTest extends BaseTest {
         when(body.source()).thenReturn(mock(BufferedSource.class));
         when(body.byteStream()).thenReturn(new BufferedInputStream(new ByteArrayInputStream(new byte[2])));
         when(call.execute()).thenReturn(Response.success(body));
-        when(cxense.unpackMap(isNull())).thenThrow(new IOException());
+        when(mapper.readValue((String) any(), any(TypeReference.class))).thenReturn(Collections.<String, String>emptyMap());
         sendTask.sendPageViewEvents(Arrays.asList(record, new EventRecord()));
-        verify(cxense).putEventRecordInDatabase(any());
+        verify(eventRepository, times(2)).putEventRecordInDatabase(any());
         verify(sendCallback).onSend(any());
     }
 
     @Test
     public void run() throws Exception {
         List<EventRecord> records = new ArrayList<>();
-        when(cxense.getNotSubmittedEvents(anyBoolean())).thenReturn(records);
+        when(eventRepository.getNotSubmittedPvEvents()).thenReturn(records);
         sendTask.run();
-        verify(cxense).deleteOutdatedEvents();
+        verify(eventRepository).deleteOutdatedEvents(anyLong());
         verify(sendTask).sendDmpEvents(records);
         verify(sendTask).sendPageViewEvents(records);
     }
@@ -115,13 +121,14 @@ public class SendTaskTest extends BaseTest {
     public void runOffline() throws Exception {
         when(configuration.getDispatchMode()).thenReturn(CxenseConfiguration.DispatchMode.OFFLINE);
         sendTask.run();
-        verify(cxense).deleteOutdatedEvents();
-        verify(cxense, never()).getNotSubmittedEvents(anyBoolean());
+        verify(eventRepository).deleteOutdatedEvents(anyLong());
+        verify(eventRepository, never()).getNotSubmittedPvEvents();
+        verify(eventRepository, never()).getNotSubmittedDmpEvents();
     }
 
     @Test
     public void runException() throws Exception {
-        doThrow(new SQLiteDatabaseCorruptException()).when(cxense).deleteOutdatedEvents();
+        doThrow(new SQLiteDatabaseCorruptException()).when(eventRepository).deleteOutdatedEvents(anyLong());
         sendTask.run();
     }
 
