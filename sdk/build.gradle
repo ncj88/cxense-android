@@ -6,13 +6,13 @@ ext {
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion sdkTargetVersion
     buildToolsVersion '28.0.3'
 
 
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 27
+        minSdkVersion sdkMinVersion
+        targetSdkVersion sdkTargetVersion
         versionCode 1
         versionName "$version"
         buildConfigField "String", "SDK_NAME", '"cxense"'

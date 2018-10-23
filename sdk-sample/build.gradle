@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion sdkTargetVersion
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "com.example.cxensesdk"
-        minSdkVersion 15
-        targetSdkVersion 27
+        minSdkVersion sdkMinVersion
+        targetSdkVersion sdkTargetVersion
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -39,9 +39,6 @@ android {
 
 dependencies {
     implementation project(':sdk')
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.android.support:design:27.1.1'

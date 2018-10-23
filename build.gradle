@@ -49,7 +49,7 @@ ext {
     sdkTargetVersion = 28
     globalBuildToolsVersion = '28.0.2'
 
-    appCompatVersion = '22.0.0'
+    appCompatVersion = '22.2.0'
     playServicesVersion = '8.1.0'
     retrofitVersion = '2.4.0'
     okHttpVersion = '3.11.0'
