@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 /**
@@ -62,12 +61,9 @@ public class PerformanceEventBuilderTest extends BaseTest {
 
     @Test
     public void setCurrentTime() throws Exception {
-        spy(System.class);
         doNothing().when(builder).setTime(anyLong());
         assertThat(builder, is(builder.setCurrentTime()));
         verify(builder).setTime(anyLong());
-        verifyStatic(System.class);
-        System.currentTimeMillis();
     }
 
     @Test

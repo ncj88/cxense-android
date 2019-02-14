@@ -1,9 +1,0 @@
-apply plugin: 'jacoco-android'
-
-jacocoAndroidUnitTestReport {
-    csv.enabled false
-    html.enabled true
-    xml.enabled true
-}
-
-check.dependsOn 'jacocoTestReport'

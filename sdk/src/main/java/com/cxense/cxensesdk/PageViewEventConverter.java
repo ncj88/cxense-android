@@ -92,8 +92,8 @@ public class PageViewEventConverter extends EventConverter<PageViewEvent> {
         Map<String, String> result = new HashMap<>();
         int i = 0;
         for (ExternalUserId userId : event.getExternalUserIds()) {
-            result.put("eit" + i, userId.key);
-            result.put("eid" + i, userId.value);
+            result.put(EXTERNAL_USER_KEY + i, userId.key);
+            result.put(EXTERNAL_USER_VALUE + i, userId.value);
         }
         if (configuration.isAutoMetaInfoTrackingEnabled()) {
             // automatic app meta gathering

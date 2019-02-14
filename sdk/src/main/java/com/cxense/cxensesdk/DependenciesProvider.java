@@ -93,7 +93,7 @@ public final class DependenciesProvider {
         cxenseSdk = new CxenseSdk(executor, cxenseConfiguration, advertisingIdProvider, userProvider, apiInstance, errorParser, mapper, eventRepository, eventsSendTask);
     }
 
-    public static void init(Context context) {
+    static void init(Context context) {
         instance = new DependenciesProvider(context);
     }
 
