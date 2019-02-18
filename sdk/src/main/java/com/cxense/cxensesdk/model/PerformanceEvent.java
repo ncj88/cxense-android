@@ -7,10 +7,12 @@ import com.cxense.cxensesdk.Preconditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -56,10 +58,11 @@ public final class PerformanceEvent extends Event {
 
     private PerformanceEvent(Builder builder, List<String> consentOptions) {
         super(builder.eventId);
+        rnd = String.format(Locale.US, "%d%d", Calendar.getInstance().getTimeInMillis(), (int) (Math.random() * 10E8));
+
         time = builder.time;
         identities = Collections.unmodifiableList(builder.identities);
         prnd = builder.prnd;
-        rnd = builder.rnd;
         siteId = builder.siteId;
         origin = builder.origin;
         type = builder.type;
@@ -167,7 +170,6 @@ public final class PerformanceEvent extends Event {
         private Long time;
         private List<UserIdentity> identities;
         private String prnd;
-        private String rnd;
         private String siteId;
         private String origin;
         private String type;
@@ -267,18 +269,6 @@ public final class PerformanceEvent extends Event {
          */
         public Builder setPrnd(String prnd) {
             this.prnd = prnd;
-            return this;
-        }
-
-        /**
-         * Sets an alternative specification for eventId.
-         * Multiple events on the same page view must have distinct rnd values.
-         *
-         * @param rnd A value uniquely identifying the action.
-         * @return Builder instance
-         */
-        public Builder setRnd(String rnd) {
-            this.rnd = rnd;
             return this;
         }
 

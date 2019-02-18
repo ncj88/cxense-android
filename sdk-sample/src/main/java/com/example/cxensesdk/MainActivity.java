@@ -235,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements MainAdapter.ItemC
                         new CustomParameter("cxd-interests", "TEST"),
                         new CustomParameter("cxd-test", "TEST")
                 ));
-        cxenseSdk.pushEvents(builder.setRnd("123").build(), builder.setRnd("12345").build());
+        cxenseSdk.pushEvents(builder.build(), builder.build());
     }
 
 }

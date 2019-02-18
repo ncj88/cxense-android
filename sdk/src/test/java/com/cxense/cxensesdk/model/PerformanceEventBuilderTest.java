@@ -102,13 +102,6 @@ public class PerformanceEventBuilderTest extends BaseTest {
     }
 
     @Test
-    public void setRnd() throws Exception {
-        String rnd = "rnd";
-        assertThat(builder, is(builder.setRnd(rnd)));
-        assertEquals(rnd, Whitebox.getInternalState(builder, "rnd"));
-    }
-
-    @Test
     public void setSiteId() throws Exception {
         String siteId = "siteId";
         assertThat(builder, is(builder.setSiteId(siteId)));
