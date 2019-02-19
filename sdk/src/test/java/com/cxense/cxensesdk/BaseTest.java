@@ -7,6 +7,7 @@ import android.webkit.URLUtil;
 
 import org.junit.Before;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -20,11 +21,9 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-19).
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({CxenseSdk.class, TextUtils.class, Log.class, URLUtil.class})
+@PrepareForTest({TextUtils.class, Log.class, URLUtil.class})
+@PowerMockIgnore("javax.net.ssl.*")
 public abstract class BaseTest {
-    protected static final String APPNAME = "NAME";
-    protected static final String APPVERSION = "1.0";
-    protected CxenseSdk cxense;
     protected Context context;
 
     // Extracted from Android URLUtil code start
@@ -53,17 +52,9 @@ public abstract class BaseTest {
         when(context.getApplicationContext()).thenReturn(context);
         mockStatic(TextUtils.class, Log.class, URLUtil.class);
         when(URLUtil.isNetworkUrl(anyString())).thenAnswer(invocation -> isNetworkUrl(invocation.getArgument(0)));
-        initCxenseSdk();
         when(TextUtils.isEmpty(any())).thenAnswer(invocation -> {
             CharSequence arg = invocation.getArgument(0);
             return arg == null || arg.length() == 0;
         });
-    }
-
-    protected void initCxenseSdk() throws Exception {
-        mockStatic(CxenseSdk.class);
-        cxense = mock(CxenseSdk.class);
-        when(CxenseSdk.getInstance()).thenReturn(cxense);
-        when(cxense.packObject(any())).thenReturn("{}");
     }
 }

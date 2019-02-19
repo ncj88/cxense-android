@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import com.cxense.cxensesdk.CxenseSdk;
 import com.cxense.cxensesdk.EventStatus;
-import com.cxense.cxensesdk.PageViewEvent;
+import com.cxense.cxensesdk.model.PageViewEvent;
 
 import java.util.ArrayList;
 import java.util.List;

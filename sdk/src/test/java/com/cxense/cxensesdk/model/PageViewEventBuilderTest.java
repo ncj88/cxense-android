@@ -1,6 +1,11 @@
-package com.cxense.cxensesdk;
+package com.cxense.cxensesdk.model;
 
 import android.location.Location;
+
+import com.cxense.cxensesdk.ArrayFixedSizeQueue;
+import com.cxense.cxensesdk.BaseTest;
+import com.cxense.cxensesdk.CxenseConfiguration;
+import com.cxense.cxensesdk.UserProvider;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,12 +20,10 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-31).
@@ -34,10 +37,8 @@ public class PageViewEventBuilderTest extends BaseTest {
     public void setUp() throws Exception {
         super.setUp();
         event = mock(PageViewEvent.class);
-        CxenseConfiguration configuration = spy(new CxenseConfiguration());
-        when(cxense.getConfiguration()).thenReturn(configuration);
-        builder = new PageViewEvent.Builder("siteId");
-        whenNew(PageViewEvent.class).withAnyArguments().thenReturn(event);
+        builder = new PageViewEvent.Builder(mock(UserProvider.class));
+//        whenNew(PageViewEvent.class).withAnyArguments().thenReturn(event);
     }
 
     @Test
@@ -220,14 +221,14 @@ public class PageViewEventBuilderTest extends BaseTest {
 
     @Test
     public void build() throws Exception {
-        Whitebox.setInternalState(builder, "location", "http://test.com/page_location");
-        assertThat(event, is(builder.build()));
+        builder.setLocation("http://test.com/page_location");
+        assertNotNull(builder.build());
     }
 
     @Test
     public void buildUrlLess() throws Exception {
-        Whitebox.setInternalState(builder, "contentId", "location");
-        assertThat(event, is(builder.build()));
+        builder.setContentId("location");
+        assertNotNull(builder.build());
     }
 
     @Test(expected = IllegalStateException.class)

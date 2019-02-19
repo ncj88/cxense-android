@@ -1,23 +1,18 @@
-package com.cxense.cxensesdk;
+package com.cxense.cxensesdk.model;
 
 import android.support.annotation.NonNull;
-import android.text.TextUtils;
-import android.util.Pair;
 
-import com.cxense.cxensesdk.db.EventRecord;
-import com.cxense.cxensesdk.model.CustomParameter;
-import com.cxense.cxensesdk.model.UserIdentity;
+import com.cxense.cxensesdk.DependenciesProvider;
+import com.cxense.cxensesdk.Preconditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,15 +22,15 @@ import java.util.concurrent.TimeUnit;
  */
 
 public final class PerformanceEvent extends Event {
-    static final String TIME = "time";
-    static final String USER_IDS = "userIds";
-    static final String PRND = "prnd";
-    static final String RND = "rnd";
-    static final String SITE_ID = "siteId";
-    static final String ORIGIN = "origin";
-    static final String TYPE = "type";
-    static final String SEGMENT_IDS = "segmentIds";
-    static final String CUSTOM_PARAMETERS = "customParameters";
+    public static final String TIME = "time";
+    public static final String USER_IDS = "userIds";
+    public static final String PRND = "prnd";
+    public static final String RND = "rnd";
+    public static final String SITE_ID = "siteId";
+    public static final String ORIGIN = "origin";
+    public static final String TYPE = "type";
+    public static final String SEGMENT_IDS = "segmentIds";
+    public static final String CUSTOM_PARAMETERS = "customParameters";
     @JsonProperty(TIME)
     private Long time;
     @JsonProperty(USER_IDS)
@@ -61,68 +56,19 @@ public final class PerformanceEvent extends Event {
         super(null);
     }
 
-    private PerformanceEvent(Builder builder) {
+    private PerformanceEvent(Builder builder, List<String> consentOptions) {
         super(builder.eventId);
+        rnd = String.format(Locale.US, "%d%d", Calendar.getInstance().getTimeInMillis(), (int) (Math.random() * 10E8));
+
         time = builder.time;
         identities = Collections.unmodifiableList(builder.identities);
         prnd = builder.prnd;
-        rnd = builder.rnd;
         siteId = builder.siteId;
         origin = builder.origin;
         type = builder.type;
         segments = Collections.unmodifiableList(builder.segments);
         customParameters = Collections.unmodifiableList(builder.customParameters);
-        consentOptions = CxenseSdk.getInstance().getConsentOptionsValues();
-    }
-
-    @Override
-    public EventRecord toEventRecord() throws JsonProcessingException {
-        EventRecord record = new EventRecord();
-        record.customId = eventId;
-        record.data = CxenseSdk.getInstance().packObject(this);
-        // event time in seconds, but timestamp in milliseconds
-        record.timestamp = time != null ? TimeUnit.SECONDS.toMillis(time) : System.currentTimeMillis();
-        record.ckp = prnd;
-        record.rnd = rnd;
-        record.eventType = type;
-        return record;
-    }
-
-    private <T> Pair<String, String> convertInnerObject(String objectName, T obj, String nameKey, String valueKey,
-                                                        Function<T, String> getName, Function<T, String> getValue) {
-        List<String> innerData = new ArrayList<>();
-        innerData.add(objectName);
-        innerData.add(String.format(Locale.getDefault(), "%s:%s", nameKey, getName.apply(obj)));
-        innerData.add(valueKey);
-        String key = TextUtils.join("/", innerData);
-        return new Pair<>(key, getValue.apply(obj));
-    }
-
-    @Override
-    Map<String, String> toQueryMap() {
-        Map<String, String> result = new HashMap<>();
-        if (time != null)
-            result.put(TIME, "" + TimeUnit.SECONDS.toMillis(time));
-        result.put(PRND, escapeString(prnd));
-        result.put(RND, escapeString(rnd));
-        result.put(SITE_ID, escapeString(siteId));
-        result.put(ORIGIN, escapeString(origin));
-        result.put(TYPE, escapeString(type));
-        for (CustomParameter cp : customParameters) {
-            Pair<String, String> pair = convertInnerObject(CUSTOM_PARAMETERS, cp, CustomParameter.GROUP,
-                    CustomParameter.ITEM, CustomParameter::getName, CustomParameter::getItem);
-            result.put(pair.first, pair.second);
-        }
-        for (UserIdentity uid : identities) {
-            Pair<String, String> pair = convertInnerObject(USER_IDS, uid, UserIdentity.TYPE, UserIdentity.ID,
-                    UserIdentity::getType, UserIdentity::getId);
-            result.put(pair.first, pair.second);
-        }
-        if (segments != null && !segments.isEmpty())
-            result.put(SEGMENT_IDS, TextUtils.join(",", segments));
-        if (!consentOptions.isEmpty())
-            result.put("con", TextUtils.join(",", consentOptions));
-        return result;
+        this.consentOptions = consentOptions;
     }
 
     /**
@@ -224,7 +170,6 @@ public final class PerformanceEvent extends Event {
         private Long time;
         private List<UserIdentity> identities;
         private String prnd;
-        private String rnd;
         private String siteId;
         private String origin;
         private String type;
@@ -328,18 +273,6 @@ public final class PerformanceEvent extends Event {
         }
 
         /**
-         * Sets an alternative specification for eventId.
-         * Multiple events on the same page view must have distinct rnd values.
-         *
-         * @param rnd A value uniquely identifying the action.
-         * @return Builder instance
-         */
-        public Builder setRnd(String rnd) {
-            this.rnd = rnd;
-            return this;
-        }
-
-        /**
          * Sets the analytics site identifier to be associated with the events.
          *
          * @param siteId site identifier
@@ -415,7 +348,7 @@ public final class PerformanceEvent extends Event {
          * @return PerformanceEvent instance
          */
         public PerformanceEvent build() {
-            return new PerformanceEvent(this);
+            return new PerformanceEvent(this, DependenciesProvider.getInstance().getCxenseConfiguration().getConsentOptionsValues());
         }
     }
 }

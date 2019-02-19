@@ -49,7 +49,7 @@ public class CxSdkInitProvider extends ContentProvider {
      * @param context {@code Context} instance from {@code Activity}/{@code ContentProvider}/etc.
      */
     protected void initCxense(Context context) {
-        CxenseSdk.init(context);
+        DependenciesProvider.init(context);
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk;
 
 import com.cxense.cxensesdk.model.CustomParameter;
+import com.cxense.cxensesdk.model.PerformanceEvent;
 import com.cxense.cxensesdk.model.UserIdentity;
 
 import org.junit.Before;
@@ -16,10 +17,7 @@ import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.spy;
 
 /**
@@ -32,6 +30,7 @@ public class PerformanceEventTest extends BaseTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        DependenciesProvider.init(context);
         event = spy(new PerformanceEvent.Builder(new ArrayList<>(), "siteId", "xyz-origin", "type").build());
     }
 
@@ -96,12 +95,6 @@ public class PerformanceEventTest extends BaseTest {
         List<CustomParameter> customParameters = new ArrayList<>();
         Whitebox.setInternalState(event, "customParameters", customParameters);
         assertThat(customParameters, is(event.getCustomParameters()));
-    }
-
-    @Test
-    public void toEventRecord() throws Exception {
-        assertNotNull(event.toEventRecord());
-        verify(cxense).packObject(any());
     }
 
 }

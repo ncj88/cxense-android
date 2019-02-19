@@ -44,9 +44,9 @@ public class WidgetContextBuilderTest {
 
     @Test
     public void setPageClass() throws Exception {
-        String pageClass = "pageClass";
-        assertThat(builder, is(builder.setPageClass(pageClass)));
-        assertEquals(pageClass, Whitebox.getInternalState(builder, "pageClass"));
+        String pageClass = "pageclass";
+        assertThat(builder, is(builder.setPageclass(pageClass)));
+        assertEquals(pageClass, Whitebox.getInternalState(builder, "pageclass"));
     }
 
     @Test

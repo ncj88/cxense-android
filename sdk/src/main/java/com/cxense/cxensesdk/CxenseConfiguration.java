@@ -1,13 +1,14 @@
 package com.cxense.cxensesdk;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.support.annotation.NonNull;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -18,60 +19,29 @@ import java.util.concurrent.TimeUnit;
 
 public final class CxenseConfiguration {
     static final long DISPATCH_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(30);
-    private String username;
-    private String apiKey;
     private boolean isAutoMetaInfoTrackingEnabled = true;
     private long dispatchPeriod = CxenseConstants.DEFAULT_DISPATCH_PERIOD;
-    private NetworkRestriction networkRestriction = NetworkRestriction.NONE;
+    private NetworkStatus minimumNetworkStatus = NetworkStatus.NONE;
     private DispatchMode dispatchMode = DispatchMode.ONLINE;
     private long outdatePeriod = CxenseConstants.DEFAULT_OUTDATED_PERIOD;
-    private String dmpPushPersistentId;
+    private CredentialsProvider credentialsProvider;
+    private Set<ConsentOption> consentOptions = new HashSet<>();
+    private DispatchPeriodListener dispatchPeriodListener;
 
     CxenseConfiguration() {
     }
 
-    /**
-     * Gets username
-     *
-     * @return username
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public String getUsername() {
-        return username;
+    public CredentialsProvider getCredentialsProvider() {
+        return credentialsProvider;
     }
 
-    /**
-     * Sets username
-     *
-     * @param username username
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void setUsername(@NonNull String username) {
-        Preconditions.checkStringForNullOrEmpty(username, "username");
-        this.username = username;
-        CxenseSdk.getInstance().updateAuth(this.username, this.apiKey);
+    public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+        Preconditions.checkForNull(credentialsProvider, "credentialsProvider");
+        this.credentialsProvider = credentialsProvider;
     }
 
-    /**
-     * Gets Api key
-     *
-     * @return api key
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public String getApiKey() {
-        return apiKey;
-    }
-
-    /**
-     * Sets api key
-     *
-     * @param apiKey api key
-     */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void setApiKey(@NonNull String apiKey) {
-        Preconditions.checkStringForNullOrEmpty(apiKey, "apiKey");
-        this.apiKey = apiKey;
-        CxenseSdk.getInstance().updateAuth(this.username, this.apiKey);
+    void setDispatchPeriodListener(DispatchPeriodListener listener) {
+        dispatchPeriodListener = listener;
     }
 
     /**
@@ -117,24 +87,24 @@ public final class CxenseConfiguration {
     }
 
     /**
-     * Returns the network restriction
+     * Returns the minimum network status for sending events
      *
-     * @return the network restriction
+     * @return the minimum network status
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public NetworkRestriction getNetworkRestriction() {
-        return networkRestriction;
+    public NetworkStatus getMinimumNetworkStatus() {
+        return minimumNetworkStatus;
     }
 
     /**
-     * Set the network restriction which should apply for automatic dispatching
-     * of events. The default value is NetworkRestriction.NONE
+     * Set the minimum network status which should apply for automatic dispatching
+     * of events. The default value is #NetworkStatus.NONE
      *
-     * @param restriction the restriction which should be enforced
+     * @param status the minimum network status which should be used
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void setNetworkRestriction(NetworkRestriction restriction) {
-        networkRestriction = restriction;
+    public void setMinimumNetworkStatus(NetworkStatus status) {
+        minimumNetworkStatus = status;
     }
 
     /**
@@ -161,8 +131,11 @@ public final class CxenseConfiguration {
         if (millis < CxenseConstants.MIN_DISPATCH_PERIOD)
             throw new IllegalArgumentException(String.format(Locale.US, "period must be greater than %d seconds",
                     TimeUnit.MILLISECONDS.toSeconds(CxenseConstants.MIN_DISPATCH_PERIOD)));
-        dispatchPeriod = millis;
-        CxenseSdk.getInstance().initSendTaskSchedule();
+        if (dispatchPeriod != millis) {
+            dispatchPeriod = millis;
+            if (dispatchPeriodListener != null)
+                dispatchPeriodListener.onDispatchPeriodChanged(dispatchPeriod);
+        }
     }
 
     /**
@@ -192,23 +165,49 @@ public final class CxenseConfiguration {
     }
 
     /**
-     * Gets persistent query id for pushing DMP Performance events without authorization
+     * Returns current consent options for user
      *
-     * @return persistent query id
+     * @return current consent options
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public String getDmpPushPersistentId() {
-        return dmpPushPersistentId;
+    public Set<ConsentOption> getConsentOptions() {
+        return Collections.unmodifiableSet(consentOptions);
     }
 
     /**
-     * Sets persistent query id for pushing DMP Performance events without authorization
+     * Set consent options for user data
      *
-     * @param persistentId the persistent query id
+     * @param options new options
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void setDmpPushPersistentId(String persistentId) {
-        this.dmpPushPersistentId = persistentId;
+    public void setConsentOptions(ConsentOption... options) {
+        consentOptions = new HashSet<>(Arrays.asList(options));
+    }
+
+    /**
+     * Returns current consent options for user as string values
+     *
+     * @return current consent options string values
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public List<String> getConsentOptionsValues() {
+        List<String> values = new ArrayList<>();
+        for (ConsentOption option : consentOptions) {
+            values.add(option.getValue());
+        }
+        return values;
+    }
+
+    /**
+     * Returns current consent options for user as comma-delimited string
+     *
+     * @return comma-delimited string with current consent options
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public String getConsentOptionsAsString() {
+        if (consentOptions.isEmpty())
+            return null;
+        return TextUtils.join(",", getConsentOptionsValues());
     }
 
     /**
@@ -216,48 +215,8 @@ public final class CxenseConfiguration {
      *
      * @return True, if username and api key filled
      */
-    boolean isDmpAuthorized() {
-        return !TextUtils.isEmpty(username) && !TextUtils.isEmpty(apiKey);
-    }
-
-    /**
-     * Check if the installed network restriction applies to the current connection.
-     *
-     * @return true if the given restriction is limited by the connection
-     */
-    boolean isRestricted(Context context) {
-        ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        final NetworkInfo activeNetworkInfo = manager.getActiveNetworkInfo();
-
-        if (activeNetworkInfo == null || !activeNetworkInfo.isConnected()) {
-            return true;
-        }
-
-        if (networkRestriction == NetworkRestriction.NONE) {
-            return false;
-        }
-
-        final int type = activeNetworkInfo.getType();
-        if (type == ConnectivityManager.TYPE_WIFI) {
-            return false; // All calls are allowed on Wi-Fi
-        }
-
-        TelephonyManager telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        switch (telephonyManager.getNetworkType()) {
-            case TelephonyManager.NETWORK_TYPE_GPRS:
-                return (networkRestriction == NetworkRestriction.MOBILE
-                        || networkRestriction == NetworkRestriction.WIFI);
-            case TelephonyManager.NETWORK_TYPE_HSDPA:
-            case TelephonyManager.NETWORK_TYPE_HSPA:
-            case TelephonyManager.NETWORK_TYPE_HSPAP:
-            case TelephonyManager.NETWORK_TYPE_HSUPA:
-            case TelephonyManager.NETWORK_TYPE_LTE:
-                // 3G or better
-                return networkRestriction == NetworkRestriction.WIFI; // Wi-Fi would be limited
-            default:
-                // Worse than GPRS, probably EDGE or similar so only None applies
-                return true;
-        }
+    boolean isApiCredentialsProvided() {
+        return !TextUtils.isEmpty(credentialsProvider.getUsername()) && !TextUtils.isEmpty(credentialsProvider.getApiKey());
     }
 
     /**
@@ -275,25 +234,28 @@ public final class CxenseConfiguration {
     }
 
     /**
-     * Restriction in network access. Restrictions are in rising order of connection
-     * capability and are treated as a <i>minimum</i> requirement.
+     * Network statuses ordered by connection capability.
      */
-    public enum NetworkRestriction {
+    public enum NetworkStatus {
         /**
-         * No restriction applies.
+         * No network.
          */
         NONE,
         /**
-         * GPRS connection or better is required.
+         * GPRS connection.
          */
         GPRS,
         /**
-         * A mobile connection (3G/4G/LTE) or better is required.
+         * A mobile connection (3G/4G/LTE).
          */
         MOBILE,
         /**
-         * A Wi-Fi connection is required.
+         * A Wi-Fi connection.
          */
         WIFI
+    }
+
+    interface DispatchPeriodListener {
+        void onDispatchPeriodChanged(long millis);
     }
 }

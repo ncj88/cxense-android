@@ -9,7 +9,6 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 
 import java.security.InvalidKeyException;
 import java.util.Calendar;
@@ -37,13 +36,14 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-14).
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({CxenseAuthenticator.class, Route.class, Response.class})
+@PrepareForTest({CxenseAuthenticator.class, CxenseConfiguration.class, Route.class, Response.class})
 @PowerMockIgnore({"javax.crypto.*"})
 public class CxenseAuthenticatorTest {
     private static final String HEADER = "username=testUser date=1970-01-01T04:00:00.001+0400 " +
             "hmac-sha256-hex=C266EF8D0CF01BE4ADA9DC6E4D4DBB9870DE3BD3A20BB3E060326D691597382A";
     private static final TimeZone TIME_ZONE = TimeZone.getTimeZone("UTC");
     private Date date;
+    private CredentialsProvider credentialsProvider;
     private CxenseAuthenticator authenticator;
     private Route route;
     private Response response;
@@ -55,20 +55,15 @@ public class CxenseAuthenticatorTest {
         response = mock(Response.class);
         Request request = new Request.Builder().url("http://example.com/").build();
         when(response.request()).thenReturn(request);
-        authenticator = spy(new CxenseAuthenticator());
+        credentialsProvider = mock(CredentialsProvider.class, invocation -> "");
+        CxenseConfiguration configuration = mock(CxenseConfiguration.class);
+        when(configuration.getCredentialsProvider()).thenReturn(credentialsProvider);
+        authenticator = spy(new CxenseAuthenticator(configuration));
         Calendar calendar = Calendar.getInstance(TIME_ZONE);
         calendar.setTimeInMillis(1);
         CxenseAuthenticator.DATE_FORMAT.setTimeZone(TIME_ZONE);
         date = calendar.getTime();
         whenNew(Date.class).withNoArguments().thenReturn(date);
-    }
-
-    @Test
-    public void updateCredentials() throws Exception {
-        String username = "user", apiKey = "key";
-        authenticator.updateCredentials(username, apiKey);
-        assertEquals(username, Whitebox.getInternalState(authenticator, "username"));
-        assertEquals(apiKey, Whitebox.getInternalState(authenticator, "apiKey"));
     }
 
     @Test

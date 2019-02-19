@@ -1,11 +1,11 @@
-package com.cxense.cxensesdk;
+package com.cxense.cxensesdk.model;
 
-import com.cxense.cxensesdk.model.KeyValueParameter;
+import com.cxense.cxensesdk.Preconditions;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
-final class ExternalUserId extends KeyValueParameter<String, String> {
+public final class ExternalUserId extends KeyValueParameter<String, String> {
     /**
      * Initializes External User Id description.
      *

@@ -1,7 +1,6 @@
-package com.cxense.cxensesdk;
+package com.cxense.cxensesdk.model;
 
-import com.cxense.cxensesdk.model.CustomParameter;
-import com.cxense.cxensesdk.model.UserIdentity;
+import com.cxense.cxensesdk.BaseTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +21,6 @@ import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.spy;
-import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 /**
@@ -38,6 +36,12 @@ public class PerformanceEventBuilderTest extends BaseTest {
         PerformanceEvent event = mock(PerformanceEvent.class);
         builder = spy(new PerformanceEvent.Builder(new ArrayList<>(), "siteId", "xyz-origin", "type"));
         whenNew(PerformanceEvent.class).withAnyArguments().thenReturn(event);
+    }
+
+    @Test
+    public void setEventId() {
+        builder.setEventId("id");
+        assertEquals("id", Whitebox.getInternalState(builder, "eventId"));
     }
 
     @Test
@@ -57,12 +61,9 @@ public class PerformanceEventBuilderTest extends BaseTest {
 
     @Test
     public void setCurrentTime() throws Exception {
-        spy(System.class);
         doNothing().when(builder).setTime(anyLong());
         assertThat(builder, is(builder.setCurrentTime()));
         verify(builder).setTime(anyLong());
-        verifyStatic();
-        System.currentTimeMillis();
     }
 
     @Test
@@ -98,13 +99,6 @@ public class PerformanceEventBuilderTest extends BaseTest {
         String prnd = "prnd";
         assertThat(builder, is(builder.setPrnd(prnd)));
         assertEquals(prnd, Whitebox.getInternalState(builder, "prnd"));
-    }
-
-    @Test
-    public void setRnd() throws Exception {
-        String rnd = "rnd";
-        assertThat(builder, is(builder.setRnd(rnd)));
-        assertEquals(rnd, Whitebox.getInternalState(builder, "rnd"));
     }
 
     @Test
