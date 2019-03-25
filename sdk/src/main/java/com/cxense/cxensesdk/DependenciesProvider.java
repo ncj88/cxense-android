@@ -2,10 +2,11 @@ package com.cxense.cxensesdk;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+
+import androidx.annotation.NonNull;
 
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.model.EventRepository;

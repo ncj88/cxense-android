@@ -1,7 +1,8 @@
 package com.cxense.cxensesdk;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.exceptions.CxenseException;
 import com.cxense.cxensesdk.model.BaseUserIdentity;
@@ -145,8 +146,7 @@ public final class CxenseSdk {
      * @param <T>      Successful response type.
      * @return Callback instance
      */
-    @SuppressWarnings("WeakerAccess") // Internal API.
-    protected <T> Callback<T> transform(final LoadCallback<T> callback) {
+    <T> Callback<T> transform(final LoadCallback<T> callback) {
         return new ApiCallback<>(callback, errorParser);
     }
 
@@ -159,8 +159,7 @@ public final class CxenseSdk {
      * @param <U>      Callback type.
      * @return Callback instance
      */
-    @SuppressWarnings("WeakerAccess") // Internal API.
-    protected <T, U> Callback<T> transform(final LoadCallback<U> callback, final Function<T, U> function) {
+    <T, U> Callback<T> transform(final LoadCallback<U> callback, final Function<T, U> function) {
         return transform(new LoadCallback<T>() {
             @Override
             public void onSuccess(T data) {

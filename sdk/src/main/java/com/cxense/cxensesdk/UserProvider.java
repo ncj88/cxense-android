@@ -1,6 +1,6 @@
 package com.cxense.cxensesdk;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.cxense.cxensesdk.model.ContentUser;
 

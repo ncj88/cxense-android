@@ -2,14 +2,14 @@ package com.example.cxensesdk;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.cxense.cxensesdk.CredentialsProvider;
 import com.cxense.cxensesdk.CxenseConfiguration;
@@ -24,6 +24,7 @@ import com.cxense.cxensesdk.model.User;
 import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
 import com.cxense.cxensesdk.model.UserSegmentRequest;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Arrays;

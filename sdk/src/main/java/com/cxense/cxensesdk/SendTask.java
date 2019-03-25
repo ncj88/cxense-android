@@ -1,9 +1,10 @@
 package com.cxense.cxensesdk;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.EventDataRequest;
