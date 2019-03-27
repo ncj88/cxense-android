@@ -14,7 +14,7 @@ import java.util.Locale;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public final class ExternalItem {
-    private static final String REGEXP = "^[a-zA-Z\\d-]{1,%d}$";
+    private static final String GROUP_REGEXP = "^[a-zA-Z\\d-]{1,%d}$";
     private static final int GROUP_NAME_MAX_LENGTH = 26;
     private static final int ITEM_NAME_MAX_LENGTH = 100;
     private static final String ERROR_MSG = "'%s' can contains only letters, digits or dash, max length is %d";
@@ -28,10 +28,9 @@ public final class ExternalItem {
 
     ExternalItem(@NonNull String group, @NonNull String item) {
         this();
-        Preconditions.checkStringForRegex(group, "group", String.format(Locale.US, REGEXP,
+        Preconditions.checkStringForRegex(group, "group", String.format(Locale.US, GROUP_REGEXP,
                 GROUP_NAME_MAX_LENGTH), ERROR_MSG, "group", GROUP_NAME_MAX_LENGTH);
-        Preconditions.checkStringForRegex(item, "item", String.format(Locale.US, REGEXP,
-                ITEM_NAME_MAX_LENGTH), ERROR_MSG, "item", ITEM_NAME_MAX_LENGTH);
+        Preconditions.checkStringMaxLength(item, "item", ITEM_NAME_MAX_LENGTH);
         this.group = group;
         this.item = item;
     }
