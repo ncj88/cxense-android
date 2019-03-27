@@ -39,12 +39,3 @@ dependencies {
     implementation(Libs.appcompat)
     implementation(Libs.material)
 }
-
-//dependencies {
-//    implementation project(':sdk')
-//    implementation 'com.android.support:appcompat-v7:27.1.1'
-//    implementation 'com.android.support:recyclerview-v7:27.1.1'
-//    implementation 'com.android.support:design:27.1.1'
-//    implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-//    implementation 'com.android.support:support-vector-drawable:27.1.1'
-//}
