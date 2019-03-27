@@ -1,7 +1,8 @@
 package com.cxense.cxensesdk.model;
 
 import android.location.Location;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
 
 import com.cxense.cxensesdk.ArrayFixedSizeQueue;
 import com.cxense.cxensesdk.DependenciesProvider;

@@ -1,7 +1,8 @@
 package com.cxense.cxensesdk;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.exceptions.CxenseException;
 import com.cxense.cxensesdk.model.BaseUserIdentity;
@@ -28,9 +29,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.ResponseBody;
-import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 
 
 /**
@@ -88,7 +87,7 @@ public final class CxenseSdk {
      *
      * @param item the item that contains the click-url
      */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @Deprecated
     public void trackClick(@NonNull WidgetItem item) {
         trackClick(item.clickUrl);
     }
@@ -98,17 +97,39 @@ public final class CxenseSdk {
      *
      * @param url the click-url
      */
-    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @Deprecated
     public void trackClick(@NonNull String url) {
-        apiInstance.trackUrlClick(url).enqueue(new Callback<Void>() {
+        trackClick(url, new LoadCallback() {
             @Override
-            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+            public void onSuccess(Object data) {
             }
 
             @Override
-            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable throwable) {
+            public void onError(Throwable throwable) {
             }
         });
+    }
+
+    /**
+     * Tracks an url click for the given item
+     *
+     * @param item     the item that contains the click-url
+     * @param callback callback for checking status
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public void trackClick(@NonNull WidgetItem item, LoadCallback callback) {
+        trackClick(item.clickUrl, callback);
+    }
+
+    /**
+     * Tracks a click for the given click-url
+     *
+     * @param url      the click-url
+     * @param callback callback for checking status
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public void trackClick(@NonNull String url, LoadCallback callback) {
+        apiInstance.trackUrlClick(url).enqueue(transform(callback));
     }
 
     /**
@@ -145,8 +166,7 @@ public final class CxenseSdk {
      * @param <T>      Successful response type.
      * @return Callback instance
      */
-    @SuppressWarnings("WeakerAccess") // Internal API.
-    protected <T> Callback<T> transform(final LoadCallback<T> callback) {
+    <T> Callback<T> transform(final LoadCallback<T> callback) {
         return new ApiCallback<>(callback, errorParser);
     }
 
@@ -159,8 +179,7 @@ public final class CxenseSdk {
      * @param <U>      Callback type.
      * @return Callback instance
      */
-    @SuppressWarnings("WeakerAccess") // Internal API.
-    protected <T, U> Callback<T> transform(final LoadCallback<U> callback, final Function<T, U> function) {
+    <T, U> Callback<T> transform(final LoadCallback<U> callback, final Function<T, U> function) {
         return transform(new LoadCallback<T>() {
             @Override
             public void onSuccess(T data) {
