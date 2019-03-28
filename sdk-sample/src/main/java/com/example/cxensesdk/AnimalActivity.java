@@ -1,14 +1,15 @@
 package com.example.cxensesdk;
 
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.cxense.cxensesdk.CxenseSdk;
 import com.cxense.cxensesdk.EventStatus;
 import com.cxense.cxensesdk.model.PageViewEvent;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
