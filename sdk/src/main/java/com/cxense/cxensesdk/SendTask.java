@@ -148,6 +148,33 @@ public class SendTask implements Runnable {
             sendCallback.onSend(statuses);
     }
 
+    void sendConversionEvents(@NonNull List<EventRecord> events) {
+        List<EventStatus> statuses = new ArrayList<>();
+        Exception exception = null;
+        try {
+            List<String> data = new ArrayList<>();
+            for (EventRecord record : events) {
+                data.add(record.data);
+            }
+            Response<Void> response = cxenseApi.pushConversionEvents(new EventDataRequest(data)).execute();
+            if (response.isSuccessful()) {
+                for (EventRecord event : events) {
+                    event.isSent = true;
+                    eventRepository.putEventRecordInDatabase(event);
+                }
+            }
+            exception = errorParser.parseError(response);
+        } catch (IOException e) {
+            exception = e;
+        } finally {
+            for (EventRecord event : events) {
+                statuses.add(new EventStatus(event.customId, event.isSent, exception));
+            }
+        }
+        if (sendCallback != null)
+            sendCallback.onSend(statuses);
+    }
+
     @Override
     public void run() {
         try {
@@ -161,6 +188,7 @@ public class SendTask implements Runnable {
                 return;
             sendPageViewEvents(eventRepository.getNotSubmittedPvEvents());
             sendDmpEvents(eventRepository.getNotSubmittedDmpEvents());
+            sendConversionEvents(eventRepository.getNotSubmittedConversionEvents());
 
         } catch (Exception e) {
             Log.e(TAG, "Error at sending data", e);
