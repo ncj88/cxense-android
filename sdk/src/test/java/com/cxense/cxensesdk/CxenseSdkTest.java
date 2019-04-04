@@ -84,22 +84,22 @@ public class CxenseSdkTest extends BaseTest {
 
     @Test
     public void loadWidgetRecommendations() {
-        doNothing().when(cxense).loadWidgetRecommendations(anyString(), any(WidgetContext.class), isNull(), any(LoadCallback.class));
+        doNothing().when(cxense).loadWidgetRecommendations(anyString(), any(WidgetContext.class), isNull(), isNull(), isNull(), any(LoadCallback.class));
         WidgetContext widgetContext = new WidgetContext();
         cxense.loadWidgetRecommendations("id", widgetContext, callback);
-        verify(cxense).loadWidgetRecommendations("id", widgetContext, null, callback);
+        verify(cxense).loadWidgetRecommendations("id", widgetContext, null, null, null, callback);
     }
 
     @Test
     public void loadWidgetRecommendationsNullUser() {
-        cxense.loadWidgetRecommendations("id", new WidgetContext(), null, callback);
+        cxense.loadWidgetRecommendations("id", new WidgetContext(), null, null, null, callback);
         verify(cxense).getDefaultUser();
         verifyApiCalled();
     }
 
     @Test
     public void loadWidgetRecommendationsAllArgs() {
-        cxense.loadWidgetRecommendations("id", new WidgetContext(), mock(ContentUser.class), callback);
+        cxense.loadWidgetRecommendations("id", new WidgetContext(), mock(ContentUser.class), "", "", callback);
         verifyApiCalled();
     }
 
