@@ -12,16 +12,20 @@ public final class WidgetRequest {
     public String widgetId;
     public ContentUser user;
     public WidgetContext context;
+    public String tag;
+    public String prnd;
     public List<String> consent;
 
     public WidgetRequest() {
     }
 
-    public WidgetRequest(String widgetId, WidgetContext widgetContext, ContentUser widgetUser, List<String> consentOptions) {
+    public WidgetRequest(String widgetId, WidgetContext widgetContext, ContentUser widgetUser, final String tag, final String prnd, List<String> consentOptions) {
         this();
         this.widgetId = widgetId;
         user = widgetUser;
         context = widgetContext;
+        this.tag = tag;
+        this.prnd = prnd;
         consent = consentOptions;
     }
 }

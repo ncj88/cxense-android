@@ -53,6 +53,7 @@ public final class CxenseSdk {
     private ScheduledFuture<?> scheduled;
 
     /**
+     *
      */
     CxenseSdk(@NonNull ScheduledExecutorService executor, @NonNull CxenseConfiguration cxenseConfiguration,
               @NonNull AdvertisingIdProvider advertisingIdProvider, UserProvider userProvider, @NonNull CxenseApi cxenseApi,
@@ -141,22 +142,24 @@ public final class CxenseSdk {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void loadWidgetRecommendations(final String widgetId, final WidgetContext widgetContext, final LoadCallback<List<WidgetItem>> listener) {
-        loadWidgetRecommendations(widgetId, widgetContext, null, listener);
+        loadWidgetRecommendations(widgetId, widgetContext, null, null, null, listener);
     }
 
     /**
      * @param widgetId      the widget id
      * @param widgetContext the WidgetContext
      * @param user          custom user
+     * @param tag           Only display results from the branch with the given tag and ignore other conditions.
+     * @param prnd          Identifier for the page view where the result of this call will be displayed.
      * @param listener      listener for returning result
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void loadWidgetRecommendations(final String widgetId, final WidgetContext widgetContext, ContentUser user,
-                                          final LoadCallback<List<WidgetItem>> listener) {
+                                          final String tag, final String prnd, final LoadCallback<List<WidgetItem>> listener) {
         Preconditions.checkStringForNullOrEmpty(widgetId, "widgetId");
         if (user == null)
             user = getDefaultUser();
-        apiInstance.getWidgetData(new WidgetRequest(widgetId, widgetContext, user, configuration.getConsentOptionsValues())).enqueue(transform(listener, data -> data.items));
+        apiInstance.getWidgetData(new WidgetRequest(widgetId, widgetContext, user, tag, prnd, configuration.getConsentOptionsValues())).enqueue(transform(listener, data -> data.items));
     }
 
     /**
