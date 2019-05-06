@@ -12,21 +12,18 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.3.21"
     //Plugins
-    const val buildScanPlugin = "2.2.1"
+    const val buildScanPlugin = "2.3"
     const val versionsPlugin = "0.21.0"
-    const val releasePlugin = "1.10.0"
-    const val androidToolsPlugin = "3.3.2"
+    const val releasePlugin = "1.10.1"
+    const val androidToolsPlugin = "3.4.0"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "1.7.1"
     // Android libraries
-    const val annotations = "28.0.0"
     const val compatLibrary = "1.0.2"
     const val materialLibrary = "1.0.0"
 
     // Third party Libraries
-    const val firebaseDispatcher = "0.8.6"
     const val googlePlayServices = "16.0.0"
     const val retrofit = "2.5.0"
     const val okhttp = "3.12.2"
@@ -34,12 +31,11 @@ object Versions {
     // Test Libraries
     const val junit = "4.12"
     const val testRunner = "1.1.1"
-    const val powermock = "2.0.0"
+    const val powermock = "2.0.2"
     const val hamcrest = "2.1"
 }
 
 object Plugins {
-    const val kotlin = "gradle-plugin"
     const val buildScan = "com.gradle.build-scan"
     const val versions = "com.github.ben-manes.versions"
     const val release = "pl.allegro.tech.build.axion-release"

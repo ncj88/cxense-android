@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk.model;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.DependenciesProvider;
 import com.cxense.cxensesdk.Preconditions;
@@ -35,7 +36,7 @@ public class ConversionEvent extends Event {
     @JsonProperty("productId")
     private String productId;
     @JsonProperty("productPrice")
-    private Integer price;
+    private Double price;
     @JsonProperty("productRenewalFrequency")
     private String renewalFrequency;
     @JsonProperty("funnelStep")
@@ -57,37 +58,44 @@ public class ConversionEvent extends Event {
     }
 
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public String getType() {
+    public @NonNull
+    String getType() {
         return type;
     }
 
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public List<UserIdentity> getIdentities() {
+    public @NonNull
+    List<UserIdentity> getIdentities() {
         return identities;
     }
 
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public String getSiteId() {
+    public @NonNull
+    String getSiteId() {
         return siteId;
     }
 
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public String getProductId() {
+    public @NonNull
+    String getProductId() {
         return productId;
     }
 
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public Integer getPrice() {
+    public @Nullable
+    Double getPrice() {
         return price;
     }
 
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public String getRenewalFrequency() {
+    public @Nullable
+    String getRenewalFrequency() {
         return renewalFrequency;
     }
 
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public String getFunnelStep() {
+    public @NonNull
+    String getFunnelStep() {
         return funnelStep;
     }
 
@@ -96,7 +104,7 @@ public class ConversionEvent extends Event {
         private List<UserIdentity> identities;
         private String siteId;
         private String productId;
-        private Integer price;
+        private Double price;
         private String renewalFrequency;
         private String funnelStep;
 
@@ -114,7 +122,7 @@ public class ConversionEvent extends Event {
          * @param eventId event id
          * @return Builder instance
          */
-        public Builder setEventId(String eventId) {
+        public Builder setEventId(@Nullable String eventId) {
             this.eventId = eventId;
             return this;
         }
@@ -151,13 +159,13 @@ public class ConversionEvent extends Event {
         }
 
         @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-        public Builder setPrice(Integer price) {
+        public Builder setPrice(@Nullable Double price) {
             this.price = price;
             return this;
         }
 
         @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-        public Builder setRenewalFrequency(String renewalFrequency) {
+        public Builder setRenewalFrequency(@Nullable String renewalFrequency) {
             Preconditions.checkStringMaxLength(renewalFrequency, "renewalFrequency", MAX_LENGTH);
             this.renewalFrequency = renewalFrequency;
             return this;
