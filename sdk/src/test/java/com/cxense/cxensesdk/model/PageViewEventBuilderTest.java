@@ -30,15 +30,12 @@ import static org.powermock.api.mockito.PowerMockito.mock;
  */
 @PrepareForTest({PageViewEvent.class, CxenseConfiguration.class})
 public class PageViewEventBuilderTest extends BaseTest {
-    private PageViewEvent event;
     private PageViewEvent.Builder builder;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        event = mock(PageViewEvent.class);
         builder = new PageViewEvent.Builder(mock(UserProvider.class));
-//        whenNew(PageViewEvent.class).withAnyArguments().thenReturn(event);
     }
 
     @Test

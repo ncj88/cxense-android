@@ -64,6 +64,9 @@ public interface CxenseApi {
                                      @Query(PerformanceEvent.SEGMENT_IDS) List<String> segments,
                                      @QueryMap Map<String, String> options);
 
+    @POST("https://comcluster.cxense.com/cce/push?experimental=true")
+    Call<Void> pushConversionEvents(@Body EventDataRequest request);
+
     @POST("public/widget/data")
     Call<WidgetResponse> getWidgetData(@Body WidgetRequest request);
 
