@@ -26,7 +26,7 @@ object Versions {
     // Third party Libraries
     const val googlePlayServices = "16.0.0"
     const val retrofit = "2.5.0"
-    const val okhttp = "3.12.2"
+    const val okhttp = "3.12.3"
 
     // Test Libraries
     const val junit = "4.12"

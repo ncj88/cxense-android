@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -150,25 +151,19 @@ public class SendTask implements Runnable {
 
     void sendConversionEvents(@NonNull List<EventRecord> events) {
         List<EventStatus> statuses = new ArrayList<>();
-        Exception exception = null;
-        try {
-            List<String> data = new ArrayList<>();
-            for (EventRecord record : events) {
-                data.add(record.data);
-            }
-            Response<Void> response = cxenseApi.pushConversionEvents(new EventDataRequest(data)).execute();
-            if (response.isSuccessful()) {
-                for (EventRecord event : events) {
+        for (EventRecord event : events) {
+            EventStatus status = null;
+            try {
+                Response<Void> response = cxenseApi.pushConversionEvents(new EventDataRequest(Collections.singletonList(event.data))).execute();
+                if (response.isSuccessful()) {
                     event.isSent = true;
-                    eventRepository.putEventRecordInDatabase(event);
                 }
-            }
-            exception = errorParser.parseError(response);
-        } catch (IOException e) {
-            exception = e;
-        } finally {
-            for (EventRecord event : events) {
-                statuses.add(new EventStatus(event.customId, event.isSent, exception));
+                eventRepository.putEventRecordInDatabase(event);
+                status = createStatus(event, errorParser.parseError(response));
+            } catch (IOException e) {
+                status = createStatus(event, e);
+            } finally {
+                statuses.add(status);
             }
         }
         if (sendCallback != null)

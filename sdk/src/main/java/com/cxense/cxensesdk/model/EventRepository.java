@@ -40,7 +40,7 @@ public class EventRepository {
                 for (EventConverter converter : eventConverters) {
                     if (converter.canConvert(event)) {
                         putEventRecordInDatabase(converter.toEventRecord(event));
-                        return;
+                        break;
                     }
                 }
             } catch (JsonProcessingException e) {

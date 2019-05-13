@@ -68,6 +68,7 @@ public class SendTaskTest extends BaseTest {
         doReturn(true).when(configuration).isApiCredentialsProvided();
         when(api.pushEvents(any())).thenReturn(call);
         when(api.trackInsightEvent(any())).thenReturn(call);
+        when(api.pushConversionEvents(any())).thenReturn(call);
     }
 
     @Test
@@ -103,6 +104,19 @@ public class SendTaskTest extends BaseTest {
         when(call.execute()).thenReturn(Response.success(body));
         when(mapper.readValue((String) any(), any(TypeReference.class))).thenReturn(Collections.<String, String>emptyMap());
         sendTask.sendPageViewEvents(Arrays.asList(record, new EventRecord()));
+        verify(eventRepository, times(2)).putEventRecordInDatabase(any());
+        verify(sendCallback).onSend(any());
+    }
+
+    @Test
+    public void sendConversionEvents() throws Exception {
+        EventRecord record = new EventRecord();
+        record.data = "{}";
+        ResponseBody body = mock(ResponseBody.class);
+        when(body.source()).thenReturn(mock(BufferedSource.class));
+        when(body.byteStream()).thenReturn(new BufferedInputStream(new ByteArrayInputStream(new byte[2])));
+        when(call.execute()).thenReturn(Response.success(body));
+        sendTask.sendConversionEvents(Arrays.asList(record, new EventRecord()));
         verify(eventRepository, times(2)).putEventRecordInDatabase(any());
         verify(sendCallback).onSend(any());
     }
