@@ -2,15 +2,20 @@ package com.example.cxensesdk;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.cxense.cxensesdk.CxenseSdk;
 import com.cxense.cxensesdk.EventStatus;
+import com.cxense.cxensesdk.LoadCallback;
 import com.cxense.cxensesdk.model.ConversionEvent;
+import com.cxense.cxensesdk.model.Impression;
 import com.cxense.cxensesdk.model.PageViewEvent;
 import com.cxense.cxensesdk.model.UserIdentity;
+import com.cxense.cxensesdk.model.WidgetContext;
+import com.cxense.cxensesdk.model.WidgetItem;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
@@ -63,5 +68,31 @@ public class AnimalActivity extends AppCompatActivity {
                         .setRenewalFrequency("1wC")
                         .build()
         );
+        CxenseSdk.getInstance().loadWidgetRecommendations("ffb1d2523b582f5f649df351d37928d2c108e715", new WidgetContext.Builder("https://cxense.com").build(), new LoadCallback<List<WidgetItem>>() {
+            @Override
+            public void onSuccess(List<WidgetItem> data) {
+                CxenseSdk.getInstance().reportWidgetVisibilities(
+                        new LoadCallback() {
+                            @Override
+                            public void onSuccess(Object data) {
+                                Log.d("WVR", "Success");
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                Log.e("WVR", throwable.getMessage(), throwable);
+                            }
+                        },
+                        new Impression(data.get(0).clickUrl, 1),
+                        new Impression(data.get(1).clickUrl, 2)
+                );
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e("WVR", throwable.getMessage(), throwable);
+            }
+        });
+
     }
 }

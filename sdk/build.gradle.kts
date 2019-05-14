@@ -13,10 +13,11 @@ android {
     defaultConfig {
         minSdkVersion(Config.androidMinSdk)
         targetSdkVersion(Config.androidTargetSdk)
+        versionName = rootProject.version.toString()
 
         buildConfigField("String", "SDK_NAME", """"cxense"""")
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
-        buildConfigField("String", "AUTHORITY", """"$applicationId.${Config.authority}"""")
+        buildConfigField("String", "AUTHORITY", """APPLICATION_ID + ".${Config.authority}"""")
         buildConfigField("String", "CX_USER", """"${project.property("CX_USER") ?: ""}"""")
         buildConfigField("String", "CX_KEY", """"${project.property("CX_KEY") ?: ""}"""")
         buildConfigField("String", "CX_SITE_ID", """"${project.property("CX_SITE_ID") ?: ""}"""")
