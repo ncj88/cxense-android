@@ -10,6 +10,7 @@ import com.cxense.cxensesdk.model.ContentUser;
 import com.cxense.cxensesdk.model.CxenseUserIdentity;
 import com.cxense.cxensesdk.model.Event;
 import com.cxense.cxensesdk.model.EventRepository;
+import com.cxense.cxensesdk.model.Impression;
 import com.cxense.cxensesdk.model.User;
 import com.cxense.cxensesdk.model.UserDataRequest;
 import com.cxense.cxensesdk.model.UserExternalData;
@@ -18,9 +19,11 @@ import com.cxense.cxensesdk.model.UserSegmentRequest;
 import com.cxense.cxensesdk.model.WidgetContext;
 import com.cxense.cxensesdk.model.WidgetItem;
 import com.cxense.cxensesdk.model.WidgetRequest;
+import com.cxense.cxensesdk.model.WidgetVisibilityReport;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -146,6 +149,8 @@ public final class CxenseSdk {
     }
 
     /**
+     * Load widget recommendations
+     *
      * @param widgetId      the widget id
      * @param widgetContext the WidgetContext
      * @param user          custom user
@@ -160,6 +165,17 @@ public final class CxenseSdk {
         if (user == null)
             user = getDefaultUser();
         apiInstance.getWidgetData(new WidgetRequest(widgetId, widgetContext, user, tag, prnd, configuration.getConsentOptionsValues())).enqueue(transform(listener, data -> data.items));
+    }
+
+    /**
+     * Report visibility of recommendations for a content widget.
+     *
+     * @param impressions The list of seen recommendations (impressions) you'd like to report visibility of.
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public void reportWidgetVisibilities(LoadCallback callback, @NonNull Impression... impressions) {
+        Preconditions.checkForNull(impressions, "impressions");
+        apiInstance.reportWidgetVisibility(new WidgetVisibilityReport(Arrays.asList(impressions))).enqueue(transform(callback));
     }
 
     /**

@@ -3,6 +3,7 @@ package com.cxense.cxensesdk;
 import com.cxense.cxensesdk.model.ContentUser;
 import com.cxense.cxensesdk.model.Event;
 import com.cxense.cxensesdk.model.EventRepository;
+import com.cxense.cxensesdk.model.Impression;
 import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
 import com.cxense.cxensesdk.model.WidgetContext;
@@ -100,6 +101,12 @@ public class CxenseSdkTest extends BaseTest {
     @Test
     public void loadWidgetRecommendationsAllArgs() {
         cxense.loadWidgetRecommendations("id", new WidgetContext(), mock(ContentUser.class), "", "", callback);
+        verifyApiCalled();
+    }
+
+    @Test
+    public void reportWidgetVisibilities() {
+        cxense.reportWidgetVisibilities(callback, new Impression("clickUrl", 1));
         verifyApiCalled();
     }
 
