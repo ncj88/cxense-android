@@ -56,6 +56,7 @@ public final class DependenciesProvider {
     private final DispatchEventsCallback eventsSendCallback;
     private final PageViewEventConverter pageViewEventConverter;
     private final PerformanceEventConverter performanceEventConverter;
+    private final ConversionEventConverter conversionEventConverter;
     private final SendTask eventsSendTask;
     private final CxenseSdk cxenseSdk;
 
@@ -75,13 +76,14 @@ public final class DependenciesProvider {
         mapper = buildMapper();
         pageViewEventConverter = new PageViewEventConverter(mapper, cxenseConfiguration, deviceInfoProvider);
         performanceEventConverter = new PerformanceEventConverter(mapper, cxenseConfiguration);
+        conversionEventConverter = new ConversionEventConverter(mapper);
         converterFactory = JacksonConverterFactory.create(mapper);
         retrofit = buildRetrofit(getBaseUrl(), okHttpClient, converterFactory);
         Converter<ResponseBody, ApiError> errorConverter = retrofit.responseBodyConverter(ApiError.class, new Annotation[0]);
         errorParser = new ApiErrorParser(errorConverter);
         apiInstance = retrofit.create(CxenseApi.class);
         databaseHelper = new DatabaseHelper(appContext);
-        eventRepository = new EventRepository(databaseHelper, mapper, Arrays.asList(pageViewEventConverter, performanceEventConverter));
+        eventRepository = new EventRepository(databaseHelper, mapper, Arrays.asList(pageViewEventConverter, performanceEventConverter, conversionEventConverter));
         eventsSendCallback = statuses -> {
             for (EventStatus eventStatus : statuses) {
                 if (eventStatus.exception != null) {

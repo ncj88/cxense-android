@@ -23,14 +23,11 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 @PrepareForTest({CxenseConfiguration.class, PageViewEvent.class})
 public class PageViewEventTest extends BaseTest {
     private PageViewEvent event;
-    private CxenseConfiguration configuration;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         DependenciesProvider.init(context);
-        configuration = spy(new CxenseConfiguration());
-//        when(cxense.getConfiguration()).thenReturn(configuration);
         event = spy(new PageViewEvent.Builder("siteId").setLocation("http://example.com").build());
     }
 

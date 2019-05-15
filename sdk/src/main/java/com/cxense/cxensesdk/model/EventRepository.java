@@ -40,7 +40,7 @@ public class EventRepository {
                 for (EventConverter converter : eventConverters) {
                     if (converter.canConvert(event)) {
                         putEventRecordInDatabase(converter.toEventRecord(event));
-                        return;
+                        break;
                     }
                 }
             } catch (JsonProcessingException e) {
@@ -66,7 +66,11 @@ public class EventRepository {
     }
 
     public List<EventRecord> getNotSubmittedDmpEvents() {
-        return getEvents(EventRecord.IS_SENT + " = 0 AND " + EventRecord.EVENT_TYPE + " <> ?", PageViewEvent.DEFAULT_EVENT_TYPE);
+        return getEvents(EventRecord.IS_SENT + " = 0 AND " + EventRecord.EVENT_TYPE + " <> ? AND " + EventRecord.EVENT_TYPE + " <> ?", PageViewEvent.DEFAULT_EVENT_TYPE, ConversionEvent.EVENT_TYPE);
+    }
+
+    public List<EventRecord> getNotSubmittedConversionEvents() {
+        return getEvents(EventRecord.IS_SENT + " = 0 AND " + EventRecord.EVENT_TYPE + " = ?", ConversionEvent.EVENT_TYPE);
     }
 
     private List<EventRecord> getEvents(String selection, String... selectionArgs) {

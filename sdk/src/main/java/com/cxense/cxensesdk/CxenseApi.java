@@ -13,6 +13,7 @@ import com.cxense.cxensesdk.model.UserIdentity;
 import com.cxense.cxensesdk.model.UserSegmentRequest;
 import com.cxense.cxensesdk.model.WidgetRequest;
 import com.cxense.cxensesdk.model.WidgetResponse;
+import com.cxense.cxensesdk.model.WidgetVisibilityReport;
 
 import java.util.List;
 import java.util.Map;
@@ -64,8 +65,14 @@ public interface CxenseApi {
                                      @Query(PerformanceEvent.SEGMENT_IDS) List<String> segments,
                                      @QueryMap Map<String, String> options);
 
+    @POST("https://comcluster.cxense.com/cce/push?experimental=true")
+    Call<Void> pushConversionEvents(@Body EventDataRequest request);
+
     @POST("public/widget/data")
     Call<WidgetResponse> getWidgetData(@Body WidgetRequest request);
+
+    @POST("/public/widget/visibility")
+    Call<ResponseBody> reportWidgetVisibility(@Body WidgetVisibilityReport request);
 
     @GET
     Call<Void> trackUrlClick(@Url String url);

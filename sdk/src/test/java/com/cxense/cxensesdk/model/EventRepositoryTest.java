@@ -102,6 +102,14 @@ public class EventRepositoryTest extends BaseTest {
     }
 
     @Test
+    public void getNotSubmittedConversionEvents() {
+        prepareDatabaseHelper(Collections.singletonList(new ContentValues()));
+        assertFalse(eventRepository.getNotSubmittedDmpEvents().isEmpty());
+        verifyDatabaseHelper();
+    }
+
+
+    @Test
     public void getPvEventFromDatabase() {
         prepareDatabaseHelper(Collections.singletonList(new ContentValues()));
         assertNotNull(eventRepository.getPvEventFromDatabase("id"));

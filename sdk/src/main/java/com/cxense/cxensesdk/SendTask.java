@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -148,6 +149,27 @@ public class SendTask implements Runnable {
             sendCallback.onSend(statuses);
     }
 
+    void sendConversionEvents(@NonNull List<EventRecord> events) {
+        List<EventStatus> statuses = new ArrayList<>();
+        for (EventRecord event : events) {
+            EventStatus status = null;
+            try {
+                Response<Void> response = cxenseApi.pushConversionEvents(new EventDataRequest(Collections.singletonList(event.data))).execute();
+                if (response.isSuccessful()) {
+                    event.isSent = true;
+                }
+                eventRepository.putEventRecordInDatabase(event);
+                status = createStatus(event, errorParser.parseError(response));
+            } catch (IOException e) {
+                status = createStatus(event, e);
+            } finally {
+                statuses.add(status);
+            }
+        }
+        if (sendCallback != null)
+            sendCallback.onSend(statuses);
+    }
+
     @Override
     public void run() {
         try {
@@ -161,6 +183,7 @@ public class SendTask implements Runnable {
                 return;
             sendPageViewEvents(eventRepository.getNotSubmittedPvEvents());
             sendDmpEvents(eventRepository.getNotSubmittedDmpEvents());
+            sendConversionEvents(eventRepository.getNotSubmittedConversionEvents());
 
         } catch (Exception e) {
             Log.e(TAG, "Error at sending data", e);
