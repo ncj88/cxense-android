@@ -1,5 +1,14 @@
+import org.jetbrains.kotlin.gradle.internal.CacheImplementation
+
 plugins {
     id(Plugins.androidApp)
+    id(Plugins.kotlinAndroidApp)
+    id(Plugins.kotlinAndroidExtApp)
+}
+
+androidExtensions {
+    isExperimental = true
+    defaultCacheImplementation = CacheImplementation.SPARSE_ARRAY
 }
 
 android {
@@ -35,6 +44,7 @@ android {
 }
 
 dependencies {
+    implementation(kotlin(Libs.kotlinStdlib, Versions.kotlin))
     implementation(project(":sdk"))
     implementation(Libs.appcompat)
     implementation(Libs.material)
