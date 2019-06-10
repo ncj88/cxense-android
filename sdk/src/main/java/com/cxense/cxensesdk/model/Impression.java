@@ -33,6 +33,7 @@ public class Impression {
      *
      * @return click URL
      */
+    @NonNull
     public String getClickUrl() {
         return clickUrl;
     }

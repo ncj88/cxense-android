@@ -6,6 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,12 +18,12 @@ import java.util.List;
  *
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
-
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class DatabaseHelper extends SQLiteOpenHelper {
     static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "tracks.db";
 
-    public DatabaseHelper(Context context) {
+    public DatabaseHelper(@NonNull Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -65,7 +69,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             migrate(db, i);
     }
 
-    public long save(DatabaseObject databaseObject) {
+    public long save(@NonNull DatabaseObject databaseObject) {
         ContentValues values = databaseObject.toContentValues();
         SQLiteDatabase db = getWritableDatabase();
         Integer id = databaseObject.id;
@@ -75,24 +79,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.update(tableName, values, DatabaseObject._ID + "= ?", new String[]{"" + id});
     }
 
-    public int delete(DatabaseObject databaseObject) {
+    public int delete(@NonNull DatabaseObject databaseObject) {
         Integer id = databaseObject.id;
         if (id == null)
             return -1;
         return delete(databaseObject.getTableName(), DatabaseObject._ID + "= ?", new String[]{"" + id});
     }
 
-    public int delete(String tableName, String whereClause, String[] whereArgs) {
+    public int delete(@NonNull String tableName, @Nullable String whereClause, @Nullable String[] whereArgs) {
         return getWritableDatabase().delete(tableName, whereClause, whereArgs);
     }
 
-    public List<ContentValues> query(String tableName, String[] columns, String selection, String[] selectionArgs,
-                                     String groupBy, String having, String orderBy) {
+    public List<ContentValues> query(@NonNull String tableName, @Nullable String[] columns, @Nullable String selection,
+                                     @Nullable String[] selectionArgs, @Nullable String groupBy,
+                                     @Nullable String having, @Nullable String orderBy) {
         return query(tableName, columns, selection, selectionArgs, groupBy, having, orderBy, null);
     }
 
-    public List<ContentValues> query(String tableName, String[] columns, String selection, String[] selectionArgs,
-                                     String groupBy, String having, String orderBy, String limit) {
+    public List<ContentValues> query(@NonNull String tableName, @Nullable String[] columns, @Nullable String selection,
+                                     @Nullable String[] selectionArgs, @Nullable String groupBy,
+                                     @Nullable String having, @Nullable String orderBy, @Nullable String limit) {
         Cursor cursor = null;
         List<ContentValues> values = new ArrayList<>();
         try {

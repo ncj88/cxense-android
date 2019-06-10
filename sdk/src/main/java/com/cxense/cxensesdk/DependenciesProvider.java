@@ -7,6 +7,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
 
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.model.EventRepository;
@@ -33,6 +34,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-17).
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public final class DependenciesProvider {
     private static final String TAG = DependenciesProvider.class.getSimpleName();
 
@@ -61,7 +63,7 @@ public final class DependenciesProvider {
     private final CxenseSdk cxenseSdk;
 
 
-    private DependenciesProvider(Context context) {
+    private DependenciesProvider(@NonNull Context context) {
         appContext = context.getApplicationContext();
         defaultUserAgent = getDefaultUserAgent(appContext);
         executor = Executors.newSingleThreadScheduledExecutor();
@@ -100,6 +102,7 @@ public final class DependenciesProvider {
         instance = new DependenciesProvider(context);
     }
 
+    @NonNull
     public static DependenciesProvider getInstance() {
         throwIfUninitialized(instance);
         return instance;
@@ -237,6 +240,7 @@ public final class DependenciesProvider {
      *
      * @return {@code Context} instance
      */
+    @NonNull
     public Context getContext() {
         return appContext;
     }
@@ -246,6 +250,7 @@ public final class DependenciesProvider {
      *
      * @return {@code ScheduledExecutorService} instance.
      */
+    @NonNull
     public ScheduledExecutorService getExecutor() {
         return executor;
     }

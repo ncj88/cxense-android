@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 
 import okhttp3.HttpUrl;
@@ -12,11 +14,11 @@ import okhttp3.Response;
  *
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
-public class SdkInterceptor implements Interceptor {
+class SdkInterceptor implements Interceptor {
     private final String sdkName;
     private final String sdkVersion;
 
-    public SdkInterceptor(String sdkName, String sdkVersion) {
+    SdkInterceptor(@NonNull String sdkName, @NonNull String sdkVersion) {
         this.sdkName = sdkName;
         this.sdkVersion = sdkVersion;
     }

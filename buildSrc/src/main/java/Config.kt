@@ -4,8 +4,8 @@ object Config {
     // Android config
     const val androidBuildTools = "28.0.3"
     const val androidMinSdk = 15
-    const val androidTargetSdk = 28
-    const val androidCompileSdk = 28
+    const val androidTargetSdk = 29
+    const val androidCompileSdk = 29
     const val authority = "CxSdkInitProvider"
     val compileSourceVersion = JavaVersion.VERSION_1_8
     val compileTargetVersion = JavaVersion.VERSION_1_8
@@ -17,7 +17,7 @@ object Versions {
     const val buildScanPlugin = "2.3"
     const val versionsPlugin = "0.21.0"
     const val releasePlugin = "1.10.1"
-    const val androidToolsPlugin = "3.4.1"
+    const val androidToolsPlugin = "3.6.0-alpha03"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "2.0.0"
     // Android libraries
@@ -31,7 +31,7 @@ object Versions {
 
     // Test Libraries
     const val junit = "4.12"
-    const val testRunner = "1.1.1"
+    const val testRunner = "1.1.0"
     const val powermock = "2.0.2"
     const val hamcrest = "2.1"
 }
@@ -65,6 +65,8 @@ object Libs {
 
     const val junit = "junit:junit:${Versions.junit}"
     const val testRunner = "androidx.test:runner:${Versions.testRunner}"
+    const val testJunitExt = "androidx.test.ext:junit:${Versions.testRunner}"
+    const val testCore = "androidx.test:core:${Versions.testRunner}"
     const val powermockJunit = "org.powermock:powermock-module-junit4:${Versions.powermock}"
     const val powermockMockito = "org.powermock:powermock-api-mockito2:${Versions.powermock}"
     const val okhttpMockServer = "com.squareup.okhttp3:mockwebserver:${Versions.okhttp}"

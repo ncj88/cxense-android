@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk;
 
+import androidx.annotation.NonNull;
+
 public enum ConsentOption {
     CONSENT_REQUIRED("y"),
     PV_ALLOWED("pv"),
@@ -9,10 +11,11 @@ public enum ConsentOption {
 
     private String value;
 
-    ConsentOption(String value) {
+    ConsentOption(@NonNull String value) {
         this.value = value;
     }
 
+    @NonNull
     public String getValue() {
         return value;
     }

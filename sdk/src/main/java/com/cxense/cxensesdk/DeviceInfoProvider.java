@@ -8,20 +8,21 @@ import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-17).
  */
-public class DeviceInfoProvider {
+class DeviceInfoProvider {
     private static final String TAG = DeviceInfoProvider.class.getSimpleName();
     private final Context context;
 
-    public DeviceInfoProvider(Context context) {
+    DeviceInfoProvider(@NonNull Context context) {
         this.context = context;
     }
 
-    public DisplayMetrics getDisplayMetrics() {
+    DisplayMetrics getDisplayMetrics() {
         return context.getResources().getDisplayMetrics();
     }
 

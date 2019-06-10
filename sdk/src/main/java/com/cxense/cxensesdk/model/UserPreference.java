@@ -1,6 +1,11 @@
 package com.cxense.cxensesdk.model;
 
+import androidx.annotation.NonNull;
+
+import com.cxense.cxensesdk.Preconditions;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -14,6 +19,7 @@ public final class UserPreference {
      * List of categories.
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public List<String> categories;
     /**
      * A boost value between 0.0 and 100.0 indicating the level of boost to give for the list of categories.
@@ -28,8 +34,9 @@ public final class UserPreference {
     }
 
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public UserPreference(List<String> categories, double boost) {
+    public UserPreference(@NonNull Collection<String> categories, double boost) {
         this();
+        Preconditions.checkForNull(categories, "categories");
         this.categories.addAll(categories);
         this.boost = boost;
     }

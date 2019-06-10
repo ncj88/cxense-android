@@ -29,7 +29,7 @@ import okhttp3.Route;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
 class CxenseAuthenticator implements Authenticator {
-    public static final int DEFAULT_MAX_ATTEMPTS = 3;
+    static final int DEFAULT_MAX_ATTEMPTS = 3;
     static final String AUTH_HEADER = "X-cXense-Authentication";
     private static final String ISO_8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
     static final DateFormat DATE_FORMAT = new SimpleDateFormat(ISO_8601, Locale.US);
@@ -39,11 +39,11 @@ class CxenseAuthenticator implements Authenticator {
     private int maxAttempts;
     private CxenseConfiguration cxenseConfiguration;
 
-    public CxenseAuthenticator(CxenseConfiguration cxenseConfiguration) {
+    CxenseAuthenticator(@NonNull CxenseConfiguration cxenseConfiguration) {
         this(cxenseConfiguration, DEFAULT_MAX_ATTEMPTS);
     }
 
-    public CxenseAuthenticator(CxenseConfiguration cxenseConfiguration, int maxAttempts) {
+    CxenseAuthenticator(@NonNull CxenseConfiguration cxenseConfiguration, int maxAttempts) {
         this.cxenseConfiguration = cxenseConfiguration;
         this.maxAttempts = maxAttempts;
     }

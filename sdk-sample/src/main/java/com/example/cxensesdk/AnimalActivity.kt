@@ -29,7 +29,7 @@ class AnimalActivity : AppCompatActivity() {
         super.onResume()
         CxenseSdk.getInstance().setDispatchEventsCallback { statuses ->
             val grouped = statuses.groupBy { it.isSent }
-            val message = "Sent: '${grouped[true]?.joinToString { it.eventId }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId }}'"
+            val message = "Sent: '${grouped[true]?.joinToString { it.eventId ?: "" }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'"
             Snackbar.make(animalText, message, Snackbar.LENGTH_LONG).show()
         }
         CxenseSdk.getInstance().pushEvents(

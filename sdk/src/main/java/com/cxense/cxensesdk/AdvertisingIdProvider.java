@@ -3,6 +3,7 @@ package com.cxense.cxensesdk;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-17).
  */
-public class AdvertisingIdProvider {
+class AdvertisingIdProvider {
     private static final String TAG = AdvertisingIdProvider.class.getSimpleName();
     private static final long DELAY = 300;
     private final Context context;
@@ -25,7 +26,7 @@ public class AdvertisingIdProvider {
 
     private AdvertisingIdClient.Info advertisingInfo;
 
-    public AdvertisingIdProvider(Context context, ScheduledExecutorService executor) {
+    AdvertisingIdProvider(@NonNull Context context, @NonNull ScheduledExecutorService executor) {
         this.context = context;
         this.executor = executor;
         getAdvertisingInfoTask = () -> {
@@ -46,11 +47,11 @@ public class AdvertisingIdProvider {
     }
 
     @Nullable
-    public String getDefaultUserId() {
+    String getDefaultUserId() {
         return advertisingInfo != null ? advertisingInfo.getId() : null;
     }
 
-    public boolean isLimitAdTrackingEnabled() {
+    boolean isLimitAdTrackingEnabled() {
         return advertisingInfo != null && advertisingInfo.isLimitAdTrackingEnabled();
     }
 }

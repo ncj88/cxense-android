@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk.model;
 
+import androidx.annotation.NonNull;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
@@ -14,6 +16,7 @@ public final class SegmentsResponse {
     /**
      * segments ids
      */
+    @NonNull
     @JsonProperty("segments")
     public List<String> ids;
 }

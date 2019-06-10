@@ -49,7 +49,7 @@ public class ConversionEventBuilderTest extends BaseTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void addIdentitiesNull() throws Exception {
-        builder.addIdentities(null);
+        builder.addIdentities(null, null);
     }
 
     @Test

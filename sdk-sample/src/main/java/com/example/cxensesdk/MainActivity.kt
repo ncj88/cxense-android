@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         CxenseSdk.getInstance().setDispatchEventsCallback { statuses ->
             val grouped = statuses.groupBy { it.isSent }
-            showText("Sent: '${grouped[true]?.joinToString { it.eventId }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId }}'")
+            showText("Sent: '${grouped[true]?.joinToString { it.eventId ?: "" }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'")
         }
     }
 

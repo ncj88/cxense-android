@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk;
 
+import androidx.annotation.NonNull;
+
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-17).
  */
@@ -9,6 +11,7 @@ public interface CredentialsProvider {
      *
      * @return username
      */
+    @NonNull
     default String getUsername() {
         return "";
     }
@@ -18,6 +21,7 @@ public interface CredentialsProvider {
      *
      * @return api key
      */
+    @NonNull
     default String getApiKey() {
         return "";
     }
@@ -27,6 +31,7 @@ public interface CredentialsProvider {
      *
      * @return persistent query id
      */
+    @NonNull
     default String getDmpPushPersistentId() {
         return "";
     }

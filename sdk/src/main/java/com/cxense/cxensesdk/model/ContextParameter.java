@@ -1,16 +1,32 @@
 package com.cxense.cxensesdk.model;
 
+import androidx.annotation.NonNull;
+
 /**
  * Context parameter that replace the placeholders are passed from the widget data request.
  *
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
 
-public final class ContextParameter extends KeyValueParameter<String, String> {
-    public ContextParameter() {
+@SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+public final class ContextParameter {
+    /**
+     * Parameter key
+     */
+    @NonNull
+    public String key;
+
+    /**
+     * Parameter value
+     */
+    @NonNull
+    public String value;
+
+    private ContextParameter() {
     }
 
-    public ContextParameter(String key, String value) {
-        super(key, value);
+    public ContextParameter(@NonNull String key, @NonNull String value) {
+        this.key = key;
+        this.value = value;
     }
 }

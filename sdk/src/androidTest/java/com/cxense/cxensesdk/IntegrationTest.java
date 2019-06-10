@@ -1,8 +1,10 @@
 package com.cxense.cxensesdk;
 
-import android.support.test.InstrumentationRegistry;
-import android.support.test.runner.AndroidJUnit4;
 import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import com.cxense.cxensesdk.model.CustomParameter;
 import com.cxense.cxensesdk.model.Event;
@@ -26,8 +28,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-08-10).
@@ -46,7 +47,7 @@ public class IntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        DependenciesProvider.init(InstrumentationRegistry.getTargetContext());
+        DependenciesProvider.init(ApplicationProvider.getApplicationContext());
         DependenciesProvider provider = DependenciesProvider.getInstance();
         NotifyingSendTask sendTask = new NotifyingSendTask(syncObject, provider);
         cxense = new CxenseSdk(provider.getExecutor(), provider.getCxenseConfiguration(),
@@ -56,11 +57,13 @@ public class IntegrationTest {
         final CxenseConfiguration configuration = cxense.getConfiguration();
         configuration.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);
         configuration.setCredentialsProvider(new CredentialsProvider() {
+            @NonNull
             @Override
             public String getUsername() {
                 return API_USER;
             }
 
+            @NonNull
             @Override
             public String getApiKey() {
                 return API_USER;
@@ -87,7 +90,7 @@ public class IntegrationTest {
         Response response = okHttpClient.newCall(request).execute();
         JSONObject obj = new JSONObject(response.body().string());
         JSONArray arr = obj.getJSONArray("events");
-        assertThat(arr.length(), greaterThanOrEqualTo(events.length));
+        assertTrue(arr.length() >= events.length);
     }
 
     @Test

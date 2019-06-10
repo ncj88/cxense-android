@@ -3,6 +3,9 @@ package com.cxense.cxensesdk;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.CustomParameter;
 import com.cxense.cxensesdk.model.Event;
@@ -21,23 +24,24 @@ import java.util.Map;
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-19).
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class PerformanceEventConverter extends EventConverter<PerformanceEvent> {
     public static final String CONSENT = "con";
     private final ObjectMapper mapper;
     private final CxenseConfiguration configuration;
 
-    public PerformanceEventConverter(ObjectMapper mapper, CxenseConfiguration configuration) {
+    PerformanceEventConverter(@NonNull ObjectMapper mapper, @NonNull CxenseConfiguration configuration) {
         this.mapper = mapper;
         this.configuration = configuration;
     }
 
     @Override
-    public boolean canConvert(Event event) {
+    public boolean canConvert(@NonNull Event event) {
         return event instanceof PerformanceEvent;
     }
 
     @Override
-    public Map<String, String> toQueryMap(PerformanceEvent event) {
+    public Map<String, String> toQueryMap(@NonNull PerformanceEvent event) {
         Map<String, String> result = new HashMap<>();
         Date date = event.getTime();
         if (date != null)
@@ -66,8 +70,9 @@ public class PerformanceEventConverter extends EventConverter<PerformanceEvent> 
         return result;
     }
 
+    @NonNull
     @Override
-    public EventRecord toEventRecord(PerformanceEvent event) throws JsonProcessingException {
+    public EventRecord toEventRecord(@NonNull PerformanceEvent event) throws JsonProcessingException {
         EventRecord record = new EventRecord();
         record.customId = event.getEventId();
         record.data = mapper.writeValueAsString(event);

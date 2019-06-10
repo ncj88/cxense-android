@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -59,8 +60,9 @@ public final class CxenseSdk {
      *
      */
     CxenseSdk(@NonNull ScheduledExecutorService executor, @NonNull CxenseConfiguration cxenseConfiguration,
-              @NonNull AdvertisingIdProvider advertisingIdProvider, UserProvider userProvider, @NonNull CxenseApi cxenseApi,
-              @NonNull ApiErrorParser errorParser, @NonNull ObjectMapper objectMapper, @NonNull EventRepository eventRepository,
+              @NonNull AdvertisingIdProvider advertisingIdProvider, @NonNull UserProvider userProvider,
+              @NonNull CxenseApi cxenseApi, @NonNull ApiErrorParser errorParser,
+              @NonNull ObjectMapper objectMapper, @NonNull EventRepository eventRepository,
               @NonNull SendTask sendTask) {
         this.executor = executor;
         configuration = cxenseConfiguration;
@@ -82,6 +84,7 @@ public final class CxenseSdk {
      * @return singleton SDK instance.
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public static CxenseSdk getInstance() {
         return DependenciesProvider.getInstance().getCxenseSdk();
     }
@@ -90,6 +93,7 @@ public final class CxenseSdk {
      * Tracks an url click for the given item
      *
      * @param item the item that contains the click-url
+     * @deprecated Use {@link #trackClick(WidgetItem, LoadCallback)}
      */
     @Deprecated
     public void trackClick(@NonNull WidgetItem item) {
@@ -100,6 +104,7 @@ public final class CxenseSdk {
      * Tracks a click for the given click-url
      *
      * @param url the click-url
+     * @deprecated Use {@link #trackClick(String, LoadCallback)}
      */
     @Deprecated
     public void trackClick(@NonNull String url) {
@@ -144,7 +149,8 @@ public final class CxenseSdk {
      * @param listener      listener for returning result
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void loadWidgetRecommendations(final String widgetId, final WidgetContext widgetContext, final LoadCallback<List<WidgetItem>> listener) {
+    public void loadWidgetRecommendations(@NonNull final String widgetId, @NonNull final WidgetContext widgetContext,
+                                          @Nullable final LoadCallback<List<WidgetItem>> listener) {
         loadWidgetRecommendations(widgetId, widgetContext, null, null, null, listener);
     }
 
@@ -159,8 +165,9 @@ public final class CxenseSdk {
      * @param listener      listener for returning result
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void loadWidgetRecommendations(final String widgetId, final WidgetContext widgetContext, ContentUser user,
-                                          final String tag, final String prnd, final LoadCallback<List<WidgetItem>> listener) {
+    public void loadWidgetRecommendations(@NonNull final String widgetId, @NonNull final WidgetContext widgetContext,
+                                          @Nullable ContentUser user, @Nullable final String tag,
+                                          @Nullable final String prnd, @Nullable final LoadCallback<List<WidgetItem>> listener) {
         Preconditions.checkStringForNullOrEmpty(widgetId, "widgetId");
         if (user == null)
             user = getDefaultUser();
@@ -173,7 +180,7 @@ public final class CxenseSdk {
      * @param impressions The list of seen recommendations (impressions) you'd like to report visibility of.
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void reportWidgetVisibilities(LoadCallback callback, @NonNull Impression... impressions) {
+    public void reportWidgetVisibilities(@Nullable LoadCallback callback, @NonNull Impression... impressions) {
         Preconditions.checkForNull(impressions, "impressions");
         apiInstance.reportWidgetVisibility(new WidgetVisibilityReport(Arrays.asList(impressions))).enqueue(transform(callback));
     }
@@ -185,7 +192,7 @@ public final class CxenseSdk {
      * @param <T>      Successful response type.
      * @return Callback instance
      */
-    <T> Callback<T> transform(final LoadCallback<T> callback) {
+    <T> Callback<T> transform(@Nullable final LoadCallback<T> callback) {
         return new ApiCallback<>(callback, errorParser);
     }
 
@@ -198,7 +205,7 @@ public final class CxenseSdk {
      * @param <U>      Callback type.
      * @return Callback instance
      */
-    <T, U> Callback<T> transform(final LoadCallback<U> callback, final Function<T, U> function) {
+    <T, U> Callback<T> transform(@Nullable final LoadCallback<U> callback, @NonNull final Function<T, U> function) {
         return transform(new LoadCallback<T>() {
             @Override
             public void onSuccess(T data) {
@@ -220,6 +227,7 @@ public final class CxenseSdk {
      * @return current user id
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @Nullable
     public String getUserId() {
         return userProvider.getUserId();
     }
@@ -260,6 +268,7 @@ public final class CxenseSdk {
      * @return sdk configuration
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public CxenseConfiguration getConfiguration() {
         return configuration;
     }
@@ -274,12 +283,13 @@ public final class CxenseSdk {
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void getUserSegmentIds(@NonNull List<UserIdentity> identities,
                                   @NonNull List<String> siteGroupIds,
-                                  final LoadCallback<List<String>> callback) throws CxenseException {
+                                  @Nullable final LoadCallback<List<String>> callback) throws CxenseException {
         Preconditions.checkForNull(identities, "identities");
         Preconditions.checkForNull(siteGroupIds, "siteGroupIds");
         Set<ConsentOption> consentOptions = configuration.getConsentOptions();
         if (consentOptions.contains(ConsentOption.CONSENT_REQUIRED) && !consentOptions.contains(ConsentOption.SEGMENT_ALLOWED)) {
-            callback.onSuccess(Collections.emptyList());
+            if (callback != null)
+                callback.onSuccess(Collections.emptyList());
             return;
         }
         apiInstance.getUserSegments(new UserSegmentRequest(identities, siteGroupIds))
@@ -294,7 +304,7 @@ public final class CxenseSdk {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void getUser(@NonNull UserIdentity identity,
-                        LoadCallback<User> callback) throws CxenseException {
+                        @Nullable LoadCallback<User> callback) throws CxenseException {
         getUser(identity, null, null, null, callback);
     }
 
@@ -302,20 +312,20 @@ public final class CxenseSdk {
      * Asynchronously retrieves a suitably authorized slice of a given user's interest profile
      *
      * @param identity      user identifier with type and id
-     * @param groups        a list of strings that specify profile item groups to keep in the returned profile.
+     * @param groups        a collection of strings that specify profile item groups to keep in the returned profile.
      *                      If not specified, all groups available for the user will be returned
      * @param recent        flag whether to only return the most recent user profile information. This can be used to
      *                      return quickly if response time is important
-     * @param identityTypes a list of external customer identifier types. If an external customer identifier exists for
+     * @param identityTypes a collection of external customer identifier types. If an external customer identifier exists for
      *                      the user, it will be included in the response
      * @param callback      a callback with {@link User} profile
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess", "SameParameterValue"}) // Public API.
     public void getUser(@NonNull UserIdentity identity,
-                        List<String> groups,
-                        Boolean recent,
-                        List<String> identityTypes,
-                        LoadCallback<User> callback) throws CxenseException {
+                        @Nullable Collection<String> groups,
+                        @Nullable Boolean recent,
+                        @Nullable Collection<String> identityTypes,
+                        @Nullable LoadCallback<User> callback) throws CxenseException {
         Preconditions.checkForNull(identity, "identity");
         apiInstance.getUser(new UserDataRequest(identity, groups, recent, identityTypes)).enqueue(transform(callback));
     }
@@ -328,7 +338,7 @@ public final class CxenseSdk {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void getUserExternalData(@NonNull String type,
-                                    LoadCallback<List<UserExternalData>> callback)
+                                    @Nullable LoadCallback<List<UserExternalData>> callback)
             throws CxenseException {
         getUserExternalData(null, type, callback);
     }
@@ -341,9 +351,9 @@ public final class CxenseSdk {
      * @param callback a callback with {@link UserExternalData}
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess", "SameParameterValue"}) // Public API.
-    public void getUserExternalData(String id,
+    public void getUserExternalData(@Nullable String id,
                                     @NonNull String type,
-                                    LoadCallback<List<UserExternalData>> callback)
+                                    @Nullable LoadCallback<List<UserExternalData>> callback)
             throws CxenseException {
         apiInstance.getUserExternalData(new BaseUserIdentity(id, type))
                 .enqueue(transform(callback, data -> data.items));
@@ -357,7 +367,7 @@ public final class CxenseSdk {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess", "SameParameterValue"}) // Public API.
     public void setUserExternalData(@NonNull UserExternalData userExternalData,
-                                    LoadCallback<Void> callback) throws CxenseException {
+                                    @Nullable LoadCallback<Void> callback) throws CxenseException {
         Preconditions.checkForNull(userExternalData, "userExternalData");
         apiInstance.updateUserExternalData(userExternalData).enqueue(transform(callback));
     }
@@ -370,7 +380,7 @@ public final class CxenseSdk {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void deleteUserExternalData(@NonNull UserIdentity identity,
-                                       LoadCallback<Void> callback) throws CxenseException {
+                                       @Nullable LoadCallback<Void> callback) throws CxenseException {
         Preconditions.checkForNull(identity, "identity");
         apiInstance.deleteExternalUserData(identity).enqueue(transform(callback));
     }
@@ -385,7 +395,7 @@ public final class CxenseSdk {
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void getUserExternalLink(@NonNull String cxenseId,
                                     @NonNull String type,
-                                    LoadCallback<UserIdentity> callback) throws CxenseException {
+                                    @Nullable LoadCallback<UserIdentity> callback) throws CxenseException {
         apiInstance.getUserExternalLink(new CxenseUserIdentity(cxenseId, type)).enqueue(transform(callback));
     }
 
@@ -399,7 +409,7 @@ public final class CxenseSdk {
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void setUserExternalLink(@NonNull String cxenseId,
                                     @NonNull UserIdentity identity,
-                                    LoadCallback<UserIdentity> callback) throws CxenseException {
+                                    @Nullable LoadCallback<UserIdentity> callback) throws CxenseException {
         apiInstance.updateUserExternalLink(new CxenseUserIdentity(identity, cxenseId)).enqueue(transform(callback));
     }
 
@@ -424,7 +434,7 @@ public final class CxenseSdk {
      * @param eventId the event to report active time for.
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void trackActiveTime(String eventId) {
+    public void trackActiveTime(@NonNull String eventId) {
         trackActiveTime(eventId, 0);
     }
 
@@ -435,7 +445,7 @@ public final class CxenseSdk {
      * @param activeTime the active time in seconds.
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess", "SameParameterValue"}) // Public API.
-    public void trackActiveTime(final String eventId, final long activeTime) {
+    public void trackActiveTime(@NonNull final String eventId, final long activeTime) {
         executor.execute(() -> putEventTime(eventId, activeTime));
     }
 
@@ -445,6 +455,7 @@ public final class CxenseSdk {
      * @return the default user
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public ContentUser getDefaultUser() {
         return userProvider.getContentUser();
     }
@@ -474,7 +485,7 @@ public final class CxenseSdk {
      * @param callback callback instance
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void setDispatchEventsCallback(DispatchEventsCallback callback) {
+    public void setDispatchEventsCallback(@Nullable DispatchEventsCallback callback) {
         sendTask.setDispatchEventsCallback(callback);
     }
 
@@ -507,7 +518,10 @@ public final class CxenseSdk {
      * @param <T>               response type
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public <T> void executePersistedQuery(String url, String persistentQueryId, LoadCallback<T> callback) {
+    public <T> void executePersistedQuery(@NonNull String url, @NonNull String persistentQueryId,
+                                          @Nullable LoadCallback<T> callback) {
+        Preconditions.checkForNull(url, "url");
+        Preconditions.checkForNull(persistentQueryId, "persistentQueryId");
         apiInstance.getPersisted(url, persistentQueryId).enqueue(createGenericCallback(callback));
     }
 
@@ -521,7 +535,10 @@ public final class CxenseSdk {
      * @param <T>               response type
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public <T> void executePersistedQuery(String url, String persistentQueryId, Object data, LoadCallback<T> callback) {
+    public <T> void executePersistedQuery(@NonNull String url, @NonNull String persistentQueryId,
+                                          @Nullable Object data, @Nullable LoadCallback<T> callback) {
+        Preconditions.checkForNull(url, "url");
+        Preconditions.checkForNull(persistentQueryId, "persistentQueryId");
         apiInstance.postPersisted(url, persistentQueryId, data).enqueue(createGenericCallback(callback));
     }
 

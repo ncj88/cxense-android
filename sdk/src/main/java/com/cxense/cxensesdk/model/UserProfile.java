@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk.model;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Collections;
@@ -22,6 +24,7 @@ public final class UserProfile {
      *
      * @return item value
      */
+    @Nullable
     public String getItem() {
         return item;
     }
@@ -31,6 +34,7 @@ public final class UserProfile {
      *
      * @return list of {@link UserProfileGroup} objects
      */
+    @Nullable
     public List<UserProfileGroup> getGroups() {
         return Collections.unmodifiableList(groups);
     }

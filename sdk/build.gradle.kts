@@ -113,5 +113,6 @@ dependencies {
     testImplementation(Libs.hamcrest)
 
     androidTestImplementation(Libs.testRunner)
-    androidTestImplementation(Libs.hamcrest)
+    androidTestImplementation(Libs.testJunitExt)
+    androidTestImplementation(Libs.testCore)
 }

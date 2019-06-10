@@ -3,6 +3,7 @@ package com.cxense.cxensesdk.model;
 import android.location.Location;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.ArrayFixedSizeQueue;
 import com.cxense.cxensesdk.DependenciesProvider;
@@ -258,7 +259,8 @@ public final class PageViewEvent extends Event {
          * @param eventId event id
          * @return Builder instance
          */
-        public Builder setEventId(String eventId) {
+        @NonNull
+        public Builder setEventId(@Nullable String eventId) {
             this.eventId = eventId;
             return this;
         }
@@ -269,6 +271,7 @@ public final class PageViewEvent extends Event {
          * @param type type of event
          * @return Builder instance
          */
+        @NonNull
         public Builder setType(@NonNull String type) {
             Preconditions.checkStringForNullOrEmpty(type, "type");
             this.type = type;
@@ -281,6 +284,7 @@ public final class PageViewEvent extends Event {
          * @param accountId account identifier
          * @return Builder instance
          */
+        @NonNull
         public Builder setAccountId(int accountId) {
             this.accountId = accountId;
             return this;
@@ -292,7 +296,8 @@ public final class PageViewEvent extends Event {
          * @param siteId the Cxense site identifier.
          * @return Builder instance
          */
-        public Builder setSiteId(String siteId) {
+        @NonNull
+        public Builder setSiteId(@NonNull String siteId) {
             Preconditions.checkStringForNullOrEmpty(siteId, "siteId");
             this.siteId = siteId;
             return this;
@@ -305,6 +310,7 @@ public final class PageViewEvent extends Event {
          * @param contentId content id
          * @return Builder instance
          */
+        @NonNull
         public Builder setContentId(@NonNull String contentId) {
             Preconditions.checkStringForNullOrEmpty(contentId, "contentId");
             this.contentId = contentId;
@@ -318,6 +324,7 @@ public final class PageViewEvent extends Event {
          * @param location page URL
          * @return Builder instance
          */
+        @NonNull
         public Builder setLocation(@NonNull String location) {
             Preconditions.checkStringIsUrl(location, "location", "location must be valid URL");
             this.location = location;
@@ -330,6 +337,7 @@ public final class PageViewEvent extends Event {
          * @param referrer referring page URL
          * @return Builder instance
          */
+        @NonNull
         public Builder setReferrer(@NonNull String referrer) {
             Preconditions.checkStringIsUrl(referrer, "referrer", "referrer must be valid URL");
             this.referrer = referrer;
@@ -342,7 +350,8 @@ public final class PageViewEvent extends Event {
          * @param goalId goal identifier
          * @return Builder instance
          */
-        public Builder setGoalId(String goalId) {
+        @NonNull
+        public Builder setGoalId(@Nullable String goalId) {
             this.goalId = goalId;
             return this;
         }
@@ -353,7 +362,8 @@ public final class PageViewEvent extends Event {
          * @param pageName page name
          * @return Builder instance
          */
-        public Builder setPageName(String pageName) {
+        @NonNull
+        public Builder setPageName(@Nullable String pageName) {
             this.pageName = pageName;
             return this;
         }
@@ -364,6 +374,7 @@ public final class PageViewEvent extends Event {
          * @param newUser flag indicates new user
          * @return Builder instance
          */
+        @NonNull
         public Builder setNewUser(boolean newUser) {
             isNewUser = newUser;
             return this;
@@ -375,7 +386,8 @@ public final class PageViewEvent extends Event {
          * @param location User geo location
          * @return Builder instance
          */
-        public Builder setUserLocation(Location location) {
+        @NonNull
+        public Builder setUserLocation(@Nullable Location location) {
             userLocation = location;
             return this;
         }
@@ -387,6 +399,7 @@ public final class PageViewEvent extends Event {
          * @param value parameter value
          * @return Builder instance
          */
+        @NonNull
         public Builder addCustomParameter(@NonNull String name, @NonNull String value) {
             Preconditions.checkStringNotNullMaxLength(name, "name", MAX_CUSTOM_PARAMETER_KEY_LENGTH);
             Preconditions.checkStringNotNullMaxLength(value, "value", MAX_CUSTOM_PARAMETER_VALUE_LENGTH);
@@ -401,7 +414,8 @@ public final class PageViewEvent extends Event {
          * @param value parameter value
          * @return Builder instance
          */
-        public Builder addCustomUserParameter(String name, @NonNull String value) {
+        @NonNull
+        public Builder addCustomUserParameter(@NonNull String name, @NonNull String value) {
             Preconditions.checkStringNotNullMaxLength(name, "name", MAX_CUSTOM_PARAMETER_KEY_LENGTH);
             Preconditions.checkStringNotNullMaxLength(value, "value", MAX_CUSTOM_PARAMETER_VALUE_LENGTH);
             customUserParameters.put(name, value);
@@ -416,18 +430,37 @@ public final class PageViewEvent extends Event {
          *
          * @param userType external user type
          * @param userId   external user id
+         * @return Builder instance
          * @throws IllegalArgumentException if external user type has a length less than 1 or greater than 10
          *                                  characters or if external user id has a length less than 1 or greater than
          *                                  40 characters.
          */
-        public Builder addExternalUserId(String userType, String userId) {
-            externalUserIds.add(new ExternalUserId(userType, userId));
+        @NonNull
+        public Builder addExternalUserId(@NonNull String userType, @NonNull String userId) {
+            return addExternalUserIds(new ExternalUserId(userType, userId));
+        }
+
+        /**
+         * Adds external user ids for this event.
+         * You can add a maximum of {@link #MAX_EXTERNAL_USER_IDS} external user ids, if you add more, then last will be
+         * used.
+         *
+         * @param userIds User ids
+         * @return Builder instance
+         */
+        @NonNull
+        public Builder addExternalUserIds(@NonNull ExternalUserId... userIds) {
+            for (ExternalUserId userId : userIds) {
+                Preconditions.checkForNull(userId, "userId");
+                externalUserIds.add(userId);
+            }
             return this;
         }
 
         /**
          * Clear external user ids list.
          */
+        @NonNull
         public Builder clearExternalUserIds() {
             externalUserIds.clear();
             return this;
@@ -439,6 +472,7 @@ public final class PageViewEvent extends Event {
          * @return Event instance
          * @throws IllegalStateException if location and content id does not specified.
          */
+        @NonNull
         public PageViewEvent build() {
             if (location == null && contentId == null)
                 throw new IllegalStateException("You should specify page location or content id");

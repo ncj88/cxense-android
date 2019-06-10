@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 
 import okhttp3.Interceptor;
@@ -11,13 +13,13 @@ import okhttp3.Response;
  *
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
-public class UserAgentInterceptor implements Interceptor {
+class UserAgentInterceptor implements Interceptor {
     private final String userAgent;
 
     /**
      * @param userAgent user-agent string
      */
-    public UserAgentInterceptor(String userAgent) {
+    UserAgentInterceptor(@NonNull String userAgent) {
         this.userAgent = userAgent;
     }
 

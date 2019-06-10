@@ -35,6 +35,7 @@ public final class User extends UserIdentity {
      *
      * @return list of {@link UserProfile} objects
      */
+    @NonNull
     public List<UserProfile> getProfiles() {
         return Collections.unmodifiableList(profiles);
     }
@@ -44,6 +45,7 @@ public final class User extends UserIdentity {
      *
      * @return list of {@link UserIdentity} objects
      */
+    @NonNull
     public List<UserIdentity> getIdentities() {
         return Collections.unmodifiableList(identities);
     }

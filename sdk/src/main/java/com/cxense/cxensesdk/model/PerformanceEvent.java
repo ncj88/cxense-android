@@ -2,12 +2,14 @@ package com.cxense.cxensesdk.model;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.DependenciesProvider;
 import com.cxense.cxensesdk.Preconditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -57,7 +59,7 @@ public final class PerformanceEvent extends Event {
         super(null);
     }
 
-    private PerformanceEvent(Builder builder, List<String> consentOptions) {
+    private PerformanceEvent(@NonNull Builder builder, @NonNull List<String> consentOptions) {
         super(builder.eventId);
         rnd = String.format(Locale.US, "%d%d", Calendar.getInstance().getTimeInMillis(), (int) (Math.random() * 10E8));
 
@@ -78,6 +80,7 @@ public final class PerformanceEvent extends Event {
      * @return datetime of an event
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @Nullable
     public Date getTime() {
         return time != null ? new Date(TimeUnit.SECONDS.toMillis(time)) : null;
     }
@@ -88,6 +91,7 @@ public final class PerformanceEvent extends Event {
      * @return user identities
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public List<UserIdentity> getIdentities() {
         return identities;
     }
@@ -98,6 +102,7 @@ public final class PerformanceEvent extends Event {
      * @return prnd
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @Nullable
     public String getPrnd() {
         return prnd;
     }
@@ -108,6 +113,7 @@ public final class PerformanceEvent extends Event {
      * @return rnd
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public String getRnd() {
         return rnd;
     }
@@ -118,6 +124,7 @@ public final class PerformanceEvent extends Event {
      * @return site identifier
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public String getSiteId() {
         return siteId;
     }
@@ -128,6 +135,7 @@ public final class PerformanceEvent extends Event {
      * @return origin
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public String getOrigin() {
         return origin;
     }
@@ -138,6 +146,7 @@ public final class PerformanceEvent extends Event {
      * @return event type
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public String getType() {
         return type;
     }
@@ -208,7 +217,8 @@ public final class PerformanceEvent extends Event {
          * @param eventId event id
          * @return Builder instance
          */
-        public Builder setEventId(String eventId) {
+        @NonNull
+        public Builder setEventId(@Nullable String eventId) {
             this.eventId = eventId;
             return this;
         }
@@ -219,7 +229,8 @@ public final class PerformanceEvent extends Event {
          * @param date datetime object
          * @return Builder instance
          */
-        public Builder setTime(Date date) {
+        @NonNull
+        public Builder setTime(@NonNull Date date) {
             setTime(date.getTime());
             return this;
         }
@@ -229,6 +240,7 @@ public final class PerformanceEvent extends Event {
          *
          * @return Builder instance
          */
+        @NonNull
         public Builder setCurrentTime() {
             setTime(System.currentTimeMillis());
             return this;
@@ -239,11 +251,12 @@ public final class PerformanceEvent extends Event {
          *
          * @param identity {@link UserIdentity} instance
          * @return Builder instance
+         * @deprecated Use {@link #addIdentities(UserIdentity...)}
          */
+        @NonNull
+        @Deprecated
         public Builder addIdentity(@NonNull UserIdentity identity) {
-            Preconditions.checkForNull(identity, "identity");
-            identities.add(identity);
-            return this;
+            return addIdentities(identity);
         }
 
         /**
@@ -255,9 +268,21 @@ public final class PerformanceEvent extends Event {
         public Builder addIdentities(@NonNull Collection<UserIdentity> identities) {
             Preconditions.checkForNull(identities, "identities");
             for (UserIdentity identity : identities) {
-                this.addIdentity(identity);
+                Preconditions.checkForNull(identity, "identity");
+                this.identities.add(identity);
             }
             return this;
+        }
+
+        /**
+         * Adds known user identities to identify the user.
+         *
+         * @param identities Some {@link UserIdentity} objects
+         * @return Builder instance
+         */
+        @NonNull
+        public Builder addIdentities(@NonNull UserIdentity... identities) {
+            return addIdentities(Arrays.asList(identities));
         }
 
         /**
@@ -268,7 +293,8 @@ public final class PerformanceEvent extends Event {
          * @param prnd A value uniquely identifying the page request
          * @return Builder instance
          */
-        public Builder setPrnd(String prnd) {
+        @NonNull
+        public Builder setPrnd(@Nullable String prnd) {
             this.prnd = prnd;
             return this;
         }
@@ -279,6 +305,7 @@ public final class PerformanceEvent extends Event {
          * @param siteId site identifier
          * @return Builder instance
          */
+        @NonNull
         public Builder setSiteId(@NonNull String siteId) {
             Preconditions.checkStringForNullOrEmpty(siteId, "siteId");
             this.siteId = siteId;
@@ -291,7 +318,8 @@ public final class PerformanceEvent extends Event {
          * @param origin prefixed by the customer prefix value
          * @return Builder instance
          */
-        public Builder setOrigin(String origin) {
+        @NonNull
+        public Builder setOrigin(@NonNull String origin) {
             Preconditions.checkStringForRegex(origin, "origin", "\\w{3}-[\\w-]+", "'%s' must be " +
                     "prefixed by the customer prefix.", "origin");
             this.origin = origin;
@@ -304,7 +332,8 @@ public final class PerformanceEvent extends Event {
          * @param type event type
          * @return Builder instance
          */
-        public Builder setType(String type) {
+        @NonNull
+        public Builder setType(@NonNull String type) {
             Preconditions.checkStringForNullOrEmpty(type, "type");
             this.type = type;
             return this;
@@ -316,9 +345,21 @@ public final class PerformanceEvent extends Event {
          * @param segments matching segments
          * @return Builder instance
          */
-        public Builder addSegments(Collection<String> segments) {
+        @NonNull
+        public Builder addSegments(@NonNull Collection<String> segments) {
             this.segments.addAll(segments);
             return this;
+        }
+
+        /**
+         * Adds optional collection of matching segments to be reported.
+         *
+         * @param segments matching segments
+         * @return Builder instance
+         */
+        @NonNull
+        public Builder addSegments(@NonNull String... segments) {
+            return addSegments(Arrays.asList(segments));
         }
 
         /**
@@ -326,10 +367,12 @@ public final class PerformanceEvent extends Event {
          *
          * @param parameter {@link CustomParameter} object
          * @return Builder instance
+         * @deprecated Use {@link #addCustomParameters(CustomParameter...)}
          */
-        public Builder addCustomParameter(CustomParameter parameter) {
-            this.customParameters.add(parameter);
-            return this;
+        @NonNull
+        @Deprecated
+        public Builder addCustomParameter(@NonNull CustomParameter parameter) {
+            return addCustomParameters(parameter);
         }
 
         /**
@@ -338,9 +381,16 @@ public final class PerformanceEvent extends Event {
          * @param parameters {@link Collection} of {@link CustomParameter} objects
          * @return Builder instance
          */
-        public Builder addCustomParameters(Collection<CustomParameter> parameters) {
+        @NonNull
+        public Builder addCustomParameters(@NonNull Collection<CustomParameter> parameters) {
+            Preconditions.checkForNull(parameters, "parameters");
             this.customParameters.addAll(parameters);
             return this;
+        }
+
+        @NonNull
+        public Builder addCustomParameters(CustomParameter... parameters) {
+            return addCustomParameters(Arrays.asList(parameters));
         }
 
         /**
@@ -348,6 +398,7 @@ public final class PerformanceEvent extends Event {
          *
          * @return PerformanceEvent instance
          */
+        @NonNull
         public PerformanceEvent build() {
             return new PerformanceEvent(this, DependenciesProvider.getInstance().getCxenseConfiguration().getConsentOptionsValues());
         }

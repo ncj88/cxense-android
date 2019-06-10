@@ -17,15 +17,15 @@ import retrofit2.Response;
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-17).
  */
-public class ApiErrorParser {
+class ApiErrorParser {
     private final Converter<ResponseBody, ApiError> converter;
 
-    public ApiErrorParser(Converter<ResponseBody, ApiError> converter) {
+    ApiErrorParser(@NonNull Converter<ResponseBody, ApiError> converter) {
         this.converter = converter;
     }
 
     @Nullable
-    public CxenseException parseError(@NonNull Response<?> response) {
+    CxenseException parseError(@NonNull Response<?> response) {
         if (response.isSuccessful())
             return null;
         try {
