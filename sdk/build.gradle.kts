@@ -17,7 +17,7 @@ android {
 
         buildConfigField("String", "SDK_NAME", """"cxense"""")
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
-        buildConfigField("String", "AUTHORITY", """APPLICATION_ID + ".${Config.authority}"""")
+        buildConfigField("String", "AUTHORITY", """LIBRARY_PACKAGE_NAME + ".${Config.authority}"""")
         buildConfigField("String", "CX_USER", """"${project.property("CX_USER") ?: ""}"""")
         buildConfigField("String", "CX_KEY", """"${project.property("CX_KEY") ?: ""}"""")
         buildConfigField("String", "CX_SITE_ID", """"${project.property("CX_SITE_ID") ?: ""}"""")
