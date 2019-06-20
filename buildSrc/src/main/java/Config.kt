@@ -12,7 +12,7 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.3.31"
+    const val kotlin = "1.3.40"
     //Plugins
     const val buildScanPlugin = "2.3"
     const val versionsPlugin = "0.21.0"
@@ -26,7 +26,7 @@ object Versions {
 
     // Third party Libraries
     const val googlePlayServices = "16.0.0"
-    const val retrofit = "2.5.0"
+    const val retrofit = "2.6.0"
     const val okhttp = "3.12.3"
 
     // Test Libraries
