@@ -20,6 +20,7 @@ buildscript {
     dependencies {
         classpath(Plugins.androidTools)
         classpath(Plugins.androidMavenPlugin)
+        classpath(kotlin(Plugins.kotlin, Versions.kotlin))
     }
 }
 

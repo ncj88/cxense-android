@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk.model;
 
+import androidx.annotation.Nullable;
+
 import java.util.List;
 
 /**
@@ -12,13 +14,16 @@ public final class WidgetResponse {
     /**
      * widget items
      */
+    @Nullable
     public List<WidgetItem> items;
     /**
      * widget template
      */
+    @Nullable
     public String template;
     /**
      * widget style
      */
+    @Nullable
     public String style;
 }

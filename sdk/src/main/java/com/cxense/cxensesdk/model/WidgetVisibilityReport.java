@@ -2,9 +2,11 @@ package com.cxense.cxensesdk.model;
 
 import androidx.annotation.NonNull;
 
+import com.cxense.cxensesdk.Preconditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -17,7 +19,8 @@ public class WidgetVisibilityReport {
     @JsonProperty("impressions")
     List<Impression> impressions;
 
-    public WidgetVisibilityReport(@NonNull List<Impression> impressions) {
+    public WidgetVisibilityReport(@NonNull Collection<Impression> impressions) {
+        Preconditions.checkForNull(impressions, "impressions");
         this.impressions = new ArrayList<>(impressions);
     }
 }

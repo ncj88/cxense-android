@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk.model;
 
+import androidx.annotation.Nullable;
+
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-03).
  */
@@ -7,7 +9,7 @@ package com.cxense.cxensesdk.model;
 public abstract class Event {
     String eventId;
 
-    Event(String eventId) {
+    Event(@Nullable String eventId) {
         this.eventId = eventId;
     }
 
@@ -16,6 +18,7 @@ public abstract class Event {
      *
      * @return event id
      */
+    @Nullable
     public String getEventId() {
         return eventId;
     }

@@ -8,6 +8,7 @@ import com.cxense.cxensesdk.Preconditions;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +50,7 @@ public class ConversionEvent extends Event {
         super(null);
     }
 
-    private ConversionEvent(Builder builder, List<String> consentOptions) {
+    private ConversionEvent(@NonNull Builder builder, @NonNull List<String> consentOptions) {
         this();
         identities = Collections.unmodifiableList(builder.identities);
         siteId = builder.siteId;
@@ -167,12 +168,13 @@ public class ConversionEvent extends Event {
          *
          * @param identity {@link UserIdentity} instance
          * @return Builder instance
+         * @deprecated use {@link #addIdentities(UserIdentity...)}
          */
         @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+        @NonNull
+        @Deprecated
         public Builder addIdentity(@NonNull UserIdentity identity) {
-            Preconditions.checkForNull(identity, "identity");
-            identities.add(identity);
-            return this;
+            return addIdentities(identity);
         }
 
         /**
@@ -182,12 +184,26 @@ public class ConversionEvent extends Event {
          * @return Builder instance
          */
         @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+        @NonNull
         public Builder addIdentities(@NonNull Collection<UserIdentity> identities) {
             Preconditions.checkForNull(identities, "identities");
             for (UserIdentity identity : identities) {
-                addIdentity(identity);
+                Preconditions.checkForNull(identity, "identity");
+                this.identities.add(identity);
             }
             return this;
+        }
+
+        /**
+         * Adds known user identities to identify the user.
+         *
+         * @param identities Some {@link UserIdentity} objects
+         * @return Builder instance
+         */
+        @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+        @NonNull
+        public Builder addIdentities(@NonNull UserIdentity... identities) {
+            return addIdentities(Arrays.asList(identities));
         }
 
         /**
@@ -197,6 +213,7 @@ public class ConversionEvent extends Event {
          * @return Builder instance
          */
         @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+        @NonNull
         public Builder setSiteId(@NonNull String siteId) {
             Preconditions.checkStringForNullOrEmpty(siteId, "siteId");
             this.siteId = siteId;
@@ -210,6 +227,7 @@ public class ConversionEvent extends Event {
          * @return Builder instance
          */
         @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+        @NonNull
         public Builder setProductId(@NonNull String productId) {
             Preconditions.checkForNull(productId, "productId");
             Preconditions.checkStringMaxLength(productId, "productId", MAX_LENGTH);
@@ -224,6 +242,7 @@ public class ConversionEvent extends Event {
          * @return Builder instance
          */
         @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+        @NonNull
         public Builder setPrice(@Nullable Double price) {
             this.price = price;
             return this;
@@ -239,6 +258,7 @@ public class ConversionEvent extends Event {
          * @return Builder instance
          */
         @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+        @NonNull
         public Builder setRenewalFrequency(@Nullable String renewalFrequency) {
             if (renewalFrequency != null)
                 Preconditions.checkStringForRegex(renewalFrequency, "renewalFrequency", "^\\d{1,3}[dwMy][CR]$", "The renewal frequency has the format \"<number><units><type>\". The <number> is limited to 3 digits. Only 'd' (days), 'w' (weeks), 'M' (months) and 'y' (years) are supported as <units>. The <type> can be one of 'R' (relative to the time the user has converted) or 'C' (calendar-based: happening at the beginning of the <unit>).");
@@ -253,6 +273,7 @@ public class ConversionEvent extends Event {
          * @return Builder instance
          */
         @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+        @NonNull
         public Builder setFunnelStep(@NonNull String funnelStep) {
             Preconditions.checkForNull(funnelStep, "funnelStep");
             Preconditions.checkStringMaxLength(funnelStep, "funnelStep", MAX_LENGTH);
@@ -260,6 +281,7 @@ public class ConversionEvent extends Event {
             return this;
         }
 
+        @NonNull
         public ConversionEvent build() {
             return new ConversionEvent(this, DependenciesProvider.getInstance().getCxenseConfiguration().getConsentOptionsValues());
         }

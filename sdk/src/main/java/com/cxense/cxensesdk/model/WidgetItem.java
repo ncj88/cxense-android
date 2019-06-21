@@ -1,5 +1,6 @@
 package com.cxense.cxensesdk.model;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
@@ -31,6 +32,7 @@ public final class WidgetItem {
      * Click url for item
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     @JsonProperty("click_url")
     public String clickUrl;
 
@@ -40,6 +42,7 @@ public final class WidgetItem {
      * @return map with custom properties
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public Map<String, Object> getProperties() {
         return Collections.unmodifiableMap(properties);
     }

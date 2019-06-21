@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk.model;
 
+import androidx.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -21,6 +23,7 @@ public final class UserProfileGroup {
      *
      * @return category
      */
+    @Nullable
     public String getGroup() {
         return group;
     }

@@ -1,6 +1,10 @@
 package com.cxense.cxensesdk.model;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +35,7 @@ public final class WidgetContext {
      *
      * @param builder builder instance.
      */
-    public WidgetContext(Builder builder) {
+    public WidgetContext(@NonNull Builder builder) {
         this();
         url = builder.url;
         pageclass = builder.pageclass;
@@ -49,6 +53,7 @@ public final class WidgetContext {
      *
      * @return URL.
      */
+    @Nullable
     public String getUrl() {
         return url;
     }
@@ -58,6 +63,7 @@ public final class WidgetContext {
      *
      * @return the pageclass of the current page.
      */
+    @Nullable
     public String getPageclass() {
         return pageclass;
     }
@@ -67,6 +73,7 @@ public final class WidgetContext {
      *
      * @return specified sentiment.
      */
+    @Nullable
     public String getSentiment() {
         return sentiment;
     }
@@ -85,6 +92,7 @@ public final class WidgetContext {
      *
      * @return unmodifiable map for categories.
      */
+    @NonNull
     public Map<String, String> getCategories() {
         return categories;
     }
@@ -94,6 +102,7 @@ public final class WidgetContext {
      *
      * @return unmodifiable list of keywords
      */
+    @NonNull
     public List<String> getKeywords() {
         return keywords;
     }
@@ -104,6 +113,7 @@ public final class WidgetContext {
      *
      * @return unmodifiable list of linked articles IDs.
      */
+    @NonNull
     public List<String> getNeighbors() {
         return neighbors;
     }
@@ -113,6 +123,7 @@ public final class WidgetContext {
      *
      * @return referrer URI.
      */
+    @Nullable
     public String getReferrer() {
         return referrer;
     }
@@ -123,6 +134,7 @@ public final class WidgetContext {
      *
      * @return Unmodifiable list of parameters.
      */
+    @NonNull
     public List<ContextParameter> getParameters() {
         return parameters;
     }
@@ -143,7 +155,7 @@ public final class WidgetContext {
          *
          * @param url url for widget
          */
-        public Builder(String url) {
+        public Builder(@Nullable String url) {
             this.url = url;
         }
 
@@ -153,7 +165,8 @@ public final class WidgetContext {
          * @param url new URL
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setUrl(String url) {
+        @NonNull
+        public WidgetContext.Builder setUrl(@Nullable String url) {
             this.url = url;
             return this;
         }
@@ -164,7 +177,8 @@ public final class WidgetContext {
          * @param pageclass the pageclass of the current page.
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setPageclass(String pageclass) {
+        @NonNull
+        public WidgetContext.Builder setPageclass(@Nullable String pageclass) {
             this.pageclass = pageclass;
             return this;
         }
@@ -175,7 +189,8 @@ public final class WidgetContext {
          * @param sentiment the sentiment of the current page.
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setSentiment(String sentiment) {
+        @NonNull
+        public WidgetContext.Builder setSentiment(@Nullable String sentiment) {
             this.sentiment = sentiment;
             return this;
         }
@@ -186,7 +201,8 @@ public final class WidgetContext {
          * @param recommending recs-recommending setting of the current page.
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setRecommending(boolean recommending) {
+        @NonNull
+        public WidgetContext.Builder setRecommending(@Nullable boolean recommending) {
             this.recommending = recommending;
             return this;
         }
@@ -197,7 +213,8 @@ public final class WidgetContext {
          * @param categories map for categories of the current page.
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setCategories(Map<String, String> categories) {
+        @NonNull
+        public WidgetContext.Builder setCategories(@NonNull Map<String, String> categories) {
             this.categories = new HashMap<>(categories);
             return this;
         }
@@ -208,7 +225,8 @@ public final class WidgetContext {
          * @param keywords list of keywords describing the context.
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setKeywords(List<String> keywords) {
+        @NonNull
+        public WidgetContext.Builder setKeywords(@NonNull Collection<String> keywords) {
             this.keywords = new ArrayList<>(keywords);
             return this;
         }
@@ -219,7 +237,8 @@ public final class WidgetContext {
          * @param neighbors list of linked articles IDs.
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setNeighbors(List<String> neighbors) {
+        @NonNull
+        public WidgetContext.Builder setNeighbors(@NonNull Collection<String> neighbors) {
             this.neighbors = new ArrayList<>(neighbors);
             return this;
         }
@@ -230,7 +249,8 @@ public final class WidgetContext {
          * @param referrer referrer URI.
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setReferrer(String referrer) {
+        @NonNull
+        public WidgetContext.Builder setReferrer(@Nullable String referrer) {
             this.referrer = referrer;
             return this;
         }
@@ -242,7 +262,8 @@ public final class WidgetContext {
          * @param parameters list of {@link ContextParameter} objects.
          * @return {@link Builder} instance
          */
-        public WidgetContext.Builder setParameters(List<ContextParameter> parameters) {
+        @NonNull
+        public WidgetContext.Builder setParameters(@NonNull Collection<ContextParameter> parameters) {
             this.parameters = new ArrayList<>(parameters);
             return this;
         }
@@ -252,6 +273,7 @@ public final class WidgetContext {
          *
          * @return {@link WidgetContext} instance
          */
+        @NonNull
         public WidgetContext build() {
             return new WidgetContext(this);
         }

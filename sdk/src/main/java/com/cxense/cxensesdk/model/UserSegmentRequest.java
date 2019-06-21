@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,7 +20,7 @@ public final class UserSegmentRequest {
     @JsonProperty("identities")
     List<UserIdentity> identities;
 
-    public UserSegmentRequest(@Nullable List<UserIdentity> identities, @Nullable List<String> siteGroups) {
+    public UserSegmentRequest(@Nullable Collection<UserIdentity> identities, @Nullable Collection<String> siteGroups) {
         if (siteGroups != null)
             this.siteGroups = new ArrayList<>(siteGroups);
         if (identities != null)

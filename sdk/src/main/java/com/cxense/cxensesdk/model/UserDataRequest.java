@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,8 +24,8 @@ public final class UserDataRequest extends UserIdentity {
     @JsonProperty("identityTypes")
     List<String> identityTypes;
 
-    public UserDataRequest(@NonNull UserIdentity identity, @Nullable List<String> groups, Boolean recent,
-                           @Nullable List<String> identityTypes) {
+    public UserDataRequest(@NonNull UserIdentity identity, @Nullable Collection<String> groups, @Nullable Boolean recent,
+                           @Nullable Collection<String> identityTypes) {
         super(identity);
         isRecent = recent;
         if (groups != null)

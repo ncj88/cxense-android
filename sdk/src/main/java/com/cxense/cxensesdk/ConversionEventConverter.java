@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk;
 
+import androidx.annotation.NonNull;
+
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.ConversionEvent;
 import com.cxense.cxensesdk.model.Event;
@@ -8,25 +10,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 
-public class ConversionEventConverter extends EventConverter<ConversionEvent> {
+class ConversionEventConverter extends EventConverter<ConversionEvent> {
     private final ObjectMapper mapper;
 
-    public ConversionEventConverter(ObjectMapper mapper) {
+    ConversionEventConverter(ObjectMapper mapper) {
         this.mapper = mapper;
     }
 
     @Override
-    public boolean canConvert(Event event) {
+    public boolean canConvert(@NonNull Event event) {
         return event instanceof ConversionEvent;
     }
 
     @Override
-    public Map<String, String> toQueryMap(ConversionEvent event) {
+    public Map<String, String> toQueryMap(@NonNull ConversionEvent event) {
         return null;
     }
 
+    @NonNull
     @Override
-    public EventRecord toEventRecord(ConversionEvent event) throws JsonProcessingException {
+    public EventRecord toEventRecord(@NonNull ConversionEvent event) throws JsonProcessingException {
         EventRecord record = new EventRecord();
         record.customId = event.getEventId();
         record.data = mapper.writeValueAsString(event);

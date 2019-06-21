@@ -20,7 +20,7 @@ public final class CxenseUserIdentity extends UserIdentity {
      * @param identity User identity object
      * @param cxenseId The Cxense-specific user identifier, either an internal cross-site user id
      */
-    public CxenseUserIdentity(@NonNull UserIdentity identity, @Nullable String cxenseId) {
+    public CxenseUserIdentity(@NonNull UserIdentity identity, @NonNull String cxenseId) {
         super(identity);
         setCxenseId(cxenseId);
     }
@@ -29,7 +29,7 @@ public final class CxenseUserIdentity extends UserIdentity {
      * @param type     The customer-specific identifier type as registered with Cxense
      * @param cxenseId The Cxense-specific user identifier, either an internal cross-site user id
      */
-    public CxenseUserIdentity(@Nullable String type, @Nullable String cxenseId) {
+    public CxenseUserIdentity(@Nullable String type, @NonNull String cxenseId) {
         super(type);
         setCxenseId(cxenseId);
     }
@@ -39,6 +39,7 @@ public final class CxenseUserIdentity extends UserIdentity {
      *
      * @return Cxense-specific user identifier
      */
+    @NonNull
     public String getCxenseId() {
         return cxenseId;
     }
@@ -48,7 +49,7 @@ public final class CxenseUserIdentity extends UserIdentity {
      *
      * @param cxenseId Cxense-specific user identifier
      */
-    public void setCxenseId(String cxenseId) {
+    public void setCxenseId(@NonNull String cxenseId) {
         Preconditions.checkStringForNullOrEmpty(cxenseId, "cxenseId");
         this.cxenseId = cxenseId;
     }

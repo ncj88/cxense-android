@@ -43,6 +43,7 @@ public final class CustomParameter {
      *
      * @return parameter name
      */
+    @NonNull
     public String getName() {
         return name;
     }
@@ -52,6 +53,7 @@ public final class CustomParameter {
      *
      * @return parameter value
      */
+    @NonNull
     public String getItem() {
         return item;
     }

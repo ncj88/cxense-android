@@ -2,6 +2,9 @@ package com.cxense.cxensesdk;
 
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -31,11 +34,24 @@ public final class CxenseConfiguration {
     CxenseConfiguration() {
     }
 
+    /**
+     * Gets credential provider
+     *
+     * @return {@link CredentialsProvider} instance
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public CredentialsProvider getCredentialsProvider() {
         return credentialsProvider;
     }
 
-    public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
+    /**
+     * Sets credential provider, which provide username/api key dynamically
+     *
+     * @param credentialsProvider {@link CredentialsProvider} instance
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    public void setCredentialsProvider(@NonNull CredentialsProvider credentialsProvider) {
         Preconditions.checkForNull(credentialsProvider, "credentialsProvider");
         this.credentialsProvider = credentialsProvider;
     }
@@ -170,6 +186,7 @@ public final class CxenseConfiguration {
      * @return current consent options
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public Set<ConsentOption> getConsentOptions() {
         return Collections.unmodifiableSet(consentOptions);
     }
@@ -180,7 +197,7 @@ public final class CxenseConfiguration {
      * @param options new options
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void setConsentOptions(ConsentOption... options) {
+    public void setConsentOptions(@NonNull ConsentOption... options) {
         consentOptions = new HashSet<>(Arrays.asList(options));
     }
 
@@ -190,6 +207,7 @@ public final class CxenseConfiguration {
      * @return current consent options string values
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
     public List<String> getConsentOptionsValues() {
         List<String> values = new ArrayList<>();
         for (ConsentOption option : consentOptions) {
@@ -204,6 +222,7 @@ public final class CxenseConfiguration {
      * @return comma-delimited string with current consent options
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @Nullable
     public String getConsentOptionsAsString() {
         if (consentOptions.isEmpty())
             return null;

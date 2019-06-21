@@ -4,6 +4,9 @@ import android.location.Location;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.Event;
 import com.cxense.cxensesdk.model.ExternalUserId;
@@ -20,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-19).
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public class PageViewEventConverter extends EventConverter<PageViewEvent> {
     public static final String TIME = "ltm";
     public static final String RND = "rnd";
@@ -66,19 +70,19 @@ public class PageViewEventConverter extends EventConverter<PageViewEvent> {
     private final CxenseConfiguration configuration;
     private final DeviceInfoProvider deviceInfoProvider;
 
-    public PageViewEventConverter(ObjectMapper mapper, CxenseConfiguration configuration, DeviceInfoProvider deviceInfoProvider) {
+    PageViewEventConverter(@NonNull ObjectMapper mapper, @NonNull CxenseConfiguration configuration, @NonNull DeviceInfoProvider deviceInfoProvider) {
         this.mapper = mapper;
         this.configuration = configuration;
         this.deviceInfoProvider = deviceInfoProvider;
     }
 
     @Override
-    public boolean canConvert(Event event) {
+    public boolean canConvert(@NonNull Event event) {
         return event instanceof PageViewEvent;
     }
 
     @Override
-    public Map<String, String> toQueryMap(PageViewEvent event) {
+    public Map<String, String> toQueryMap(@NonNull PageViewEvent event) {
         Calendar calendar = Calendar.getInstance();
         long offset = TimeUnit.MILLISECONDS.toMinutes(calendar.getTimeZone().getOffset(calendar.getTimeInMillis()));
         DisplayMetrics dm = deviceInfoProvider.getDisplayMetrics();
@@ -91,9 +95,9 @@ public class PageViewEventConverter extends EventConverter<PageViewEvent> {
 
         Map<String, String> result = new HashMap<>();
         int i = 0;
-        for (ExternalUserId userId : event.getExternalUserIds()) {
-            result.put(EXTERNAL_USER_KEY + i, userId.key);
-            result.put(EXTERNAL_USER_VALUE + i, userId.value);
+        for (ExternalUserId externalUserId : event.getExternalUserIds()) {
+            result.put(EXTERNAL_USER_KEY + i, externalUserId.userType);
+            result.put(EXTERNAL_USER_VALUE + i, externalUserId.userId);
         }
         if (configuration.isAutoMetaInfoTrackingEnabled()) {
             // automatic app meta gathering
@@ -154,8 +158,9 @@ public class PageViewEventConverter extends EventConverter<PageViewEvent> {
         return result;
     }
 
+    @NonNull
     @Override
-    public EventRecord toEventRecord(PageViewEvent event) throws JsonProcessingException {
+    public EventRecord toEventRecord(@NonNull PageViewEvent event) throws JsonProcessingException {
         Map<String, String> eventMap = toQueryMap(event);
         EventRecord record = new EventRecord();
         record.customId = event.getEventId();

@@ -47,6 +47,7 @@ public class BaseUserIdentity {
      *
      * @return user identifier
      */
+    @Nullable
     public String getId() {
         return id;
     }
@@ -56,6 +57,7 @@ public class BaseUserIdentity {
      *
      * @return user identifier type
      */
+    @Nullable
     public String getType() {
         return type;
     }

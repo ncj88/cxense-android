@@ -31,7 +31,7 @@ import retrofit2.http.Url;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-03).
  */
 
-public interface CxenseApi {
+interface CxenseApi {
 
     @POST(CxenseConstants.ENDPOINT_USER_SEGMENTS)
     Call<SegmentsResponse> getUserSegments(@Body UserSegmentRequest request);

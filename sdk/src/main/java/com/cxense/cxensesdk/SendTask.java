@@ -28,7 +28,7 @@ import retrofit2.Response;
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-18).
  */
-public class SendTask implements Runnable {
+class SendTask implements Runnable {
     private static final String TAG = "CxenseEventsSender";
     private final CxenseApi cxenseApi;
     private final EventRepository eventRepository;
@@ -40,10 +40,10 @@ public class SendTask implements Runnable {
     private final ApiErrorParser errorParser;
     private DispatchEventsCallback sendCallback;
 
-    public SendTask(@NonNull CxenseApi api, @NonNull EventRepository eventRepository, @NonNull CxenseConfiguration configuration,
-                    @NonNull DeviceInfoProvider deviceInfoProvider, @NonNull UserProvider userProvider, @NonNull ObjectMapper mapper,
-                    @NonNull PerformanceEventConverter performanceEventConverter, @NonNull ApiErrorParser errorParser,
-                    @Nullable DispatchEventsCallback sendCallback) {
+    SendTask(@NonNull CxenseApi api, @NonNull EventRepository eventRepository, @NonNull CxenseConfiguration configuration,
+             @NonNull DeviceInfoProvider deviceInfoProvider, @NonNull UserProvider userProvider, @NonNull ObjectMapper mapper,
+             @NonNull PerformanceEventConverter performanceEventConverter, @NonNull ApiErrorParser errorParser,
+             @Nullable DispatchEventsCallback sendCallback) {
         cxenseApi = api;
         this.eventRepository = eventRepository;
         this.configuration = configuration;
@@ -55,7 +55,7 @@ public class SendTask implements Runnable {
         this.sendCallback = sendCallback;
     }
 
-    public void setDispatchEventsCallback(DispatchEventsCallback callback) {
+    void setDispatchEventsCallback(DispatchEventsCallback callback) {
         sendCallback = callback;
     }
 

@@ -5,6 +5,7 @@ import android.webkit.URLUtil;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import java.util.Locale;
 
@@ -13,7 +14,7 @@ import java.util.Locale;
  *
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
-
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 public final class Preconditions {
     private Preconditions() {
     }
@@ -28,7 +29,7 @@ public final class Preconditions {
      * @param <T>         argument type
      * @throws IllegalArgumentException if function returns true
      */
-    public static <T> void check(Function<T, Boolean> function, @Nullable T arg,
+    public static <T> void check(@NonNull Function<T, Boolean> function, @Nullable T arg,
                                  @NonNull String message, Object... messageArgs) {
         if (function.apply(arg))
             throw new IllegalArgumentException(String.format(Locale.US, message, messageArgs));

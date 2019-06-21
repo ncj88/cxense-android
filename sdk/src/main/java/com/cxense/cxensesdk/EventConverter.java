@@ -2,6 +2,7 @@ package com.cxense.cxensesdk;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
 
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.Event;
@@ -12,15 +13,18 @@ import java.util.Map;
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-19).
  */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 public abstract class EventConverter<T extends Event> {
     @NonNull
     String escapeString(@Nullable String str) {
         return str != null ? str : "";
     }
 
-    public abstract boolean canConvert(Event event);
+    public abstract boolean canConvert(@NonNull Event event);
 
-    public abstract Map<String, String> toQueryMap(T event);
+    @Nullable
+    public abstract Map<String, String> toQueryMap(@NonNull T event);
 
-    public abstract EventRecord toEventRecord(T event) throws JsonProcessingException;
+    @NonNull
+    public abstract EventRecord toEventRecord(@NonNull T event) throws JsonProcessingException;
 }

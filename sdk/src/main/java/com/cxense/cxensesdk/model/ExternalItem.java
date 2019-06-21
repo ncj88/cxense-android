@@ -40,6 +40,7 @@ public final class ExternalItem {
      *
      * @return group name
      */
+    @NonNull
     public String getGroup() {
         return group;
     }
@@ -49,6 +50,7 @@ public final class ExternalItem {
      *
      * @return item
      */
+    @NonNull
     public String getItem() {
         return item;
     }

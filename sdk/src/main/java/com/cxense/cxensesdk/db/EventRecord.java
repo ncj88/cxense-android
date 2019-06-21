@@ -2,6 +2,9 @@ package com.cxense.cxensesdk.db;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Database class for events
  *
@@ -25,10 +28,12 @@ public final class EventRecord extends DatabaseObject {
     /**
      * Contains customer event id
      */
+    @Nullable
     public String customId;
     /**
      * Contains the event data which should be used to report
      */
+    @Nullable
     public String data;
     /**
      * Contains unix time in UTZ sense the epoch when the event was registered
@@ -37,18 +42,22 @@ public final class EventRecord extends DatabaseObject {
     /**
      * Contains Cxense site-specific persistent cookie
      */
+    @Nullable
     public String ckp;
     /**
      * Contains a random number, for cache-busting purposes and to uniquely identify a page-view request
      */
+    @Nullable
     public String rnd;
     /**
      * Contains the event type.
      */
+    @Nullable
     public String eventType;
     /**
      * Contains spent time in seconds, null if time not tracked
      */
+    @Nullable
     public Long spentTime = null;
     /**
      * Contains sent flag for event
@@ -59,7 +68,7 @@ public final class EventRecord extends DatabaseObject {
         super();
     }
 
-    public EventRecord(EventRecord other) {
+    public EventRecord(@NonNull EventRecord other) {
         this();
         customId = other.customId;
         data = other.data;
@@ -71,7 +80,7 @@ public final class EventRecord extends DatabaseObject {
         id = null;
     }
 
-    public EventRecord(ContentValues values) {
+    public EventRecord(@NonNull ContentValues values) {
         super(values);
         customId = values.getAsString(EVENT_CUSTOM_ID);
         data = values.getAsString(EVENT);
@@ -83,11 +92,13 @@ public final class EventRecord extends DatabaseObject {
         isSent = values.getAsBoolean(IS_SENT);
     }
 
+    @NonNull
     @Override
     public String getTableName() {
         return TABLE_NAME;
     }
 
+    @NonNull
     @Override
     protected ContentValues toContentValues() {
         ContentValues values = super.toContentValues();

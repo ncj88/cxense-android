@@ -3,6 +3,9 @@ package com.cxense.cxensesdk.model;
 import android.content.ContentValues;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.cxense.cxensesdk.EventConverter;
 import com.cxense.cxensesdk.EventStatus;
 import com.cxense.cxensesdk.PageViewEventConverter;
@@ -28,13 +31,13 @@ public class EventRepository {
     private final ObjectMapper mapper;
     private final List<EventConverter> eventConverters;
 
-    public EventRepository(DatabaseHelper databaseHelper, ObjectMapper mapper, List<EventConverter> eventConverters) {
+    public EventRepository(@NonNull DatabaseHelper databaseHelper, @NonNull ObjectMapper mapper, @NonNull List<EventConverter> eventConverters) {
         this.databaseHelper = databaseHelper;
         this.mapper = mapper;
         this.eventConverters = eventConverters;
     }
 
-    public void putEventsInDatabase(Event... events) {
+    public void putEventsInDatabase(@NonNull Event... events) {
         for (Event event : events) {
             try {
                 for (EventConverter converter : eventConverters) {
@@ -52,7 +55,7 @@ public class EventRepository {
         }
     }
 
-    public long putEventRecordInDatabase(EventRecord record) {
+    public long putEventRecordInDatabase(@NonNull EventRecord record) {
         return databaseHelper.save(record);
     }
 
@@ -61,18 +64,22 @@ public class EventRepository {
                 new String[]{"" + (System.currentTimeMillis() - outdatePeriod)});
     }
 
+    @NonNull
     public List<EventRecord> getNotSubmittedPvEvents() {
         return getEvents(EventRecord.IS_SENT + " = 0 AND " + EventRecord.EVENT_TYPE + " = ?", PageViewEvent.DEFAULT_EVENT_TYPE);
     }
 
+    @NonNull
     public List<EventRecord> getNotSubmittedDmpEvents() {
         return getEvents(EventRecord.IS_SENT + " = 0 AND " + EventRecord.EVENT_TYPE + " <> ? AND " + EventRecord.EVENT_TYPE + " <> ?", PageViewEvent.DEFAULT_EVENT_TYPE, ConversionEvent.EVENT_TYPE);
     }
 
+    @NonNull
     public List<EventRecord> getNotSubmittedConversionEvents() {
         return getEvents(EventRecord.IS_SENT + " = 0 AND " + EventRecord.EVENT_TYPE + " = ?", ConversionEvent.EVENT_TYPE);
     }
 
+    @NonNull
     private List<EventRecord> getEvents(String selection, String... selectionArgs) {
         List<ContentValues> values = databaseHelper.query(EventRecord.TABLE_NAME, EventRecord.COLUMNS,
                 selection, selectionArgs, null, null, EventRecord.TIME + " ASC");
@@ -83,6 +90,7 @@ public class EventRepository {
         return records;
     }
 
+    @Nullable
     public EventRecord getPvEventFromDatabase(String eventId) {
         List<ContentValues> values = databaseHelper.query(EventRecord.TABLE_NAME, EventRecord.COLUMNS,
                 EventRecord.EVENT_CUSTOM_ID + "= ? AND " + EventRecord.EVENT_TYPE + "= ?",
@@ -93,6 +101,7 @@ public class EventRepository {
         return new EventRecord(values.get(0));
     }
 
+    @NonNull
     public List<EventStatus> getEventStatuses() {
         List<ContentValues> values = databaseHelper.query(EventRecord.TABLE_NAME,
                 new String[]{EventRecord.EVENT_CUSTOM_ID, EventRecord.IS_SENT}, null,

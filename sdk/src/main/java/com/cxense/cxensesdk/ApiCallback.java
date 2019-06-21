@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -16,7 +17,7 @@ class ApiCallback<T> implements Callback<T> {
     private final LoadCallback<T> callback;
     private final ApiErrorParser errorParser;
 
-    ApiCallback(LoadCallback<T> callback, ApiErrorParser errorParser) {
+    ApiCallback(@Nullable LoadCallback<T> callback, @NonNull ApiErrorParser errorParser) {
         this.callback = callback;
         this.errorParser = errorParser;
     }

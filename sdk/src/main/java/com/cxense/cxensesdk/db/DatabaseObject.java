@@ -3,6 +3,9 @@ package com.cxense.cxensesdk.db;
 import android.content.ContentValues;
 import android.provider.BaseColumns;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 /**
  * Base class for database objects.
  *
@@ -14,18 +17,21 @@ public abstract class DatabaseObject implements BaseColumns {
     /**
      * Contains primary key
      */
+    @Nullable
     public Integer id;
 
     protected DatabaseObject() {
     }
 
-    protected DatabaseObject(ContentValues values) {
+    protected DatabaseObject(@NonNull ContentValues values) {
         this();
         id = values.getAsInteger(_ID);
     }
 
+    @NonNull
     public abstract String getTableName();
 
+    @NonNull
     protected ContentValues toContentValues() {
         ContentValues values = new ContentValues();
         values.put(_ID, id);
