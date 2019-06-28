@@ -17,11 +17,12 @@ object Versions {
     const val buildScanPlugin = "2.3"
     const val versionsPlugin = "0.21.0"
     const val releasePlugin = "1.10.1"
-    const val androidToolsPlugin = "3.6.0-alpha03"
+    const val androidToolsPlugin = "3.6.0-alpha04"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "2.0.0"
     // Android libraries
     const val compatLibrary = "1.0.2"
+    const val annotationsLibrary = "1.1.0"
     const val materialLibrary = "1.0.0"
 
     // Third party Libraries
@@ -53,7 +54,7 @@ object Plugins {
 
 object Libs {
     const val kotlinStdlib = "stdlib-jdk7"
-    const val annotations = "androidx.annotation:annotation:${Versions.compatLibrary}"
+    const val annotations = "androidx.annotation:annotation:${Versions.annotationsLibrary}"
     const val appcompat = "androidx.appcompat:appcompat:${Versions.compatLibrary}"
     const val material = "com.google.android.material:material:${Versions.materialLibrary}"
 
