@@ -12,26 +12,27 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.3.40"
+    const val kotlin = "1.3.41"
     //Plugins
     const val buildScanPlugin = "2.3"
     const val versionsPlugin = "0.21.0"
     const val releasePlugin = "1.10.1"
-    const val androidToolsPlugin = "3.6.0-alpha03"
+    const val androidToolsPlugin = "3.6.0-alpha04"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "2.0.0"
     // Android libraries
     const val compatLibrary = "1.0.2"
+    const val annotationsLibrary = "1.1.0"
     const val materialLibrary = "1.0.0"
 
     // Third party Libraries
-    const val googlePlayServices = "16.0.0"
+    const val googlePlayServices = "17.0.0"
     const val retrofit = "2.6.0"
     const val okhttp = "3.12.3"
 
     // Test Libraries
     const val junit = "4.12"
-    const val testRunner = "1.1.0"
+    const val testRunner = "1.1.1"
     const val powermock = "2.0.2"
     const val hamcrest = "2.1"
 }
@@ -53,7 +54,7 @@ object Plugins {
 
 object Libs {
     const val kotlinStdlib = "stdlib-jdk7"
-    const val annotations = "androidx.annotation:annotation:${Versions.compatLibrary}"
+    const val annotations = "androidx.annotation:annotation:${Versions.annotationsLibrary}"
     const val appcompat = "androidx.appcompat:appcompat:${Versions.compatLibrary}"
     const val material = "com.google.android.material:material:${Versions.materialLibrary}"
 

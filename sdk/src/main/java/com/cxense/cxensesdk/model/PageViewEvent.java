@@ -447,6 +447,7 @@ public final class PageViewEvent extends Event {
          *
          * @param userIds User ids
          * @return Builder instance
+         * @since 1.6.1
          */
         @NonNull
         public Builder addExternalUserIds(@NonNull ExternalUserId... userIds) {

@@ -279,6 +279,7 @@ public final class PerformanceEvent extends Event {
          *
          * @param identities Some {@link UserIdentity} objects
          * @return Builder instance
+         * @since 1.6.1
          */
         @NonNull
         public Builder addIdentities(@NonNull UserIdentity... identities) {
@@ -356,6 +357,7 @@ public final class PerformanceEvent extends Event {
          *
          * @param segments matching segments
          * @return Builder instance
+         * @since 1.6.1
          */
         @NonNull
         public Builder addSegments(@NonNull String... segments) {
@@ -388,8 +390,15 @@ public final class PerformanceEvent extends Event {
             return this;
         }
 
+        /**
+         * Adds optional collection of customer-defined parameters to event.
+         *
+         * @param parameters custom parameters
+         * @return Builder instance
+         * @since 1.6.1
+         */
         @NonNull
-        public Builder addCustomParameters(CustomParameter... parameters) {
+        public Builder addCustomParameters(@NonNull CustomParameter... parameters) {
             return addCustomParameters(Arrays.asList(parameters));
         }
 
