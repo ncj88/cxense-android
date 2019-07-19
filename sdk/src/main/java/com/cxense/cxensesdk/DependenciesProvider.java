@@ -1,10 +1,7 @@
 package com.cxense.cxensesdk;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
@@ -40,8 +37,8 @@ public final class DependenciesProvider {
 
     private static DependenciesProvider instance;
     private final Context appContext;
-    private final String defaultUserAgent;
     private final ScheduledExecutorService executor;
+    private final UserAgentProvider userAgentProvider;
     private final DeviceInfoProvider deviceInfoProvider;
     private final AdvertisingIdProvider advertisingIdProvider;
     private final UserProvider userProvider;
@@ -65,15 +62,15 @@ public final class DependenciesProvider {
 
     private DependenciesProvider(@NonNull Context context) {
         appContext = context.getApplicationContext();
-        defaultUserAgent = getDefaultUserAgent(appContext);
         executor = Executors.newSingleThreadScheduledExecutor();
+        userAgentProvider = new UserAgentProvider(getSdkVersion(), appContext, executor);
         deviceInfoProvider = new DeviceInfoProvider(appContext);
         advertisingIdProvider = new AdvertisingIdProvider(appContext, executor);
         userProvider = new UserProvider(advertisingIdProvider);
         cxenseConfiguration = new CxenseConfiguration();
         cxenseAuthenticator = new CxenseAuthenticator(cxenseConfiguration);
         Interceptor sdkInterceptor = new SdkInterceptor(getSdkName(), getSdkVersion()),
-                userAgentInterceptor = new UserAgentInterceptor(getUserAgent());
+                userAgentInterceptor = new UserAgentInterceptor(userAgentProvider);
         okHttpClient = buildHttpClient(cxenseAuthenticator, sdkInterceptor, userAgentInterceptor);
         mapper = buildMapper();
         pageViewEventConverter = new PageViewEventConverter(mapper, cxenseConfiguration, deviceInfoProvider);
@@ -142,49 +139,6 @@ public final class DependenciesProvider {
     @NonNull
     private String getBaseUrl() {
         return BuildConfig.SDK_ENDPOINT;
-    }
-
-    /**
-     * Gets default user-agent from Android
-     *
-     * @return system default user-agent
-     */
-    private String getDefaultUserAgent(Context context) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                return WebSettings.getDefaultUserAgent(context);
-            }
-            return new WebView(context).getSettings().getUserAgentString();
-        } catch (Exception e) {
-            /*
-            This block is needed as attempt to avoid problem with Android System WebView
-            service's update during which any requests to WebViews will be finished
-            with android.content.pm.PackageManager$NameNotFoundException.
-
-            What is important here, that 'user-agent' is required param in Cxense Insight API,
-            so, we need to provide it. We can use 'http.agent' property's value here, but
-            it provides less details about device than WebView. That is why property's value
-            is used without defaultUserAgent field's initialization.
-
-            Best practise here - always using WebView's 'user-agent' string.
-
-            Bug in Android issue tracker can be found here:
-            https://code.google.com/p/android/issues/detail?id=175124
-
-            Good explanation of the problem can be found here:
-            https://bugs.chromium.org/p/chromium/issues/detail?id=506369
-             */
-            Log.e(TAG, e.getMessage(), e);
-        }
-        return System.getProperty("http.agent", "");
-    }
-
-    /**
-     * Returns the user-agent used by the SDK
-     */
-    @NonNull
-    private String getUserAgent() {
-        return String.format("cx-sdk/%s %s", BuildConfig.VERSION_NAME, defaultUserAgent);
     }
 
     /**

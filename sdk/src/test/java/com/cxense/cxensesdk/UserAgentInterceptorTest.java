@@ -8,6 +8,8 @@ import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.RecordedRequest;
 
 import static org.junit.Assert.assertEquals;
+import static org.powermock.api.mockito.PowerMockito.doReturn;
+import static org.powermock.api.mockito.PowerMockito.mock;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
@@ -18,10 +20,12 @@ public class UserAgentInterceptorTest extends BaseInterceptorTest {
     @Test
     public void intercept() throws Exception {
         mockWebServer.enqueue(new MockResponse());
+        UserAgentProvider mockUserAgentProvider = mock(UserAgentProvider.class);
+        doReturn(USER_AGENT).when(mockUserAgentProvider).getUserAgent();
 
         OkHttpClient okHttpClient = new OkHttpClient()
                 .newBuilder()
-                .addInterceptor(new UserAgentInterceptor(USER_AGENT))
+                .addInterceptor(new UserAgentInterceptor(mockUserAgentProvider))
                 .build();
         okHttpClient.newCall(new Request.Builder().url(mockWebServer.url("/")).build()).execute();
 

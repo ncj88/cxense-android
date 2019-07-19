@@ -17,7 +17,7 @@ object Versions {
     const val buildScanPlugin = "2.3"
     const val versionsPlugin = "0.21.0"
     const val releasePlugin = "1.10.1"
-    const val androidToolsPlugin = "3.6.0-alpha04"
+    const val androidToolsPlugin = "3.6.0-alpha05"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "2.0.0"
     // Android libraries
