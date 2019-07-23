@@ -11,8 +11,7 @@ import com.cxense.cxensesdk.model.CustomParameter;
 import com.cxense.cxensesdk.model.Event;
 import com.cxense.cxensesdk.model.PerformanceEvent;
 import com.cxense.cxensesdk.model.UserIdentity;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,11 +26,11 @@ import java.util.Map;
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 public class PerformanceEventConverter extends EventConverter<PerformanceEvent> {
     public static final String CONSENT = "con";
-    private final ObjectMapper mapper;
+    private final Gson gson;
     private final CxenseConfiguration configuration;
 
-    PerformanceEventConverter(@NonNull ObjectMapper mapper, @NonNull CxenseConfiguration configuration) {
-        this.mapper = mapper;
+    PerformanceEventConverter(@NonNull Gson gson, @NonNull CxenseConfiguration configuration) {
+        this.gson = gson;
         this.configuration = configuration;
     }
 
@@ -72,10 +71,10 @@ public class PerformanceEventConverter extends EventConverter<PerformanceEvent> 
 
     @NonNull
     @Override
-    public EventRecord toEventRecord(@NonNull PerformanceEvent event) throws JsonProcessingException {
+    public EventRecord toEventRecord(@NonNull PerformanceEvent event)  {
         EventRecord record = new EventRecord();
         record.customId = event.getEventId();
-        record.data = mapper.writeValueAsString(event);
+        record.data = gson.toJson(event);
         Date date = event.getTime();
         record.timestamp = date != null ? date.getTime() : System.currentTimeMillis();
         record.ckp = event.getPrnd();

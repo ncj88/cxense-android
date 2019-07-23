@@ -8,9 +8,9 @@ import androidx.annotation.RestrictTo;
 
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.model.EventRepository;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cxense.cxensesdk.model.WidgetItem;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-17).
@@ -45,7 +45,7 @@ public final class DependenciesProvider {
     private final CxenseConfiguration cxenseConfiguration;
     private final CxenseAuthenticator cxenseAuthenticator;
     private final OkHttpClient okHttpClient;
-    private final ObjectMapper mapper;
+    private final Gson gson;
     private final Converter.Factory converterFactory;
     private final Retrofit retrofit;
     private final ApiErrorParser errorParser;
@@ -72,17 +72,17 @@ public final class DependenciesProvider {
         Interceptor sdkInterceptor = new SdkInterceptor(getSdkName(), getSdkVersion()),
                 userAgentInterceptor = new UserAgentInterceptor(userAgentProvider);
         okHttpClient = buildHttpClient(cxenseAuthenticator, sdkInterceptor, userAgentInterceptor);
-        mapper = buildMapper();
-        pageViewEventConverter = new PageViewEventConverter(mapper, cxenseConfiguration, deviceInfoProvider);
-        performanceEventConverter = new PerformanceEventConverter(mapper, cxenseConfiguration);
-        conversionEventConverter = new ConversionEventConverter(mapper);
-        converterFactory = JacksonConverterFactory.create(mapper);
+        gson = buildGson();
+        pageViewEventConverter = new PageViewEventConverter(gson, cxenseConfiguration, deviceInfoProvider);
+        performanceEventConverter = new PerformanceEventConverter(gson, cxenseConfiguration);
+        conversionEventConverter = new ConversionEventConverter(gson);
+        converterFactory = GsonConverterFactory.create(gson);
         retrofit = buildRetrofit(getBaseUrl(), okHttpClient, converterFactory);
         Converter<ResponseBody, ApiError> errorConverter = retrofit.responseBodyConverter(ApiError.class, new Annotation[0]);
         errorParser = new ApiErrorParser(errorConverter);
         apiInstance = retrofit.create(CxenseApi.class);
         databaseHelper = new DatabaseHelper(appContext);
-        eventRepository = new EventRepository(databaseHelper, mapper, Arrays.asList(pageViewEventConverter, performanceEventConverter, conversionEventConverter));
+        eventRepository = new EventRepository(databaseHelper, gson, Arrays.asList(pageViewEventConverter, performanceEventConverter, conversionEventConverter));
         eventsSendCallback = statuses -> {
             for (EventStatus eventStatus : statuses) {
                 if (eventStatus.exception != null) {
@@ -91,8 +91,8 @@ public final class DependenciesProvider {
                 }
             }
         };
-        eventsSendTask = new SendTask(apiInstance, eventRepository, cxenseConfiguration, deviceInfoProvider, userProvider, mapper, performanceEventConverter, errorParser, eventsSendCallback);
-        cxenseSdk = new CxenseSdk(executor, cxenseConfiguration, advertisingIdProvider, userProvider, apiInstance, errorParser, mapper, eventRepository, eventsSendTask);
+        eventsSendTask = new SendTask(apiInstance, eventRepository, cxenseConfiguration, deviceInfoProvider, userProvider, gson, performanceEventConverter, errorParser, eventsSendCallback);
+        cxenseSdk = new CxenseSdk(executor, cxenseConfiguration, advertisingIdProvider, userProvider, apiInstance, errorParser, gson, eventRepository, eventsSendTask);
     }
 
     static void init(Context context) {
@@ -163,17 +163,11 @@ public final class DependenciesProvider {
                 .build();
     }
 
-    /**
-     * Builds and returns default object mapper for Jackson. You may override it in descendant.
-     *
-     * @return {@link ObjectMapper} instance
-     */
-    private ObjectMapper buildMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return mapper;
+    private Gson buildGson() {
+        return new GsonBuilder()
+                .setLenient()
+                .registerTypeAdapter(WidgetItem.class, new WidgetItemTypeAdapter())
+                .create();
     }
 
     /**
@@ -240,8 +234,8 @@ public final class DependenciesProvider {
     }
 
     @NonNull
-    public ObjectMapper getMapper() {
-        return mapper;
+    public Gson getGson() {
+        return gson;
     }
 
     @NonNull

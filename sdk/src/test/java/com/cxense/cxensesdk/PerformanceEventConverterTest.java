@@ -3,7 +3,7 @@ package com.cxense.cxensesdk;
 import com.cxense.cxensesdk.model.CustomParameter;
 import com.cxense.cxensesdk.model.CxenseUserIdentity;
 import com.cxense.cxensesdk.model.PerformanceEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,6 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.when;
@@ -28,7 +27,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @PrepareForTest({CxenseConfiguration.class, PerformanceEvent.class})
 public class PerformanceEventConverterTest extends BaseTest {
-    private ObjectMapper mapper;
+    private Gson gson;
     private CxenseConfiguration configuration;
     private PerformanceEventConverter converter;
     private PerformanceEvent event;
@@ -36,9 +35,9 @@ public class PerformanceEventConverterTest extends BaseTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        mapper = mock(ObjectMapper.class);
+        gson = mock(Gson.class);
         configuration = mock(CxenseConfiguration.class);
-        converter = new PerformanceEventConverter(mapper, configuration);
+        converter = new PerformanceEventConverter(gson, configuration);
         event = mock(PerformanceEvent.class);
         when(event.getTime()).thenReturn(new Date(0));
     }
@@ -72,6 +71,6 @@ public class PerformanceEventConverterTest extends BaseTest {
     @Test
     public void toEventRecord() throws Exception {
         assertNotNull(converter.toEventRecord(event));
-        verify(mapper).writeValueAsString(any());
+        verify(gson).toJson(event);
     }
 }

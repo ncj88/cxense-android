@@ -2,8 +2,9 @@ package com.cxense.cxensesdk.model;
 
 import androidx.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.cxense.cxensesdk.RawJsonAdapter;
+import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,8 @@ import java.util.List;
  */
 
 public final class EventDataRequest {
-    @JsonProperty("events")
-    @JsonRawValue
+    @SerializedName("events")
+    @JsonAdapter(RawJsonAdapter.class)
     List<String> events;
 
     /**

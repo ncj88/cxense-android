@@ -2,7 +2,7 @@ package com.cxense.cxensesdk;
 
 import androidx.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Api Error answer
@@ -12,6 +12,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 final class ApiError {
     @Nullable
-    @JsonProperty("error")
+    @SerializedName("error")
     String error;
 }

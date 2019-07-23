@@ -2,7 +2,7 @@ package com.cxense.cxensesdk.model;
 
 import androidx.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,9 +14,9 @@ import java.util.List;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public final class User extends UserIdentity {
-    @JsonProperty("profile")
+    @SerializedName("profile")
     List<UserProfile> profiles;
-    @JsonProperty("identities")
+    @SerializedName("identities")
     List<UserIdentity> identities;
 
     protected User() {

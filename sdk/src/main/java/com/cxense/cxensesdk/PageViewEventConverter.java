@@ -11,8 +11,7 @@ import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.Event;
 import com.cxense.cxensesdk.model.ExternalUserId;
 import com.cxense.cxensesdk.model.PageViewEvent;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -66,12 +65,12 @@ public class PageViewEventConverter extends EventConverter<PageViewEvent> {
     private static final String ALTITUDE = "palt";
     private static final String HEADING = "phed";
     private static final String SPEED = "pspd";
-    private final ObjectMapper mapper;
+    private final Gson gson;
     private final CxenseConfiguration configuration;
     private final DeviceInfoProvider deviceInfoProvider;
 
-    PageViewEventConverter(@NonNull ObjectMapper mapper, @NonNull CxenseConfiguration configuration, @NonNull DeviceInfoProvider deviceInfoProvider) {
-        this.mapper = mapper;
+    PageViewEventConverter(@NonNull Gson gson, @NonNull CxenseConfiguration configuration, @NonNull DeviceInfoProvider deviceInfoProvider) {
+        this.gson = gson;
         this.configuration = configuration;
         this.deviceInfoProvider = deviceInfoProvider;
     }
@@ -160,11 +159,11 @@ public class PageViewEventConverter extends EventConverter<PageViewEvent> {
 
     @NonNull
     @Override
-    public EventRecord toEventRecord(@NonNull PageViewEvent event) throws JsonProcessingException {
+    public EventRecord toEventRecord(@NonNull PageViewEvent event) {
         Map<String, String> eventMap = toQueryMap(event);
         EventRecord record = new EventRecord();
         record.customId = event.getEventId();
-        record.data = mapper.writeValueAsString(eventMap);
+        record.data = gson.toJson(eventMap);
         record.timestamp = event.getDate().getTime();
         record.ckp = eventMap.get(CKP);
         record.rnd = eventMap.get(RND);

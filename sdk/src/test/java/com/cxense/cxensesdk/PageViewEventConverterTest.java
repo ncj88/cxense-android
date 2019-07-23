@@ -5,7 +5,7 @@ import android.util.DisplayMetrics;
 
 import com.cxense.cxensesdk.model.ExternalUserId;
 import com.cxense.cxensesdk.model.PageViewEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +22,6 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasKey;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
@@ -36,7 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class PageViewEventConverterTest extends BaseTest {
     private static final String APPNAME = "NAME";
     private static final String APPVERSION = "1.0";
-    private ObjectMapper mapper;
+    private Gson gson;
     private PageViewEventConverter converter;
     private PageViewEvent event;
     private DeviceInfoProvider deviceInfoProvider;
@@ -46,10 +45,10 @@ public class PageViewEventConverterTest extends BaseTest {
     public void setUp() throws Exception {
         super.setUp();
         event = mock(PageViewEvent.class);
-        mapper = mock(ObjectMapper.class);
+        gson = mock(Gson.class);
         deviceInfoProvider = mock(DeviceInfoProvider.class);
         configuration = mock(CxenseConfiguration.class);
-        converter = spy(new PageViewEventConverter(mapper, configuration, deviceInfoProvider));
+        converter = spy(new PageViewEventConverter(gson, configuration, deviceInfoProvider));
         when(event.getDate()).thenReturn(new Date(0));
     }
 
@@ -105,6 +104,6 @@ public class PageViewEventConverterTest extends BaseTest {
         doReturn(eventMap).when(converter).toQueryMap(event);
         assertNotNull(converter.toEventRecord(event));
         verify(converter).toQueryMap(event);
-        verify(mapper).writeValueAsString(any());
+        verify(gson).toJson(eventMap);
     }
 }

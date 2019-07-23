@@ -20,7 +20,7 @@ import com.cxense.cxensesdk.model.WidgetContext;
 import com.cxense.cxensesdk.model.WidgetItem;
 import com.cxense.cxensesdk.model.WidgetRequest;
 import com.cxense.cxensesdk.model.WidgetVisibilityReport;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
@@ -51,7 +51,7 @@ public final class CxenseSdk {
     private final UserProvider userProvider;
     private final CxenseApi apiInstance;
     private final ApiErrorParser errorParser;
-    private final ObjectMapper mapper;
+    private final Gson gson;
     private final SendTask sendTask;
 
     private ScheduledFuture<?> scheduled;
@@ -62,7 +62,7 @@ public final class CxenseSdk {
     CxenseSdk(@NonNull ScheduledExecutorService executor, @NonNull CxenseConfiguration cxenseConfiguration,
               @NonNull AdvertisingIdProvider advertisingIdProvider, @NonNull UserProvider userProvider,
               @NonNull CxenseApi cxenseApi, @NonNull ApiErrorParser errorParser,
-              @NonNull ObjectMapper objectMapper, @NonNull EventRepository eventRepository,
+              @NonNull Gson gson, @NonNull EventRepository eventRepository,
               @NonNull SendTask sendTask) {
         this.executor = executor;
         configuration = cxenseConfiguration;
@@ -70,7 +70,7 @@ public final class CxenseSdk {
         this.userProvider = userProvider;
         apiInstance = cxenseApi;
         this.errorParser = errorParser;
-        mapper = objectMapper;
+        this.gson = gson;
         this.eventRepository = eventRepository;
         this.sendTask = sendTask;
 
@@ -496,7 +496,7 @@ public final class CxenseSdk {
                 try {
                     Class<T> clazz = (Class<T>) ((ParameterizedType) callback.getClass().getGenericInterfaces()[0])
                             .getActualTypeArguments()[0];
-                    callback.onSuccess(mapper.readValue(responseBody.charStream(), clazz));
+                    callback.onSuccess(gson.fromJson(responseBody.charStream(), clazz));
                 } catch (Exception e) {
                     callback.onError(e);
                 }

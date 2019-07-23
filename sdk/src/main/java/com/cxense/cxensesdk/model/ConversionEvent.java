@@ -5,7 +5,7 @@ import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.DependenciesProvider;
 import com.cxense.cxensesdk.Preconditions;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,22 +28,22 @@ public class ConversionEvent extends Event {
     static final String EVENT_TYPE = "conversion";
     static final int MAX_LENGTH = 30;
 
-    @JsonProperty("eventType")
+    @SerializedName("eventType")
     private String type = EVENT_TYPE;
-    @JsonProperty("userIds")
+    @SerializedName("userIds")
     private List<UserIdentity> identities;
-    @JsonProperty("siteId")
+    @SerializedName("siteId")
     private String siteId;
-    @JsonProperty("consent")
+    @SerializedName("consent")
     private List<String> consentOptions;
 
-    @JsonProperty("productId")
+    @SerializedName("productId")
     private String productId;
-    @JsonProperty("productPrice")
+    @SerializedName("productPrice")
     private Double price;
-    @JsonProperty("productRenewalFrequency")
+    @SerializedName("productRenewalFrequency")
     private String renewalFrequency;
-    @JsonProperty("funnelStep")
+    @SerializedName("funnelStep")
     private String funnelStep;
 
     private ConversionEvent() {

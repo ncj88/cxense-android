@@ -8,13 +8,14 @@ import com.cxense.cxensesdk.model.UserExternalData;
 import com.cxense.cxensesdk.model.UserIdentity;
 import com.cxense.cxensesdk.model.WidgetContext;
 import com.cxense.cxensesdk.model.WidgetItem;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -64,7 +65,7 @@ public class CxenseSdkTest extends BaseTest {
         sendTask = mock(SendTask.class);
         cxense = spy(new CxenseSdk(executor, configuration,
                 advertisingIdProvider, userProvider, api, mock(ApiErrorParser.class),
-                mock(ObjectMapper.class), eventRepository, sendTask));
+                mock(Gson.class), eventRepository, sendTask));
     }
 
     private void verifyApiCalled() {
@@ -73,7 +74,7 @@ public class CxenseSdkTest extends BaseTest {
 
     @Test
     public void trackClick() {
-        cxense.trackClick(new WidgetItem());
+        cxense.trackClick(new WidgetItem("", "", "", new HashMap<>()));
         verifyApiCalled();
     }
 

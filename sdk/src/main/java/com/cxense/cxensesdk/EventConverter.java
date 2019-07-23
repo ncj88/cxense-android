@@ -6,7 +6,6 @@ import androidx.annotation.RestrictTo;
 
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.Event;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.Map;
 
@@ -26,5 +25,5 @@ public abstract class EventConverter<T extends Event> {
     public abstract Map<String, String> toQueryMap(@NonNull T event);
 
     @NonNull
-    public abstract EventRecord toEventRecord(@NonNull T event) throws JsonProcessingException;
+    public abstract EventRecord toEventRecord(@NonNull T event);
 }

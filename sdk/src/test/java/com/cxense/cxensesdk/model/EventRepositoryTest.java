@@ -6,13 +6,13 @@ import com.cxense.cxensesdk.BaseTest;
 import com.cxense.cxensesdk.EventConverter;
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.db.EventRecord;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 
+import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +39,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
 @PrepareForTest({EventRepository.class, EventRecord.class})
 public class EventRepositoryTest extends BaseTest {
     private DatabaseHelper databaseHelper;
-    private ObjectMapper mapper;
+    private Gson gson;
     private EventConverter eventConverter;
     private EventRepository eventRepository;
 
@@ -48,9 +48,9 @@ public class EventRepositoryTest extends BaseTest {
         super.setUp();
         whenNew(EventRecord.class).withAnyArguments().thenReturn(mock(EventRecord.class));
         databaseHelper = mock(DatabaseHelper.class);
-        mapper = mock(ObjectMapper.class);
+        gson = mock(Gson.class);
         eventConverter = mock(EventConverter.class);
-        eventRepository = spy(new EventRepository(databaseHelper, mapper,
+        eventRepository = spy(new EventRepository(databaseHelper, gson,
                 Collections.singletonList(eventConverter)));
     }
 
@@ -136,13 +136,13 @@ public class EventRepositoryTest extends BaseTest {
         EventRecord record = new EventRecord();
         record.data = "{}";
         doReturn(record).when(eventRepository).getPvEventFromDatabase(anyString());
-        when(mapper.readValue(anyString(), any(TypeReference.class))).thenReturn(new HashMap<String, String>());
-        when(mapper.writeValueAsString(any(Map.class))).thenReturn("");
+        when(gson.fromJson(anyString(), any(Type.class))).thenReturn(new HashMap<String, String>());
+        when(gson.toJson(any(Map.class))).thenReturn("");
         when(eventRepository.putEventRecordInDatabase(any(EventRecord.class))).thenReturn(0L);
         eventRepository.putEventTime("id", 0);
         verify(eventRepository).getPvEventFromDatabase("id");
-        verify(mapper).readValue(anyString(), any(TypeReference.class));
-        verify(mapper).writeValueAsString(any(Map.class));
+        verify(gson).fromJson(anyString(), any(Type.class));
+        verify(gson).toJson(any(Map.class));
         verify(eventRepository).putEventRecordInDatabase(any(EventRecord.class));
     }
 }

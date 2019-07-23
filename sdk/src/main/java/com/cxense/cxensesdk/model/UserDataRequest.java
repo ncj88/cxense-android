@@ -4,7 +4,7 @@ package com.cxense.cxensesdk.model;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,11 +17,11 @@ import java.util.List;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public final class UserDataRequest extends UserIdentity {
-    @JsonProperty("groups")
+    @SerializedName("groups")
     List<String> groups;
-    @JsonProperty("recent")
+    @SerializedName("recent")
     Boolean isRecent;
-    @JsonProperty("identityTypes")
+    @SerializedName("identityTypes")
     List<String> identityTypes;
 
     public UserDataRequest(@NonNull UserIdentity identity, @Nullable Collection<String> groups, @Nullable Boolean recent,
