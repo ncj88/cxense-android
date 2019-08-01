@@ -266,7 +266,7 @@ public class CxenseSdkTest extends BaseTest {
     @Test
     public void flushEventQueue() {
         cxense.flushEventQueue();
-        verify(sendTask).run();
+        verify(executor).execute(sendTask);
     }
 
     @Test
