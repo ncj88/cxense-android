@@ -2,8 +2,9 @@ package com.cxense.cxensesdk.model;
 
 import androidx.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -13,6 +14,6 @@ import java.util.List;
  */
 public final class UserExternalDataResponse {
     @NonNull
-    @JsonProperty("data")
-    public List<UserExternalData> items;
+    @SerializedName("data")
+    public List<UserExternalData> items = Collections.emptyList();
 }

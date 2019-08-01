@@ -3,57 +3,57 @@ package com.cxense.cxensesdk.model;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
 public final class WidgetItem {
-    private final Map<String, Object> properties = new HashMap<>();
+
+    public WidgetItem(@Nullable String title, @Nullable String url, @NonNull String clickUrl, @NonNull Map<String, Object> properties) {
+        this.title = title;
+        this.url = url;
+        this.clickUrl = clickUrl;
+        this.properties = Collections.unmodifiableMap(properties);
+    }
+
     /**
      * Item title, can be null
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     @Nullable
-    public String title;
+    public final String title;
     /**
      * Item url, can be null.
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     @Nullable
-    public String url;
+    public final String url;
     /**
      * Click url for item
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     @NonNull
-    @JsonProperty("click_url")
-    public String clickUrl;
+    public final String clickUrl;
+
+    /**
+     * Item custom properties (read-only)
+     */
+    @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
+    @NonNull
+    public final Map<String, Object> properties;
 
     /**
      * Returns other custom properties from item
      *
+     * @deprecated use {@link #properties} field
      * @return map with custom properties
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     @NonNull
+    @Deprecated
     public Map<String, Object> getProperties() {
-        return Collections.unmodifiableMap(properties);
-    }
-
-    @JsonAnyGetter
-    public Map<String, Object> any() {
         return properties;
-    }
-
-    @JsonAnySetter
-    public void set(String name, Object value) {
-        properties.put(name, value);
     }
 }

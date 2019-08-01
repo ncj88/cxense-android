@@ -5,16 +5,15 @@ import androidx.annotation.NonNull;
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.ConversionEvent;
 import com.cxense.cxensesdk.model.Event;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import java.util.Map;
 
 class ConversionEventConverter extends EventConverter<ConversionEvent> {
-    private final ObjectMapper mapper;
+    private final Gson gson;
 
-    ConversionEventConverter(ObjectMapper mapper) {
-        this.mapper = mapper;
+    ConversionEventConverter(Gson gson) {
+        this.gson = gson;
     }
 
     @Override
@@ -29,10 +28,10 @@ class ConversionEventConverter extends EventConverter<ConversionEvent> {
 
     @NonNull
     @Override
-    public EventRecord toEventRecord(@NonNull ConversionEvent event) throws JsonProcessingException {
+    public EventRecord toEventRecord(@NonNull ConversionEvent event) {
         EventRecord record = new EventRecord();
         record.customId = event.getEventId();
-        record.data = mapper.writeValueAsString(event);
+        record.data = gson.toJson(event);
         record.timestamp = System.currentTimeMillis();
         record.eventType = event.getType();
         return record;

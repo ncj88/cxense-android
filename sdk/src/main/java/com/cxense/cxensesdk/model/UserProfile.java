@@ -2,7 +2,7 @@ package com.cxense.cxensesdk.model;
 
 import androidx.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,9 +14,9 @@ import java.util.List;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public final class UserProfile {
-    @JsonProperty("item")
+    @SerializedName("item")
     String item;
-    @JsonProperty("groups")
+    @SerializedName("groups")
     List<UserProfileGroup> groups;
 
     /**

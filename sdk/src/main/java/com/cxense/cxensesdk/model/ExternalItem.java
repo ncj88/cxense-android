@@ -3,7 +3,7 @@ package com.cxense.cxensesdk.model;
 import androidx.annotation.NonNull;
 
 import com.cxense.cxensesdk.Preconditions;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.Locale;
 
@@ -18,9 +18,9 @@ public final class ExternalItem {
     private static final int GROUP_NAME_MAX_LENGTH = 26;
     private static final int ITEM_NAME_MAX_LENGTH = 100;
     private static final String ERROR_MSG = "'%s' can contains only letters, digits or dash, max length is %d";
-    @JsonProperty("group")
+    @SerializedName("group")
     String group;
-    @JsonProperty("item")
+    @SerializedName("item")
     String item;
 
     private ExternalItem() {

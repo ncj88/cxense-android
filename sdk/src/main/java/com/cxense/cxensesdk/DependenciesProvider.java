@@ -1,19 +1,16 @@
 package com.cxense.cxensesdk;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.Log;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.model.EventRepository;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cxense.cxensesdk.model.WidgetItem;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
@@ -29,7 +26,7 @@ import okhttp3.ResponseBody;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Converter;
 import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2018-09-17).
@@ -40,15 +37,15 @@ public final class DependenciesProvider {
 
     private static DependenciesProvider instance;
     private final Context appContext;
-    private final String defaultUserAgent;
     private final ScheduledExecutorService executor;
+    private final UserAgentProvider userAgentProvider;
     private final DeviceInfoProvider deviceInfoProvider;
     private final AdvertisingIdProvider advertisingIdProvider;
     private final UserProvider userProvider;
     private final CxenseConfiguration cxenseConfiguration;
     private final CxenseAuthenticator cxenseAuthenticator;
     private final OkHttpClient okHttpClient;
-    private final ObjectMapper mapper;
+    private final Gson gson;
     private final Converter.Factory converterFactory;
     private final Retrofit retrofit;
     private final ApiErrorParser errorParser;
@@ -65,27 +62,27 @@ public final class DependenciesProvider {
 
     private DependenciesProvider(@NonNull Context context) {
         appContext = context.getApplicationContext();
-        defaultUserAgent = getDefaultUserAgent(appContext);
         executor = Executors.newSingleThreadScheduledExecutor();
+        userAgentProvider = new UserAgentProvider(getSdkVersion(), appContext, executor);
         deviceInfoProvider = new DeviceInfoProvider(appContext);
         advertisingIdProvider = new AdvertisingIdProvider(appContext, executor);
         userProvider = new UserProvider(advertisingIdProvider);
         cxenseConfiguration = new CxenseConfiguration();
         cxenseAuthenticator = new CxenseAuthenticator(cxenseConfiguration);
         Interceptor sdkInterceptor = new SdkInterceptor(getSdkName(), getSdkVersion()),
-                userAgentInterceptor = new UserAgentInterceptor(getUserAgent());
+                userAgentInterceptor = new UserAgentInterceptor(userAgentProvider);
         okHttpClient = buildHttpClient(cxenseAuthenticator, sdkInterceptor, userAgentInterceptor);
-        mapper = buildMapper();
-        pageViewEventConverter = new PageViewEventConverter(mapper, cxenseConfiguration, deviceInfoProvider);
-        performanceEventConverter = new PerformanceEventConverter(mapper, cxenseConfiguration);
-        conversionEventConverter = new ConversionEventConverter(mapper);
-        converterFactory = JacksonConverterFactory.create(mapper);
+        gson = buildGson();
+        pageViewEventConverter = new PageViewEventConverter(gson, cxenseConfiguration, deviceInfoProvider);
+        performanceEventConverter = new PerformanceEventConverter(gson, cxenseConfiguration);
+        conversionEventConverter = new ConversionEventConverter(gson);
+        converterFactory = GsonConverterFactory.create(gson);
         retrofit = buildRetrofit(getBaseUrl(), okHttpClient, converterFactory);
         Converter<ResponseBody, ApiError> errorConverter = retrofit.responseBodyConverter(ApiError.class, new Annotation[0]);
         errorParser = new ApiErrorParser(errorConverter);
         apiInstance = retrofit.create(CxenseApi.class);
         databaseHelper = new DatabaseHelper(appContext);
-        eventRepository = new EventRepository(databaseHelper, mapper, Arrays.asList(pageViewEventConverter, performanceEventConverter, conversionEventConverter));
+        eventRepository = new EventRepository(databaseHelper, gson, Arrays.asList(pageViewEventConverter, performanceEventConverter, conversionEventConverter));
         eventsSendCallback = statuses -> {
             for (EventStatus eventStatus : statuses) {
                 if (eventStatus.exception != null) {
@@ -94,8 +91,8 @@ public final class DependenciesProvider {
                 }
             }
         };
-        eventsSendTask = new SendTask(apiInstance, eventRepository, cxenseConfiguration, deviceInfoProvider, userProvider, mapper, performanceEventConverter, errorParser, eventsSendCallback);
-        cxenseSdk = new CxenseSdk(executor, cxenseConfiguration, advertisingIdProvider, userProvider, apiInstance, errorParser, mapper, eventRepository, eventsSendTask);
+        eventsSendTask = new SendTask(apiInstance, eventRepository, cxenseConfiguration, deviceInfoProvider, userProvider, gson, performanceEventConverter, errorParser, eventsSendCallback);
+        cxenseSdk = new CxenseSdk(executor, cxenseConfiguration, advertisingIdProvider, userProvider, apiInstance, errorParser, gson, eventRepository, eventsSendTask);
     }
 
     static void init(Context context) {
@@ -145,49 +142,6 @@ public final class DependenciesProvider {
     }
 
     /**
-     * Gets default user-agent from Android
-     *
-     * @return system default user-agent
-     */
-    private String getDefaultUserAgent(Context context) {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                return WebSettings.getDefaultUserAgent(context);
-            }
-            return new WebView(context).getSettings().getUserAgentString();
-        } catch (Exception e) {
-            /*
-            This block is needed as attempt to avoid problem with Android System WebView
-            service's update during which any requests to WebViews will be finished
-            with android.content.pm.PackageManager$NameNotFoundException.
-
-            What is important here, that 'user-agent' is required param in Cxense Insight API,
-            so, we need to provide it. We can use 'http.agent' property's value here, but
-            it provides less details about device than WebView. That is why property's value
-            is used without defaultUserAgent field's initialization.
-
-            Best practise here - always using WebView's 'user-agent' string.
-
-            Bug in Android issue tracker can be found here:
-            https://code.google.com/p/android/issues/detail?id=175124
-
-            Good explanation of the problem can be found here:
-            https://bugs.chromium.org/p/chromium/issues/detail?id=506369
-             */
-            Log.e(TAG, e.getMessage(), e);
-        }
-        return System.getProperty("http.agent", "");
-    }
-
-    /**
-     * Returns the user-agent used by the SDK
-     */
-    @NonNull
-    private String getUserAgent() {
-        return String.format("cx-sdk/%s %s", BuildConfig.VERSION_NAME, defaultUserAgent);
-    }
-
-    /**
      * Builds and returns default {@code OkHttpClient} for {@code Retrofit}.
      * If you override it, don't forget to add some interceptors.
      *
@@ -209,17 +163,11 @@ public final class DependenciesProvider {
                 .build();
     }
 
-    /**
-     * Builds and returns default object mapper for Jackson. You may override it in descendant.
-     *
-     * @return {@link ObjectMapper} instance
-     */
-    private ObjectMapper buildMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        return mapper;
+    private Gson buildGson() {
+        return new GsonBuilder()
+                .setLenient()
+                .registerTypeAdapter(WidgetItem.class, new WidgetItemTypeAdapter())
+                .create();
     }
 
     /**
@@ -286,8 +234,8 @@ public final class DependenciesProvider {
     }
 
     @NonNull
-    public ObjectMapper getMapper() {
-        return mapper;
+    public Gson getGson() {
+        return gson;
     }
 
     @NonNull

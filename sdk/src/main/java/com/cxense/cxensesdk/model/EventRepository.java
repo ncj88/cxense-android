@@ -11,13 +11,11 @@ import com.cxense.cxensesdk.EventStatus;
 import com.cxense.cxensesdk.PageViewEventConverter;
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.db.EventRecord;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonIOException;
+import com.google.gson.reflect.TypeToken;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,12 +26,12 @@ import java.util.concurrent.TimeUnit;
 public class EventRepository {
     private static final String TAG = EventRepository.class.getSimpleName();
     private final DatabaseHelper databaseHelper;
-    private final ObjectMapper mapper;
+    private final Gson gson;
     private final List<EventConverter> eventConverters;
 
-    public EventRepository(@NonNull DatabaseHelper databaseHelper, @NonNull ObjectMapper mapper, @NonNull List<EventConverter> eventConverters) {
+    public EventRepository(@NonNull DatabaseHelper databaseHelper, @NonNull Gson gson, @NonNull List<EventConverter> eventConverters) {
         this.databaseHelper = databaseHelper;
-        this.mapper = mapper;
+        this.gson = gson;
         this.eventConverters = eventConverters;
     }
 
@@ -46,7 +44,7 @@ public class EventRepository {
                         break;
                     }
                 }
-            } catch (JsonProcessingException e) {
+            } catch (JsonIOException e) {
                 // TODO: May be we need to rethrow new exception?
                 Log.e(TAG, "Can't serialize event data", e);
             } catch (Exception e) {
@@ -126,19 +124,16 @@ public class EventRepository {
             newRecord.spentTime = activeTime;
 
             // some black magic with map
-            Map<String, String> eventMap = mapper.readValue(newRecord.data, new TypeReference<HashMap<String, String>>() {
-            });
+            Map<String, String> eventMap = gson.fromJson(newRecord.data, new TypeToken<Map<String, String>>() {}.getType());
             eventMap.put(PageViewEventConverter.ACTIVE_RND, eventMap.get(PageViewEventConverter.RND));
             eventMap.put(PageViewEventConverter.ACTIVE_TIME, eventMap.get(PageViewEventConverter.TIME));
             eventMap.put(PageViewEventConverter.ACTIVE_SPENT_TIME, "" + activeTime);
-            newRecord.data = mapper.writeValueAsString(eventMap);
+            newRecord.data = gson.toJson(eventMap);
 
             putEventRecordInDatabase(newRecord);
-        } catch (JsonProcessingException e) {
-            Log.e(TAG, "Can't serialize event data", e);
-        } catch (IOException e) {
+        } catch (JsonIOException e) {
             // TODO: May be we need to rethrow new exception?
-            Log.e(TAG, "Can't deserialize event data", e);
+            Log.e(TAG, "Can't serialize event data", e);
         } catch (Exception e) {
             Log.e(TAG, "Error at tracking time", e);
         }

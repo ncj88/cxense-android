@@ -17,7 +17,7 @@ object Versions {
     const val buildScanPlugin = "2.3"
     const val versionsPlugin = "0.21.0"
     const val releasePlugin = "1.10.1"
-    const val androidToolsPlugin = "3.6.0-alpha04"
+    const val androidToolsPlugin = "3.6.0-alpha05"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "2.0.0"
     // Android libraries
@@ -60,7 +60,7 @@ object Libs {
 
     const val googleAds = "com.google.android.gms:play-services-ads-identifier:${Versions.googlePlayServices}"
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
-    const val retrofitConverter = "com.squareup.retrofit2:converter-jackson:${Versions.retrofit}"
+    const val retrofitConverter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val okhttpLogging = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
 
 

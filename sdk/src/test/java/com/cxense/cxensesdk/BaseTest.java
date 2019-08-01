@@ -5,6 +5,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.URLUtil;
 
+import com.google.gson.Gson;
+
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -21,7 +23,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-07-19).
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({TextUtils.class, Log.class, URLUtil.class})
+@PrepareForTest({TextUtils.class, Log.class, URLUtil.class, Gson.class})
 @PowerMockIgnore("javax.net.ssl.*")
 public abstract class BaseTest {
     protected Context context;

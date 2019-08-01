@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.DependenciesProvider;
 import com.cxense.cxensesdk.Preconditions;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,25 +34,25 @@ public final class PerformanceEvent extends Event {
     public static final String TYPE = "type";
     public static final String SEGMENT_IDS = "segmentIds";
     public static final String CUSTOM_PARAMETERS = "customParameters";
-    @JsonProperty(TIME)
+    @SerializedName(TIME)
     private Long time;
-    @JsonProperty(USER_IDS)
+    @SerializedName(USER_IDS)
     private List<UserIdentity> identities;
-    @JsonProperty(PRND)
+    @SerializedName(PRND)
     private String prnd;
-    @JsonProperty(RND)
+    @SerializedName(RND)
     private String rnd;
-    @JsonProperty(SITE_ID)
+    @SerializedName(SITE_ID)
     private String siteId;
-    @JsonProperty(ORIGIN)
+    @SerializedName(ORIGIN)
     private String origin;
-    @JsonProperty(TYPE)
+    @SerializedName(TYPE)
     private String type;
-    @JsonProperty(SEGMENT_IDS)
+    @SerializedName(SEGMENT_IDS)
     private List<String> segments;
-    @JsonProperty(CUSTOM_PARAMETERS)
+    @SerializedName(CUSTOM_PARAMETERS)
     private List<CustomParameter> customParameters;
-    @JsonProperty("consent")
+    @SerializedName("consent")
     private List<String> consentOptions;
 
     private PerformanceEvent() {

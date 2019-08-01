@@ -9,7 +9,7 @@ public class NotifyingSendTask extends SendTask {
 
     public NotifyingSendTask(Object syncObject, DependenciesProvider provider) {
         super(provider.getApi(), provider.getEventRepository(), provider.getCxenseConfiguration(),
-                provider.getDeviceInfoProvider(), provider.getUserProvider(), provider.getMapper(),
+                provider.getDeviceInfoProvider(), provider.getUserProvider(), provider.getGson(),
                 provider.getPerformanceEventConverter(), provider.getErrorParser(), provider.getEventsSendCallback());
         this.syncObject = syncObject;
     }

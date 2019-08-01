@@ -14,20 +14,20 @@ import okhttp3.Response;
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
 class UserAgentInterceptor implements Interceptor {
-    private final String userAgent;
+    private final UserAgentProvider userAgentProvider;
 
     /**
-     * @param userAgent user-agent string
+     * @param userAgentProvider user-agent string
      */
-    UserAgentInterceptor(@NonNull String userAgent) {
-        this.userAgent = userAgent;
+    UserAgentInterceptor(@NonNull UserAgentProvider userAgentProvider) {
+        this.userAgentProvider = userAgentProvider;
     }
 
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         Request newRequest = request.newBuilder()
-                .header("User-Agent", userAgent)
+                .header("User-Agent", userAgentProvider.getUserAgent())
                 .build();
         return chain.proceed(newRequest);
     }

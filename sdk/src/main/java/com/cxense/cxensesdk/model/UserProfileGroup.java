@@ -2,7 +2,8 @@ package com.cxense.cxensesdk.model;
 
 import androidx.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
+
 
 /**
  * Group object for item in {@link UserProfile}
@@ -11,11 +12,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public final class UserProfileGroup {
-    @JsonProperty("group")
+    @SerializedName("group")
     String group;
-    @JsonProperty("count")
+    @SerializedName("count")
     int count;
-    @JsonProperty("weight")
+    @SerializedName("weight")
     double weight;
 
     /**

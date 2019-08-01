@@ -2,10 +2,11 @@ package com.cxense.cxensesdk;
 
 import android.database.sqlite.SQLiteDatabaseCorruptException;
 
+import androidx.annotation.NonNull;
+
 import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.EventRepository;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,6 +14,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -41,7 +43,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class SendTaskTest extends BaseTest {
     private EventRepository eventRepository;
     private CxenseConfiguration configuration;
-    private ObjectMapper mapper;
+    private Gson gson;
     private SendTask sendTask;
     private Call call;
     private DispatchEventsCallback sendCallback;
@@ -52,16 +54,16 @@ public class SendTaskTest extends BaseTest {
         call = mock(Call.class);
         eventRepository = mock(EventRepository.class);
         configuration = spy(new CxenseConfiguration());
-        mapper = mock(ObjectMapper.class);
+        gson = mock(Gson.class);
         sendCallback = spy(new DispatchEventsCallback() {
             @Override
-            public void onSend(List<EventStatus> statuses) {
+            public void onSend(@NonNull List<EventStatus> statuses) {
             }
         });
         CxenseApi api = mock(CxenseApi.class);
         DeviceInfoProvider deviceInfoProvider = mock(DeviceInfoProvider.class);
         sendTask = spy(new SendTask(api, eventRepository, configuration, deviceInfoProvider,
-                mock(UserProvider.class), mapper, mock(PerformanceEventConverter.class),
+                mock(UserProvider.class), gson, mock(PerformanceEventConverter.class),
                 mock(ApiErrorParser.class), sendCallback));
 
         doReturn(CxenseConfiguration.NetworkStatus.WIFI).when(deviceInfoProvider).getCurrentNetworkStatus();
@@ -102,7 +104,7 @@ public class SendTaskTest extends BaseTest {
         when(body.source()).thenReturn(mock(BufferedSource.class));
         when(body.byteStream()).thenReturn(new BufferedInputStream(new ByteArrayInputStream(new byte[2])));
         when(call.execute()).thenReturn(Response.success(body));
-        when(mapper.readValue((String) any(), any(TypeReference.class))).thenReturn(Collections.<String, String>emptyMap());
+        when(gson.fromJson((String) any(), any(Type.class))).thenReturn(Collections.<String, String>emptyMap());
         sendTask.sendPageViewEvents(Arrays.asList(record, new EventRecord()));
         verify(eventRepository, times(2)).putEventRecordInDatabase(any());
         verify(sendCallback).onSend(any());

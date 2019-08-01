@@ -25,7 +25,7 @@ android {
         manifestPlaceholders = mapOf("authority" to Config.authority)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFile("cxensesdk.pro")
+        consumerProguardFiles("cxensesdk.pro", "gson.pro")
     }
 
     buildTypes {
