@@ -2,7 +2,7 @@ package com.cxense.cxensesdk.model;
 
 import androidx.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,9 +15,9 @@ import java.util.List;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public final class UserSegmentRequest {
-    @JsonProperty("siteGroupIds")
+    @SerializedName("siteGroupIds")
     List<String> siteGroups;
-    @JsonProperty("identities")
+    @SerializedName("identities")
     List<UserIdentity> identities;
 
     public UserSegmentRequest(@Nullable Collection<UserIdentity> identities, @Nullable Collection<String> siteGroups) {

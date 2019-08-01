@@ -3,7 +3,7 @@ package com.cxense.cxensesdk.model;
 import androidx.annotation.NonNull;
 
 import com.cxense.cxensesdk.Preconditions;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Describes impression data
@@ -12,9 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public class Impression {
-    @JsonProperty("clickUrl")
+    @SerializedName("clickUrl")
     String clickUrl;
-    @JsonProperty("visibilitySeconds")
+    @SerializedName("visibilitySeconds")
     int seconds;
 
     private Impression() {

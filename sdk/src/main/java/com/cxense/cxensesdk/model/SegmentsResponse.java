@@ -2,8 +2,9 @@ package com.cxense.cxensesdk.model;
 
 import androidx.annotation.NonNull;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -17,6 +18,6 @@ public final class SegmentsResponse {
      * segments ids
      */
     @NonNull
-    @JsonProperty("segments")
-    public List<String> ids;
+    @SerializedName("segments")
+    public List<String> ids = Collections.emptyList();
 }

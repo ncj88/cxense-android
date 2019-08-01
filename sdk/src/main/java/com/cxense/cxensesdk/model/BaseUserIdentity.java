@@ -2,7 +2,8 @@ package com.cxense.cxensesdk.model;
 
 import androidx.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
+
 
 /**
  * Base identity object for group of users, that must contains only type of users
@@ -13,9 +14,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class BaseUserIdentity {
     public static final String ID = "id";
     public static final String TYPE = "type";
-    @JsonProperty(ID)
+    @SerializedName(ID)
     String id;
-    @JsonProperty(TYPE)
+    @SerializedName(TYPE)
     String type;
 
     protected BaseUserIdentity() {

@@ -3,7 +3,7 @@ package com.cxense.cxensesdk.model;
 import androidx.annotation.NonNull;
 
 import com.cxense.cxensesdk.Preconditions;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Customer-defined parameter object
@@ -15,11 +15,11 @@ public final class CustomParameter {
     public static final String GROUP = "group";
     public static final String ITEM = "item";
     private static final String TYPE = "type";
-    @JsonProperty(GROUP)
+    @SerializedName(GROUP)
     String name;
-    @JsonProperty(TYPE)
+    @SerializedName(TYPE)
     String type;
-    @JsonProperty(ITEM)
+    @SerializedName(ITEM)
     String item;
 
     private CustomParameter() {

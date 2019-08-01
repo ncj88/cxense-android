@@ -1,7 +1,7 @@
 package com.cxense.cxensesdk;
 
 import com.cxense.cxensesdk.model.ConversionEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,20 +9,19 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.mock;
 
 public class ConversionEventConverterTest extends BaseTest {
-    private ObjectMapper mapper;
+    private Gson gson;
     private ConversionEventConverter converter;
     private ConversionEvent event;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        mapper = mock(ObjectMapper.class);
-        converter = new ConversionEventConverter(mapper);
+        gson = mock(Gson.class);
+        converter = new ConversionEventConverter(gson);
         event = mock(ConversionEvent.class);
     }
 
@@ -39,6 +38,6 @@ public class ConversionEventConverterTest extends BaseTest {
     @Test
     public void toEventRecord() throws Exception {
         assertNotNull(converter.toEventRecord(event));
-        verify(mapper).writeValueAsString(any());
+        verify(gson).toJson(event);
     }
 }

@@ -3,7 +3,7 @@ package com.cxense.cxensesdk.model;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +22,7 @@ public class UserExternalData extends UserIdentity {
      * Max external items for user.
      */
     public static final int MAX_PROFILE_ITEMS = 40;
-    @JsonProperty("profile")
+    @SerializedName("profile")
     List<ExternalItem> items;
 
     private UserExternalData() {

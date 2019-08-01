@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.Preconditions;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 /**
  * Cxense user identity object.
@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public final class CxenseUserIdentity extends UserIdentity {
-    @JsonProperty("cxenseId")
+    @SerializedName("cxenseId")
     private String cxenseId;
 
     /**

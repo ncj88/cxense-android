@@ -20,7 +20,7 @@ public final class WidgetContext {
     private String url;
     private String pageclass;
     private String sentiment;
-    private boolean recommending;
+    private Boolean recommending;
     private Map<String, String> categories;
     private List<String> keywords;
     private List<String> neighbors;
@@ -143,7 +143,7 @@ public final class WidgetContext {
         String url;
         String pageclass;
         String sentiment;
-        boolean recommending;
+        Boolean recommending;
         Map<String, String> categories = new HashMap<>();
         List<String> keywords = new ArrayList<>();
         List<String> neighbors = new ArrayList<>();
@@ -202,7 +202,7 @@ public final class WidgetContext {
          * @return {@link Builder} instance
          */
         @NonNull
-        public WidgetContext.Builder setRecommending(@Nullable boolean recommending) {
+        public WidgetContext.Builder setRecommending(@Nullable Boolean recommending) {
             this.recommending = recommending;
             return this;
         }

@@ -52,7 +52,7 @@ public class IntegrationTest {
         NotifyingSendTask sendTask = new NotifyingSendTask(syncObject, provider);
         cxense = new CxenseSdk(provider.getExecutor(), provider.getCxenseConfiguration(),
                 provider.getAdvertisingIdProvider(), provider.getUserProvider(), provider.getApi(),
-                provider.getErrorParser(), provider.getMapper(), provider.getEventRepository(), sendTask);
+                provider.getErrorParser(), provider.getGson(), provider.getEventRepository(), sendTask);
         cxense.setUserId("VERY-RANDOM-USER-ID");
         final CxenseConfiguration configuration = cxense.getConfiguration();
         configuration.setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS);

@@ -14,13 +14,13 @@ public final class ContextParameter {
      * Parameter key
      */
     @NonNull
-    public String key;
+    public String key = "";
 
     /**
      * Parameter value
      */
     @NonNull
-    public String value;
+    public String value = "";
 
     private ContextParameter() {
     }

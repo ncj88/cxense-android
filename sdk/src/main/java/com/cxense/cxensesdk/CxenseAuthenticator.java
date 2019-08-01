@@ -2,6 +2,7 @@ package com.cxense.cxensesdk;
 
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.cxense.cxensesdk.exceptions.CxenseException;
 
@@ -64,7 +65,7 @@ class CxenseAuthenticator implements Authenticator {
     }
 
     @Override
-    public Request authenticate(@NonNull Route route, @NonNull Response response) throws IOException {
+    public Request authenticate(@Nullable Route route, @NonNull Response response) throws IOException {
         if (responseCount(response) >= maxAttempts) {
             return null; // If we've failed N times, give up.
         }

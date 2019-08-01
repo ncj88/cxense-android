@@ -60,7 +60,7 @@ object Libs {
 
     const val googleAds = "com.google.android.gms:play-services-ads-identifier:${Versions.googlePlayServices}"
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
-    const val retrofitConverter = "com.squareup.retrofit2:converter-jackson:${Versions.retrofit}"
+    const val retrofitConverter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val okhttpLogging = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
 
 

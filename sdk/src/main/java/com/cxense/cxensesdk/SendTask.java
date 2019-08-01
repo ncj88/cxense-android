@@ -10,8 +10,8 @@ import com.cxense.cxensesdk.db.EventRecord;
 import com.cxense.cxensesdk.model.EventDataRequest;
 import com.cxense.cxensesdk.model.EventRepository;
 import com.cxense.cxensesdk.model.PerformanceEvent;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,13 +35,13 @@ class SendTask implements Runnable {
     private final CxenseConfiguration configuration;
     private final DeviceInfoProvider deviceInfoProvider;
     private final UserProvider userProvider;
-    private final ObjectMapper mapper;
+    private final Gson gson;
     private final PerformanceEventConverter performanceEventConverter;
     private final ApiErrorParser errorParser;
     private DispatchEventsCallback sendCallback;
 
     SendTask(@NonNull CxenseApi api, @NonNull EventRepository eventRepository, @NonNull CxenseConfiguration configuration,
-             @NonNull DeviceInfoProvider deviceInfoProvider, @NonNull UserProvider userProvider, @NonNull ObjectMapper mapper,
+             @NonNull DeviceInfoProvider deviceInfoProvider, @NonNull UserProvider userProvider, @NonNull Gson gson,
              @NonNull PerformanceEventConverter performanceEventConverter, @NonNull ApiErrorParser errorParser,
              @Nullable DispatchEventsCallback sendCallback) {
         cxenseApi = api;
@@ -49,7 +49,7 @@ class SendTask implements Runnable {
         this.configuration = configuration;
         this.deviceInfoProvider = deviceInfoProvider;
         this.userProvider = userProvider;
-        this.mapper = mapper;
+        this.gson = gson;
         this.performanceEventConverter = performanceEventConverter;
         this.errorParser = errorParser;
         this.sendCallback = sendCallback;
@@ -93,7 +93,7 @@ class SendTask implements Runnable {
             for (EventRecord event : events) {
                 EventStatus status = null;
                 try {
-                    Map<String, String> data = performanceEventConverter.toQueryMap(mapper.readValue(event.data, PerformanceEvent.class));
+                    Map<String, String> data = performanceEventConverter.toQueryMap(gson.fromJson(event.data, PerformanceEvent.class));
                     String segmentsValue = data.get(PerformanceEvent.SEGMENT_IDS);
                     data.remove(PerformanceEvent.SEGMENT_IDS);
                     List<String> segments = new ArrayList<>();
@@ -124,13 +124,12 @@ class SendTask implements Runnable {
         for (EventRecord event : events) {
             EventStatus status = null;
             try {
-                Map<String, String> data = mapper.readValue(event.data, new TypeReference<HashMap<String, String>>() {
-                });
+                Map<String, String> data = gson.fromJson(event.data, new TypeToken<HashMap<String, String>>() {}.getType());
                 String ckp = data.get(PageViewEventConverter.CKP);
                 String id = userProvider.getUserId();
                 if (TextUtils.isEmpty(ckp) && !TextUtils.isEmpty(id)) {
                     data.put(PageViewEventConverter.CKP, id);
-                    event.data = mapper.writeValueAsString(data);
+                    event.data = gson.toJson(data);
                     event.ckp = id;
                 }
                 Response<ResponseBody> response = cxenseApi.trackInsightEvent(data).execute();

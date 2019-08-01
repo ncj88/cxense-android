@@ -3,7 +3,7 @@ package com.cxense.cxensesdk.model;
 import androidx.annotation.NonNull;
 
 import com.cxense.cxensesdk.Preconditions;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import java.util.List;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public class WidgetVisibilityReport {
-    @JsonProperty("impressions")
+    @SerializedName("impressions")
     List<Impression> impressions;
 
     public WidgetVisibilityReport(@NonNull Collection<Impression> impressions) {
