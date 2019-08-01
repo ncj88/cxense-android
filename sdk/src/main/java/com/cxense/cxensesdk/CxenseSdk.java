@@ -465,7 +465,7 @@ public final class CxenseSdk {
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
     public void flushEventQueue() {
-        sendTask.run();
+        executor.execute(sendTask);
     }
 
     /**
