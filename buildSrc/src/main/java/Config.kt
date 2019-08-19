@@ -14,10 +14,10 @@ object Config {
 object Versions {
     const val kotlin = "1.3.41"
     //Plugins
-    const val buildScanPlugin = "2.3"
-    const val versionsPlugin = "0.21.0"
-    const val releasePlugin = "1.10.1"
-    const val androidToolsPlugin = "3.6.0-alpha05"
+    const val buildScanPlugin = "2.4"
+    const val versionsPlugin = "0.22.0"
+    const val releasePlugin = "1.10.2"
+    const val androidToolsPlugin = "3.6.0-alpha06"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "2.0.0"
     // Android libraries
@@ -27,7 +27,7 @@ object Versions {
 
     // Third party Libraries
     const val googlePlayServices = "17.0.0"
-    const val retrofit = "2.6.0"
+    const val retrofit = "2.6.1"
     const val okhttp = "3.12.3"
 
     // Test Libraries
