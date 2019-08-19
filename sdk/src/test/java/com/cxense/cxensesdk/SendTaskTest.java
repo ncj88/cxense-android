@@ -91,7 +91,7 @@ public class SendTaskTest extends BaseTest {
         EventRecord record = new EventRecord();
         record.data = "{}";
         ResponseBody body = mock(ResponseBody.class);
-        when(call.execute()).thenReturn(Response.error(404, body));
+        doReturn(Response.error(404, body)).when(call).execute();
         sendTask.sendDmpEvents(Arrays.asList(record, new EventRecord()));
         verify(sendCallback).onSend(any());
     }
