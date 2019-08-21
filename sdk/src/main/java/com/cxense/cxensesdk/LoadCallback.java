@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk;
 
+import androidx.annotation.NonNull;
+
 /**
  * Interface that is implemented to discover when data loading has finished.
  *
@@ -12,12 +14,12 @@ public interface LoadCallback<T> {
      *
      * @param data result data
      */
-    void onSuccess(T data);
+    void onSuccess(@NonNull T data);
 
     /**
      * Called when load has completed with error.
      *
      * @param throwable error
      */
-    void onError(Throwable throwable);
+    void onError(@NonNull Throwable throwable);
 }

@@ -2,7 +2,7 @@ import org.gradle.api.JavaVersion
 
 object Config {
     // Android config
-    const val androidBuildTools = "28.0.3"
+    const val androidBuildTools = "29.0.2"
     const val androidMinSdk = 15
     const val androidTargetSdk = 29
     const val androidCompileSdk = 29
@@ -46,8 +46,8 @@ object Plugins {
     const val androidMavenPlugin = "com.github.dcendents:android-maven-gradle-plugin:${Versions.androidMavenPlugin}"
     const val androidApp = "com.android.application"
     const val androidLibrary = "com.android.library"
-    const val kotlinAndroidApp = "kotlin-android"
-    const val kotlinAndroidExtApp = "kotlin-android-extensions"
+    const val kotlinAndroid = "kotlin-android"
+    const val kotlinAndroidExt = "kotlin-android-extensions"
     const val androidMaven = "com.github.dcendents.android-maven"
     const val spotbugs = "com.github.spotbugs"
 }
