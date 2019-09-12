@@ -100,6 +100,15 @@ class MainActivity : AppCompatActivity() {
         val cxenseSdk = CxenseSdk.getInstance()
         val identity = UserIdentity(id, type)
         val identities = listOf(UserIdentity(id, type))
+        cxenseSdk.loadWidgetRecommendations("w", WidgetContext.Builder("").build(), object : LoadCallback<List<WidgetItem>> {
+            override fun onSuccess(data: List<WidgetItem>) {
+                showText("TEXT")
+            }
+
+            override fun onError(throwable: Throwable) {
+                showError(throwable)
+            }
+        })
         cxenseSdk.executePersistedQuery(CxenseConstants.ENDPOINT_USER_SEGMENTS, segmentsPersistentId, UserSegmentRequest(listOf(UserIdentity(id, type)), null), object : LoadCallback<SegmentsResponse> {
             override fun onSuccess(segmentsResponse: SegmentsResponse) {
                 showText(TextUtils.join(" ", segmentsResponse.ids))

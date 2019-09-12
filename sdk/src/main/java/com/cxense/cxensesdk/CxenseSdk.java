@@ -281,8 +281,8 @@ public final class CxenseSdk {
      * @param callback     a  callback to receive a list of segment identifiers where the specified user is a member
      */
     @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
-    public void getUserSegmentIds(@NonNull List<UserIdentity> identities,
-                                  @NonNull List<String> siteGroupIds,
+    public void getUserSegmentIds(@NonNull Collection<UserIdentity> identities,
+                                  @NonNull Collection<String> siteGroupIds,
                                   @Nullable final LoadCallback<List<String>> callback) throws CxenseException {
         Preconditions.checkForNull(identities, "identities");
         Preconditions.checkForNull(siteGroupIds, "siteGroupIds");

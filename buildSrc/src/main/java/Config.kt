@@ -2,7 +2,7 @@ import org.gradle.api.JavaVersion
 
 object Config {
     // Android config
-    const val androidBuildTools = "28.0.3"
+    const val androidBuildTools = "29.0.2"
     const val androidMinSdk = 15
     const val androidTargetSdk = 29
     const val androidCompileSdk = 29
@@ -12,23 +12,23 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.3.41"
+    const val kotlin = "1.3.50"
     //Plugins
-    const val buildScanPlugin = "2.3"
-    const val versionsPlugin = "0.21.0"
-    const val releasePlugin = "1.10.1"
-    const val androidToolsPlugin = "3.6.0-alpha05"
+    const val buildScanPlugin = "2.4.2"
+    const val versionsPlugin = "0.25.0"
+    const val releasePlugin = "1.10.2"
+    const val androidToolsPlugin = "3.6.0-alpha10"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "2.0.0"
     // Android libraries
-    const val compatLibrary = "1.0.2"
+    const val compatLibrary = "1.1.0"
     const val annotationsLibrary = "1.1.0"
     const val materialLibrary = "1.0.0"
 
     // Third party Libraries
     const val googlePlayServices = "17.0.0"
-    const val retrofit = "2.6.0"
-    const val okhttp = "3.12.3"
+    const val retrofit = "2.6.1"
+    const val okhttp = "3.12.5"
 
     // Test Libraries
     const val junit = "4.12"
@@ -46,8 +46,8 @@ object Plugins {
     const val androidMavenPlugin = "com.github.dcendents:android-maven-gradle-plugin:${Versions.androidMavenPlugin}"
     const val androidApp = "com.android.application"
     const val androidLibrary = "com.android.library"
-    const val kotlinAndroidApp = "kotlin-android"
-    const val kotlinAndroidExtApp = "kotlin-android-extensions"
+    const val kotlinAndroid = "kotlin-android"
+    const val kotlinAndroidExt = "kotlin-android-extensions"
     const val androidMaven = "com.github.dcendents.android-maven"
     const val spotbugs = "com.github.spotbugs"
 }

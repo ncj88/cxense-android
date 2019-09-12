@@ -8,7 +8,6 @@ import androidx.annotation.RestrictTo;
 
 import com.cxense.cxensesdk.db.DatabaseHelper;
 import com.cxense.cxensesdk.model.EventRepository;
-import com.cxense.cxensesdk.model.WidgetItem;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -166,7 +165,7 @@ public final class DependenciesProvider {
     private Gson buildGson() {
         return new GsonBuilder()
                 .setLenient()
-                .registerTypeAdapter(WidgetItem.class, new WidgetItemTypeAdapter())
+                .registerTypeAdapterFactory(new WidgetItemTypeAdapterFactory())
                 .create();
     }
 

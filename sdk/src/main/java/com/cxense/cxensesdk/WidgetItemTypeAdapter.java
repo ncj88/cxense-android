@@ -1,12 +1,16 @@
 package com.cxense.cxensesdk;
 
 import com.cxense.cxensesdk.model.WidgetItem;
+import com.google.gson.JsonElement;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class WidgetItemTypeAdapter extends TypeAdapter<WidgetItem> {
@@ -14,6 +18,12 @@ public class WidgetItemTypeAdapter extends TypeAdapter<WidgetItem> {
     private static final String TITLE = "title";
     private static final String URL = "url";
     private static final String CLICK_URL = "click_url";
+
+    private final TypeAdapter<JsonElement> jsonElementTypeAdapter;
+
+    public WidgetItemTypeAdapter(TypeAdapter<JsonElement> jsonElementTypeAdapter) {
+        this.jsonElementTypeAdapter = jsonElementTypeAdapter;
+    }
 
     @Override
     public void write(JsonWriter out, WidgetItem value) throws IOException {
@@ -38,19 +48,34 @@ public class WidgetItemTypeAdapter extends TypeAdapter<WidgetItem> {
         in.beginObject();
         while (in.hasNext()) {
             String name = in.nextName();
-            String value = in.nextString();
             switch (name) {
                 case TITLE:
-                    title = value;
+                    title = in.nextString();
                     break;
                 case URL:
-                    url = value;
+                    url = in.nextString();
                     break;
                 case CLICK_URL:
-                    clickUrl = value;
+                    clickUrl = in.nextString();
                     break;
                 default:
-                    properties.put(name, value);
+                    switch (in.peek()) {
+                        case BEGIN_ARRAY:
+                            in.beginArray();
+                            List<String> value = new ArrayList<>();
+                            while (in.peek() != JsonToken.END_ARRAY)
+                                value.add(in.nextString());
+                            in.endArray();
+                            properties.put(name, value);
+                            break;
+                        case BEGIN_OBJECT:
+                            JsonElement obj = jsonElementTypeAdapter.read(in);
+                            properties.put(name, obj);
+                            break;
+                        default:
+                            properties.put(name, in.nextString());
+                            break;
+                    }
             }
         }
         in.endObject();

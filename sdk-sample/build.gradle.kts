@@ -2,8 +2,8 @@ import org.jetbrains.kotlin.gradle.internal.CacheImplementation
 
 plugins {
     id(Plugins.androidApp)
-    id(Plugins.kotlinAndroidApp)
-    id(Plugins.kotlinAndroidExtApp)
+    id(Plugins.kotlinAndroid)
+    id(Plugins.kotlinAndroidExt)
 }
 
 androidExtensions {
