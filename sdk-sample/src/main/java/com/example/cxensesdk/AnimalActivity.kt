@@ -38,6 +38,10 @@ class AnimalActivity : AppCompatActivity() {
                         .setEventId(item)
                         .addCustomParameter("xyz-item", item)
                         .build(),
+                PerformanceEvent.Builder(listOf(), BuildConfig.SITE_ID, "xyz-app", "view")
+                        .setEventId(item)
+                        .addCustomParameters(CustomParameter("xyz-item", item))
+                        .build(),
                 ConversionEvent.Builder(listOf(UserIdentity("123456", "cxd")), BuildConfig.SITE_ID, "0ab24abee9a85d869b29f46c837144", ConversionEvent.FUNNEL_TYPE_CONVERT_PRODUCT)
                         .setPrice(12.25)
                         .setRenewalFrequency("1wC")
