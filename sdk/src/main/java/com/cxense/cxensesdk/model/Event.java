@@ -7,7 +7,7 @@ import androidx.annotation.Nullable;
  */
 
 public abstract class Event {
-    String eventId;
+    transient String eventId;
 
     Event(@Nullable String eventId) {
         this.eventId = eventId;
