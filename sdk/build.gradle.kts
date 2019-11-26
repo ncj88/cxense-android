@@ -1,5 +1,6 @@
 plugins {
     id(Plugins.androidLibrary)
+    id(Plugins.kotlinAndroid)
     id(Plugins.androidMaven)
     id(Plugins.spotbugs)
     checkstyle
@@ -17,15 +18,12 @@ android {
 
         buildConfigField("String", "SDK_NAME", """"cxense"""")
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
-        buildConfigField("String", "AUTHORITY", """APPLICATION_ID + ".${Config.authority}"""")
-        buildConfigField("String", "CX_USER", """"${project.property("CX_USER") ?: ""}"""")
-        buildConfigField("String", "CX_KEY", """"${project.property("CX_KEY") ?: ""}"""")
-        buildConfigField("String", "CX_SITE_ID", """"${project.property("CX_SITE_ID") ?: ""}"""")
+        buildConfigField("String", "AUTHORITY", """LIBRARY_PACKAGE_NAME + ".${Config.authority}"""")
 
         manifestPlaceholders = mapOf("authority" to Config.authority)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("cxensesdk.pro", "gson.pro")
+        consumerProguardFiles("gson.pro")
     }
 
     buildTypes {
@@ -71,11 +69,6 @@ tasks {
     }
 
     artifacts.add("archives", javadocJar)
-
-    val updates by rootProject.tasks.named("dependencyUpdates")
-    named("build") {
-        dependsOn(updates)
-    }
 }
 
 version = rootProject.version
@@ -101,17 +94,20 @@ pmd {
 }
 
 dependencies {
+    implementation(kotlin(Libs.kotlinStdlib, Versions.kotlin))
     api(Libs.annotations)
     implementation(Libs.googleAds)
     api(Libs.retrofit)
     api(Libs.retrofitConverter)
     api(Libs.okhttpLogging)
+    api(Libs.timber)
 
-    testImplementation(Libs.powermockJunit)
-    testImplementation(Libs.powermockMockito)
+    testImplementation(Libs.kotlinJunit)
+    testImplementation(Libs.mockitoKotlin)
+    testImplementation(Libs.mockitoCore)
+    testImplementation(Libs.kluent)
     testImplementation(Libs.junit)
     testImplementation(Libs.okhttpMockServer)
-    testImplementation(Libs.hamcrest)
 
     androidTestImplementation(Libs.testRunner)
     androidTestImplementation(Libs.testJunitExt)

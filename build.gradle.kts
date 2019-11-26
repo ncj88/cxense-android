@@ -5,7 +5,6 @@ import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
 plugins {
     id(Plugins.versions) version Versions.versionsPlugin
-    id(Plugins.buildScan) version Versions.buildScanPlugin
     id(Plugins.release) version Versions.releasePlugin
     id(Plugins.spotbugs) version Versions.spotbugsPlugin
 }
@@ -26,7 +25,7 @@ buildscript {
 
 buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    setTermsOfServiceAgree("yes")
+    termsOfServiceAgree = "yes"
 }
 
 scmVersion {
@@ -41,6 +40,8 @@ allprojects {
     repositories {
         google()
         jcenter()
+        // temporary fix
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
 

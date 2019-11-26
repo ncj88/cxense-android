@@ -12,12 +12,12 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.3.50"
+    const val kotlin = "1.3.60"
     //Plugins
     const val buildScanPlugin = "2.4.2"
     const val versionsPlugin = "0.25.0"
     const val releasePlugin = "1.10.2"
-    const val androidToolsPlugin = "3.6.0-alpha12"
+    const val androidToolsPlugin = "4.0.0-alpha04"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "2.0.0"
     // Android libraries
@@ -27,14 +27,18 @@ object Versions {
 
     // Third party Libraries
     const val googlePlayServices = "17.0.0"
-    const val retrofit = "2.6.1"
-    const val okhttp = "3.12.5"
+    const val retrofit = "2.6.2"
+    const val okhttp = "3.12.6"
+    const val timber = "4.7.1"
 
     // Test Libraries
     const val junit = "4.12"
     const val testRunner = "1.1.1"
-    const val powermock = "2.0.2"
-    const val hamcrest = "2.1"
+    const val powermock = "2.0.4"
+    const val hamcrest = "2.2"
+    const val mockitoKotlin = "2.2.0"
+    const val mockitoCore = "3.0.0"
+    const val kluent = "1.57"
 }
 
 object Plugins {
@@ -53,7 +57,7 @@ object Plugins {
 }
 
 object Libs {
-    const val kotlinStdlib = "stdlib-jdk7"
+    const val kotlinStdlib = "stdlib-jdk8"
     const val annotations = "androidx.annotation:annotation:${Versions.annotationsLibrary}"
     const val appcompat = "androidx.appcompat:appcompat:${Versions.compatLibrary}"
     const val material = "com.google.android.material:material:${Versions.materialLibrary}"
@@ -62,8 +66,13 @@ object Libs {
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val retrofitConverter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val okhttpLogging = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
+    const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
 
 
+    const val kotlinJunit = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
+    const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.mockitoKotlin}"
+    const val mockitoCore = "org.mockito:mockito-core:${Versions.mockitoCore}"
+    const val kluent = "org.amshove.kluent:kluent-android:${Versions.kluent}"
     const val junit = "junit:junit:${Versions.junit}"
     const val testRunner = "androidx.test:runner:${Versions.testRunner}"
     const val testJunitExt = "androidx.test.ext:junit:${Versions.testRunner}"
