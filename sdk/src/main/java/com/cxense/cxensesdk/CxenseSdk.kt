@@ -76,7 +76,7 @@ class CxenseSdk(
     val limitAdTrackingEnabled: Boolean
         get() = advertisingIdProvider.limitAdTrackingEnabled
 
-    ////////// Work with events
+    // -------- Work with events
     /**
      * Sets callback for each dispatching of events
      *
@@ -99,7 +99,7 @@ class CxenseSdk(
     /**
      * Tracks active time for the given page view event.
      *
-     * @param eventId    the event to report active time for.
+     * @param eventId the event to report active time for.
      * @param activeTime the active time in seconds.
      */
     @Suppress("unused") // Public API.
@@ -121,7 +121,7 @@ class CxenseSdk(
     fun getQueueStatus(): QueueStatus =
         QueueStatus(eventRepository.getEventStatuses())
 
-    ////////// Content API
+    // -------- Content API
     @Suppress("unused") // Public API.
     val defaultContentUser: ContentUser
         get() = userProvider.defaultUser
@@ -129,7 +129,7 @@ class CxenseSdk(
     /**
      * Tracks an url click for the given item
      *
-     * @param item     the item that contains the click-url
+     * @param item the item that contains the click-url
      * @param callback callback for checking status
      */
     @Suppress("unused") // Public API.
@@ -140,7 +140,7 @@ class CxenseSdk(
     /**
      * Tracks a click for the given click-url
      *
-     * @param url      the click-url
+     * @param url the click-url
      * @param callback callback for checking status
      */
     @Suppress("unused") // Public API.
@@ -149,12 +149,12 @@ class CxenseSdk(
     /**
      * Load widget recommendations
      *
-     * @param widgetId      the widget id
+     * @param widgetId the widget id
      * @param widgetContext the WidgetContext
-     * @param user          custom user
-     * @param tag           Only display results from the branch with the given tag and ignore other conditions.
-     * @param prnd          Identifier for the page view where the result of this call will be displayed.
-     * @param callback      listener for returning result
+     * @param user custom user
+     * @param tag Only display results from the branch with the given tag and ignore other conditions.
+     * @param prnd Identifier for the page view where the result of this call will be displayed.
+     * @param callback listener for returning result
      */
     @Suppress("unused") // Public API.
     fun loadWidgetRecommendations(
@@ -175,7 +175,6 @@ class CxenseSdk(
         )
     ).enqueue(callback) { it.items }
 
-
     /**
      * Report visibility of recommendations for a content widget.
      *
@@ -187,13 +186,13 @@ class CxenseSdk(
             WidgetVisibilityReport(impressions.toList())
         ).enqueue(callback)
 
-    ////////// DMP API
+    // -------- DMP API
     /**
      * Asynchronously retrieves a list of all segments where the specified user is a member
      *
-     * @param identities   a list of user identifiers for a single user to retrieve segments for
+     * @param identities a list of user identifiers for a single user to retrieve segments for
      * @param siteGroupIds the list of site groups to retrieve segments for
-     * @param callback     a  callback to receive a list of segment identifiers where the specified user is a member
+     * @param callback a  callback to receive a list of segment identifiers where the specified user is a member
      */
     @Suppress("unused") // Public API.
     fun getUserSegmentIds(
@@ -212,14 +211,11 @@ class CxenseSdk(
     /**
      * Asynchronously retrieves a suitably authorized slice of a given user's interest profile
      *
-     * @param identity      user identifier with type and id
-     * @param groups        a collection of strings that specify profile item groups to keep in the returned profile.
-     *                      If not specified, all groups available for the user will be returned
-     * @param recent        flag whether to only return the most recent user profile information. This can be used to
-     *                      return quickly if response time is important
-     * @param identityTypes a collection of external customer identifier types. If an external customer identifier exists for
-     *                      the user, it will be included in the response
-     * @param callback      a callback with {@link User} profile
+     * @param identity user identifier with type and id
+     * @param groups a collection of strings that specify profile item groups to keep in the returned profile. If not specified, all groups available for the user will be returned
+     * @param recent flag whether to only return the most recent user profile information. This can be used to return quickly if response time is important
+     * @param identityTypes a collection of external customer identifier types. If an external customer identifier exists for the user, it will be included in the response
+     * @param callback a callback with {@link User} profile
      */
     @Suppress("unused") // Public API.
     fun getUser(
@@ -233,9 +229,9 @@ class CxenseSdk(
     /**
      * Asynchronously retrieves the external data associated with a given user
      *
-     * @param id       identifier for the user. Use 'null' if you want match all users of provided type.
-     * @param type     the customer identifier type
-     * @param filter   a traffic filter of type user-external with required group and optional item/items specified
+     * @param id identifier for the user. Use 'null' if you want match all users of provided type.
+     * @param type the customer identifier type
+     * @param filter a traffic filter of type user-external with required group and optional item/items specified
      * @param callback a callback with {@link UserExternalData}
      */
     @Suppress("unused") // Public API.
@@ -250,7 +246,7 @@ class CxenseSdk(
      * Asynchronously sets the external data associated with a given user
      *
      * @param userExternalData external data associated with a user
-     * @param callback         a callback
+     * @param callback a callback
      */
     @Suppress("unused") // Public API.
     fun setUserExternalData(userExternalData: UserExternalData, callback: LoadCallback<Void>) =
@@ -270,7 +266,7 @@ class CxenseSdk(
      * Asynchronously retrieves a registered external identity mapping for a Cxense identifier
      *
      * @param cxenseId the Cxense identifier of the user.
-     * @param type     the identity mapping type (customer identifier type) that contains the mapping.
+     * @param type the identity mapping type (customer identifier type) that contains the mapping.
      * @param callback a callback with {@link UserIdentity}
      */
     @Suppress("unused") // Public API.
@@ -288,7 +284,7 @@ class CxenseSdk(
     fun addUserExternalLink(cxenseId: String, identity: UserIdentity, callback: LoadCallback<UserIdentity>) =
         cxApi.addUserExternalLink(UserIdentityMappingRequest(cxenseId, identity.type, identity.id)).enqueue(callback)
 
-    ////////// Persisted API
+    // -------- Persisted API
     @Suppress("unused") // Public API.
     fun <T> executePersistedQuery(
         url: String,
@@ -301,7 +297,7 @@ class CxenseSdk(
         }.enqueue(createGenericCallback(callback))
     }
 
-    ////////// Internal methods
+    // -------- Internal methods
     private fun <T> Call<T>.enqueue(callback: LoadCallback<T>) = enqueue(callback.transform())
 
     private fun <T, U> Call<T>.enqueue(callback: LoadCallback<U>, function: (T) -> U) =
@@ -311,7 +307,6 @@ class CxenseSdk(
         override fun onSuccess(data: T) = this@transform.onSuccess(function(data))
 
         override fun onError(throwable: Throwable) = this@transform.onError(throwable)
-
     }.transform()
 
     private fun <T> LoadCallback<T>.transform() = ApiCallback(this, errorParser)

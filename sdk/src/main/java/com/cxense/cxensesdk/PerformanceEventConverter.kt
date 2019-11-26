@@ -45,7 +45,6 @@ class PerformanceEventConverter(
             segments to pairs.toMap()
         }
 
-
     override fun toEventRecord(event: Event): EventRecord? =
         (event as? PerformanceEvent)?.run {
             EventRecord(
@@ -61,7 +60,7 @@ class PerformanceEventConverter(
     private fun prepareKey(objectName: String, nameKey: String, valueKey: String, name: String): String =
         listOf(
             objectName,
-            "${nameKey}:${name}",
+            "$nameKey:$name",
             valueKey
         ).joinToString(separator = "/")
 

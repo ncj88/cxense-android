@@ -10,7 +10,7 @@ class UserAgentProvider(
     sdkVersion: String,
     context: Context
 ) {
-    val userAgent: String by lazy { "cx-sdk/${sdkVersion} ${context.getDefaultUserAgent()}" }
+    val userAgent: String by lazy { "cx-sdk/$sdkVersion ${context.getDefaultUserAgent()}" }
 
     private fun Context.getDefaultUserAgent(): String {
         try {

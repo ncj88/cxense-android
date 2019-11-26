@@ -50,7 +50,6 @@ class CxenseConfiguration {
         override fun getApiKey(): String = ""
 
         override fun getDmpPushPersistentId(): String = ""
-
     }
 
     /**
@@ -68,7 +67,7 @@ class CxenseConfiguration {
      * every {@code period}.
      *
      * @param period the dispatch period
-     * @param unit   the time unit of the period parameter
+     * @param unit the time unit of the period parameter
      * @throws IllegalArgumentException if period smaller then CxenseConstants.MIN_DISPATCH_PERIOD
      */
     fun dispatchPeriod(period: Long, unit: TimeUnit) {
@@ -83,7 +82,7 @@ class CxenseConfiguration {
      * Sets outdate period for events. The dispatcher will delete all events, that tracked more than {@code period}.
      *
      * @param period the dispatch period
-     * @param unit   the time unit of the period parameter
+     * @param unit the time unit of the period parameter
      * @throws IllegalArgumentException if period smaller than CxenseConstants.MIN_DISPATCH_PERIOD
      */
     fun outdatePeriod(period: Long, unit: TimeUnit) {

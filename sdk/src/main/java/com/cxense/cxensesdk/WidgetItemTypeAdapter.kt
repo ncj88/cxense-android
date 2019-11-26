@@ -42,7 +42,6 @@ class WidgetItemTypeAdapter(
             )
         }
 
-
     private fun JsonReader.readValue(): Any {
         return when (peek()) {
             JsonToken.BEGIN_ARRAY -> readList { it.nextString() }

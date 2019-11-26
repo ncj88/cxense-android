@@ -7,6 +7,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.DisplayMetrics
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import timber.log.Timber
 
@@ -36,6 +37,17 @@ class DeviceInfoProvider(
         context.packageManager.getApplicationLabel(context.applicationInfo).toString()
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun NetworkCapabilities.toNetworkStatus(): CxenseConfiguration.NetworkStatus {
+        return when {
+            hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                    hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> CxenseConfiguration.NetworkStatus.WIFI
+            hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> CxenseConfiguration.NetworkStatus.MOBILE
+            hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) -> CxenseConfiguration.NetworkStatus.GPRS
+            else -> CxenseConfiguration.NetworkStatus.NONE
+        }
+    }
+
     /**
      * Gets current network status
      *
@@ -46,15 +58,8 @@ class DeviceInfoProvider(
             ?: return CxenseConfiguration.NetworkStatus.NONE
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val caps =
-                manager.getNetworkCapabilities(manager.activeNetwork) ?: return CxenseConfiguration.NetworkStatus.NONE
-            return when {
-                caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                        || caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> CxenseConfiguration.NetworkStatus.WIFI
-                caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> CxenseConfiguration.NetworkStatus.MOBILE
-                caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) -> CxenseConfiguration.NetworkStatus.GPRS
-                else -> CxenseConfiguration.NetworkStatus.NONE
-            }
+            return manager.getNetworkCapabilities(manager.activeNetwork)?.toNetworkStatus()
+                ?: CxenseConfiguration.NetworkStatus.NONE
         } else {
             @Suppress("DEPRECATION")
             val activeNetworkInfo = manager.activeNetworkInfo

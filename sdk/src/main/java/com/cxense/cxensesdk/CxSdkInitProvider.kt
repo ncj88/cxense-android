@@ -31,7 +31,8 @@ open class CxSdkInitProvider : ContentProvider() {
     internal open fun checkAttachInfo(info: ProviderInfo) {
         // So if the authorities equal the library internal ones, the developer forgot to set his applicationId
         check(BuildConfig.AUTHORITY != info.authority) {
-            "Incorrect provider authority in manifest. Most likely due to a missing applicationId variable in application's build.gradle."
+            "Incorrect provider authority in manifest. Most likely due to a missing applicationId variable" +
+                    " in application's build.gradle."
         }
     }
 
@@ -44,7 +45,6 @@ open class CxSdkInitProvider : ContentProvider() {
         selectionArgs: Array<out String>?,
         sortOrder: String?
     ): Cursor? = null
-
 
     override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int =
         0

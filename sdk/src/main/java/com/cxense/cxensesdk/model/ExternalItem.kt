@@ -13,7 +13,7 @@ class ExternalItem(
     @SerializedName("group")
     val group: String = group.also {
         require(it.matches(GROUP_REGEXP.toRegex())) {
-            "Group can contains only letters, digits or dash, max length is $GROUP_NAME_MAX_LENGTH"
+            "Group should not be empty and can contains only letters, digits or dash, max length is $GROUP_NAME_MAX_LENGTH"
         }
     }
 
@@ -26,7 +26,7 @@ class ExternalItem(
 
     companion object {
         private const val GROUP_NAME_MAX_LENGTH = 26
-        private const val GROUP_REGEXP = "^[a-zA-Z\\d-]{1,${GROUP_NAME_MAX_LENGTH}}$"
+        private const val GROUP_REGEXP = "^[a-zA-Z\\d-]{1,$GROUP_NAME_MAX_LENGTH}$"
         private const val ITEM_NAME_MAX_LENGTH = 100
     }
 }

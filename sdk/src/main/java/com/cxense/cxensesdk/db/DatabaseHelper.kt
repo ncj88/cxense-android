@@ -91,7 +91,6 @@ open class DatabaseHelper(
                 .toList()
         }
 
-
     companion object {
         const val DATABASE_VERSION = 1
         private const val DATABASE_NAME = "tracks.db"

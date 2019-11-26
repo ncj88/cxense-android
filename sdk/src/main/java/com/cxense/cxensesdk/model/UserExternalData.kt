@@ -10,7 +10,7 @@ class UserExternalData private constructor(
 
     @SerializedName("profile")
     val items: List<ExternalItem> = externalItems.map {
-        ExternalItem("${type}-${it.group}", it.item)
+        ExternalItem("$type-${it.group}", it.item)
     }
 
     data class Builder(

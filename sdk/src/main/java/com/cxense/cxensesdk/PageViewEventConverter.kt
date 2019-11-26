@@ -24,14 +24,14 @@ class PageViewEventConverter(
             TimeUnit.MILLISECONDS.toMinutes(timeZone.getOffset(timeInMillis).toLong())
         }
         val (resolution, density) = with(deviceInfoProvider.displayMetrics) {
-            "${widthPixels}x${heightPixels}" to density.toString()
+            "${widthPixels}x$heightPixels" to density.toString()
         }
         val pairs = sequenceOf(
             SITE_ID to siteId,
             VERSION to DEFAULT_API_VERSION,
             TYPE to eventType,
             ACCOUNT to accountId?.toString(),
-            LOCATION to (contentId?.let { "http://${siteId}.content.id/${contentId}" } ?: location),
+            LOCATION to (contentId?.let { "http://$siteId.content.id/$contentId" } ?: location),
             REFERRER to referrer,
             GOAL to goalId,
             PAGE_NAME to pageName,
@@ -46,7 +46,7 @@ class PageViewEventConverter(
             RND to rnd,
             // Is Java enabled
             JAVA to "0", // No, we don't have Java 😁
-            LANGUAGE to with(Locale.getDefault()) { "${language}_${country}" },
+            LANGUAGE to with(Locale.getDefault()) { "${language}_$country" },
             CKP to userId,
             ENCODING to DEFAULT_ENCODING,
             FLASH to "0",

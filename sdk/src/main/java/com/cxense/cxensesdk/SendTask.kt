@@ -29,7 +29,6 @@ class SendTask(
 
     private fun List<EventStatus>.notifyCallback() = sendCallback?.invoke(this)
 
-
     private fun sendDmpEventsViaApi(events: List<EventRecord>) {
         try {
             events.map { it.data }
@@ -104,8 +103,8 @@ class SendTask(
     override fun run() {
         try {
             eventRepository.deleteOutdatedEvents(configuration.outdatePeriod)
-            if (configuration.dispatchMode == CxenseConfiguration.DispatchMode.OFFLINE
-                || deviceInfoProvider.getCurrentNetworkStatus() < configuration.minimumNetworkStatus
+            if (configuration.dispatchMode == CxenseConfiguration.DispatchMode.OFFLINE ||
+                deviceInfoProvider.getCurrentNetworkStatus() < configuration.minimumNetworkStatus
             )
                 return
             val consentOptions = configuration.consentOptions

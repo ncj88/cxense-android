@@ -7,6 +7,7 @@ plugins {
     id(Plugins.versions) version Versions.versionsPlugin
     id(Plugins.release) version Versions.releasePlugin
     id(Plugins.spotbugs) version Versions.spotbugsPlugin
+    id(Plugins.ktlint) version Versions.ktlint
 }
 
 buildscript {

@@ -44,7 +44,7 @@ class AuthInterceptor(
                 update(date.toByteArray())
             }
             .doFinal()
-            .joinToString(prefix = "username=${username} date=${date} hmac-sha256-hex=", separator = "") {
+            .joinToString(prefix = "username=$username date=$date hmac-sha256-hex=", separator = "") {
                 "%02X".format(it)
             }
     }

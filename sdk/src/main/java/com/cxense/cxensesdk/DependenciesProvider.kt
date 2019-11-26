@@ -149,7 +149,9 @@ internal class DependenciesProvider private constructor(
 
         @JvmStatic
         fun getInstance(): DependenciesProvider {
-            checkNotNull(instance) { "The Cxense SDK is not initialized! Make sure to call init before calling other methods." }
+            checkNotNull(instance) {
+                "The Cxense SDK is not initialized! Make sure to call init before calling other methods."
+            }
             return instance as DependenciesProvider
         }
     }

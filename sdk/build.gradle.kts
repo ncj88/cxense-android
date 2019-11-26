@@ -3,6 +3,7 @@ plugins {
     id(Plugins.kotlinAndroid)
     id(Plugins.androidMaven)
     id(Plugins.spotbugs)
+    id(Plugins.ktlint)
     checkstyle
     pmd
 }
@@ -80,7 +81,6 @@ checkstyle {
     isShowViolations = true
 }
 
-
 spotbugs {
     excludeBugsFilter = file("$checkStyleConfigDir/findbugs-exclude-filter.xml")
     effort = "max"
@@ -91,6 +91,10 @@ spotbugs {
 pmd {
     ruleSetFiles = files("$checkStyleConfigDir/pmd-ruleset.xml")
     isIgnoreFailures = true
+}
+
+ktlint {
+    android.set(true)
 }
 
 dependencies {

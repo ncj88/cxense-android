@@ -19,7 +19,8 @@ object Versions {
     const val releasePlugin = "1.10.2"
     const val androidToolsPlugin = "4.0.0-alpha04"
     const val androidMavenPlugin = "2.1"
-    const val spotbugsPlugin = "2.0.0"
+    const val spotbugsPlugin = "2.0.1"
+    const val ktlint = "9.1.1"
     // Android libraries
     const val compatLibrary = "1.1.0"
     const val annotationsLibrary = "1.1.0"
@@ -54,6 +55,7 @@ object Plugins {
     const val kotlinAndroidExt = "kotlin-android-extensions"
     const val androidMaven = "com.github.dcendents.android-maven"
     const val spotbugs = "com.github.spotbugs"
+    const val ktlint = "org.jlleitschuh.gradle.ktlint"
 }
 
 object Libs {
