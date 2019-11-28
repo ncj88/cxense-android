@@ -4,6 +4,7 @@ plugins {
     id(Plugins.androidApp)
     id(Plugins.kotlinAndroid)
     id(Plugins.kotlinAndroidExt)
+    id(Plugins.ktlint)
 }
 
 androidExtensions {
@@ -40,8 +41,10 @@ android {
         sourceCompatibility = Config.compileSourceVersion
         targetCompatibility = Config.compileTargetVersion
     }
+}
 
-
+ktlint {
+    android.set(true)
 }
 
 dependencies {

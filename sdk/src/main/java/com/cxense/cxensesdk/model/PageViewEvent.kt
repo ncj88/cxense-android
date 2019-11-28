@@ -2,9 +2,11 @@ package com.cxense.cxensesdk.model
 
 import android.location.Location
 import com.cxense.cxensesdk.DependenciesProvider
+import com.cxense.cxensesdk.UserProvider
 import okhttp3.HttpUrl
 import java.util.Collections
 
+@Suppress("unused") // Public API.
 class PageViewEvent(
     eventId: String?,
     val userId: String,
@@ -25,7 +27,8 @@ class PageViewEvent(
     val time = System.currentTimeMillis()
     val rnd: String = "${time}${(Math.random() * 10E8).toInt()}"
 
-    data class Builder(
+    data class Builder internal constructor(
+        val userProvider: UserProvider,
         var siteId: String,
         var location: String? = null,
         var contentId: String? = null,
@@ -40,7 +43,36 @@ class PageViewEvent(
         var customUserParameters: MutableList<CustomParameter> = mutableListOf(),
         var externalUserIds: MutableList<ExternalUserId> = mutableListOf()
     ) {
-        private val userProvider = DependenciesProvider.getInstance().userProvider
+        constructor(
+            siteId: String,
+            location: String? = null,
+            contentId: String? = null,
+            referrer: String? = null,
+            eventId: String? = null,
+            accountId: Int? = null,
+            goalId: String? = null,
+            pageName: String? = null,
+            newUser: Boolean? = null,
+            userLocation: Location? = null,
+            customParameters: MutableList<CustomParameter> = mutableListOf(),
+            customUserParameters: MutableList<CustomParameter> = mutableListOf(),
+            externalUserIds: MutableList<ExternalUserId> = mutableListOf()
+        ) : this(
+            DependenciesProvider.getInstance().userProvider,
+            siteId,
+            location,
+            contentId,
+            referrer,
+            eventId,
+            accountId,
+            goalId,
+            pageName,
+            newUser,
+            userLocation,
+            customParameters,
+            customUserParameters,
+            externalUserIds
+        )
 
         fun siteId(siteId: String) = apply { this.siteId = siteId }
         fun location(location: String?) = apply { this.location = location }

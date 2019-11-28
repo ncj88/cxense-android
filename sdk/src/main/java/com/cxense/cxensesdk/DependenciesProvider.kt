@@ -70,8 +70,7 @@ internal class DependenciesProvider private constructor(
     }
     private val performanceEventConverter: PerformanceEventConverter by lazy {
         PerformanceEventConverter(
-            gson,
-            cxenseConfiguration
+            gson
         )
     }
     private val conversionEventConverter: ConversionEventConverter by lazy { ConversionEventConverter(gson) }

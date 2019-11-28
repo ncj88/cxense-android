@@ -10,12 +10,11 @@ import com.google.gson.Gson
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class PerformanceEventConverter(
-    private val gson: Gson,
-    private val configuration: CxenseConfiguration
+    private val gson: Gson
 ) : EventConverter() {
     override fun canConvert(event: Event): Boolean = event is PerformanceEvent
 
-    fun extractQueryData(eventRecord: EventRecord): Pair<List<String>?, Map<String, String>>? =
+    internal fun extractQueryData(eventRecord: EventRecord): Pair<List<String>?, Map<String, String>>? =
         gson.fromJson(eventRecord.data, PerformanceEvent::class.java)?.run {
             val parameters = customParameters.asSequence().map {
                 prepareKey(
@@ -57,7 +56,7 @@ class PerformanceEventConverter(
             )
         }
 
-    private fun prepareKey(objectName: String, nameKey: String, valueKey: String, name: String): String =
+    internal fun prepareKey(objectName: String, nameKey: String, valueKey: String, name: String): String =
         listOf(
             objectName,
             "$nameKey:$name",

@@ -3,6 +3,7 @@ package com.cxense.cxensesdk.model
 /**
  * User preferences. Used for likes/dislikes.
  */
+@Suppress("unused") // Public API.
 class UserPreference(
     /**
      * List of categories.

@@ -26,7 +26,7 @@ open class CxSdkInitProvider : ContentProvider() {
      *
      * @param context {@code Context} instance from {@code Activity}/{@code ContentProvider}/etc.
      */
-    protected fun initCxense(context: Context) = DependenciesProvider.init(context)
+    internal fun initCxense(context: Context) = DependenciesProvider.init(context)
 
     internal open fun checkAttachInfo(info: ProviderInfo) {
         // So if the authorities equal the library internal ones, the developer forgot to set his applicationId

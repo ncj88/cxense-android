@@ -1,7 +1,9 @@
 package com.cxense.cxensesdk.model
 
+import okhttp3.HttpUrl
 import java.util.Collections
 
+@Suppress("unused") // Public API.
 class WidgetContext(
     val url: String,
     val referrer: String?,
@@ -34,16 +36,26 @@ class WidgetContext(
         fun neighbors(neighbors: MutableList<String>) = apply { this.neighbors = neighbors }
         fun parameters(parameters: MutableList<ContextParameter>) = apply { this.parameters = parameters }
 
-        fun build(): WidgetContext = WidgetContext(
-            url,
-            referrer,
-            pageclass,
-            sentiment,
-            recommending,
-            Collections.unmodifiableMap(categories),
-            Collections.unmodifiableList(keywords),
-            Collections.unmodifiableList(neighbors),
-            Collections.unmodifiableList(parameters)
-        )
+        fun build(): WidgetContext {
+            check(HttpUrl.parse(url) != null) {
+                "You should provide valid url as source"
+            }
+            referrer?.let {
+                check(HttpUrl.parse(it) != null) {
+                    "You should provide valid url as referrer"
+                }
+            }
+            return WidgetContext(
+                url,
+                referrer,
+                pageclass,
+                sentiment,
+                recommending,
+                Collections.unmodifiableMap(categories),
+                Collections.unmodifiableList(keywords),
+                Collections.unmodifiableList(neighbors),
+                Collections.unmodifiableList(parameters)
+            )
+        }
     }
 }

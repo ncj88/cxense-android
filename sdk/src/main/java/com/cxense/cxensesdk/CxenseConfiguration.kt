@@ -4,6 +4,7 @@ import com.cxense.cxensesdk.model.ConsentOption
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
+@Suppress("unused") // Public API.
 class CxenseConfiguration {
     /**
      * Should meta information about application be tracked automatically.
@@ -27,11 +28,6 @@ class CxenseConfiguration {
      * the minimum network status for sending events
      */
     var minimumNetworkStatus: NetworkStatus = NetworkStatus.NONE
-
-    /**
-     * the dispatch mode
-     */
-    var dispatchMode: DispatchMode = DispatchMode.ONLINE
 
     /**
      * Gets current outdate period in milliseconds.
@@ -91,20 +87,6 @@ class CxenseConfiguration {
             "Period must be greater than $MIN_OUTDATE_PERIOD_SECONDS seconds"
         }
         outdatePeriod = millis
-    }
-
-    /**
-     * The Dispatch mode specifies how and when the SDK will dispatch events.
-     */
-    enum class DispatchMode {
-        /**
-         * Automatically dispatch events.
-         */
-        ONLINE,
-        /**
-         * Don't dispatch events, only store it locally.
-         */
-        OFFLINE
     }
 
     /**

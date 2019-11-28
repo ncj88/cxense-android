@@ -81,11 +81,11 @@ class PageViewEventConverter(
         )
     }
 
-    fun extractQueryData(eventRecord: EventRecord, fixUserIdFunc: () -> String): Map<String, String>? {
-        return gson.fromJson<MutableMap<String, String>?>(
+    internal fun extractQueryData(eventRecord: EventRecord, fixUserIdFunc: () -> String): Map<String, String> {
+        return gson.fromJson<MutableMap<String, String>>(
             eventRecord.data,
             object : TypeToken<MutableMap<String, String>>() {}.type
-        )?.apply {
+        ).apply {
             if (this[CKP].isNullOrEmpty()) {
                 this[CKP] = fixUserIdFunc()
             }
@@ -104,7 +104,7 @@ class PageViewEventConverter(
             )
         }
 
-    fun updateActiveTimeData(data: String, activeTime: Long): String =
+    internal fun updateActiveTimeData(data: String, activeTime: Long): String =
         // some black magic with map
         with(
             gson.fromJson<MutableMap<String, String?>>(

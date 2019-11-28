@@ -6,6 +6,7 @@ import java.util.Collections
 import java.util.Date
 import java.util.concurrent.TimeUnit
 
+@Suppress("unused") // Public API.
 class PerformanceEvent(
     eventId: String?,
     @SerializedName(USER_IDS) val identities: List<UserIdentity>,

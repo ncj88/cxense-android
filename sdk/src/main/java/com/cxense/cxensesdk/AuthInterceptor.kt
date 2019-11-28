@@ -14,6 +14,8 @@ import javax.crypto.spec.SecretKeySpec
 class AuthInterceptor(
     private val cxenseConfiguration: CxenseConfiguration
 ) : Interceptor {
+    internal val dateString: String
+        get() = DATE_FORMAT.format(Date())
 
     override fun intercept(chain: Interceptor.Chain): Response {
         return chain.proceed(chain.request().addAuth())
@@ -36,8 +38,8 @@ class AuthInterceptor(
         }
     }
 
-    private fun createToken(username: String, secret: String): String {
-        val date = DATE_FORMAT.format(Date())
+    internal fun createToken(username: String, secret: String): String {
+        val date = dateString
         return Mac.getInstance(ALGORITHM)
             .apply {
                 init(SecretKeySpec(secret.toByteArray(), ALGORITHM))

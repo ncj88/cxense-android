@@ -13,9 +13,11 @@ class UserSegmentRequest(
         }
     }
     @SerializedName("siteGroupIds")
-    val siteGroups: List<String> = siteGroups.also {
-        require(it.isNotEmpty()) {
-            "You should provide at least one site group"
+    val siteGroups: List<String> = siteGroups
+        .filterNot { it.isEmpty() }
+        .also {
+            require(it.isNotEmpty()) {
+                "You should provide at least one not empty site group id"
+            }
         }
-    }
 }

@@ -1,5 +1,6 @@
 package com.cxense.cxensesdk.model
 
+@Suppress("unused") // Public API.
 class QueueStatus(
     eventStatuses: List<EventStatus>
 ) {

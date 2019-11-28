@@ -11,9 +11,12 @@ import kotlinx.android.synthetic.main.list_item.*
  * @author Dmitriy Konopelkin (dmitry.konopelkin@cxense.com) on (2017-06-05).
  */
 
-class MainAdapter(private val data: List<String>, private val clickListener: (String) -> Unit) : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
+class MainAdapter(
+    private val data: List<String>,
+    private val clickListener: (String) -> Unit
+) : RecyclerView.Adapter<MainAdapter.ViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false))
+        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.list_item, parent, false))
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.title.text = data[position]

@@ -13,7 +13,8 @@ class ExternalItem(
     @SerializedName("group")
     val group: String = group.also {
         require(it.matches(GROUP_REGEXP.toRegex())) {
-            "Group should not be empty and can contains only letters, digits or dash, max length is $GROUP_NAME_MAX_LENGTH"
+            "Group should not be empty and can contains only letters, digits or dash," +
+                    " max length is $GROUP_NAME_MAX_LENGTH"
         }
     }
 

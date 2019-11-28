@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit
  * Read full documentation <a href="https://wiki.cxense.com/display/cust/Cxense+SDK+for+Android">here</a>
  *
  */
+@Suppress("unused") // Public API.
 class CxenseSdk(
     private val executor: ScheduledExecutorService,
     @Suppress("unused") // Public API.
@@ -118,8 +119,8 @@ class CxenseSdk(
      * @return queue status
      */
     @Suppress("unused") // Public API.
-    fun getQueueStatus(): QueueStatus =
-        QueueStatus(eventRepository.getEventStatuses())
+    val queueStatus: QueueStatus
+        get() = QueueStatus(eventRepository.getEventStatuses())
 
     // -------- Content API
     @Suppress("unused") // Public API.
@@ -259,8 +260,8 @@ class CxenseSdk(
      * @param callback a callback
      */
     @Suppress("unused") // Public API.
-    fun deleteUserExternalData(userIdentity: UserIdentity, callback: LoadCallback<Void>) =
-        cxApi.deleteExternalUserData(userIdentity).enqueue(callback)
+    fun deleteUserExternalData(identity: UserIdentity, callback: LoadCallback<Void>) =
+        cxApi.deleteExternalUserData(identity).enqueue(callback)
 
     /**
      * Asynchronously retrieves a registered external identity mapping for a Cxense identifier

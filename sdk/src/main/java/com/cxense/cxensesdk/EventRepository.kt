@@ -55,7 +55,7 @@ class EventRepository(
         ConversionEvent.EVENT_TYPE
     )
 
-    private fun getEvents(selection: String?, vararg selectionArgs: String): List<EventRecord> =
+    internal fun getEvents(selection: String?, vararg selectionArgs: String): List<EventRecord> =
         databaseHelper.query(
             selection = selection,
             selectionArgs = selectionArgs,

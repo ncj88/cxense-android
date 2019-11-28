@@ -2,16 +2,12 @@ package com.cxense.cxensesdk.model
 
 import com.google.gson.annotations.SerializedName
 
+@Suppress("unused") // Public API.
 class UserExternalData private constructor(
     type: String,
     id: String,
-    externalItems: List<ExternalItem>
+    @SerializedName("profile") val items: List<ExternalItem>
 ) : UserIdentity(type, id) {
-
-    @SerializedName("profile")
-    val items: List<ExternalItem> = externalItems.map {
-        ExternalItem("$type-${it.group}", it.item)
-    }
 
     data class Builder(
         var identity: UserIdentity,
@@ -25,7 +21,9 @@ class UserExternalData private constructor(
             check(externalItems.size <= MAX_PROFILE_ITEMS) {
                 "Too many profile items. Current size: ${externalItems.size}, allowed max size: $MAX_PROFILE_ITEMS"
             }
-            return UserExternalData(identity.type, identity.id, externalItems)
+            return UserExternalData(identity.type, identity.id, externalItems.map {
+                ExternalItem("${identity.type}-${it.group}", it.item)
+            })
         }
     }
 

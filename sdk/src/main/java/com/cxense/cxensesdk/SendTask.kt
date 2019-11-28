@@ -29,7 +29,7 @@ class SendTask(
 
     private fun List<EventStatus>.notifyCallback() = sendCallback?.invoke(this)
 
-    private fun sendDmpEventsViaApi(events: List<EventRecord>) {
+    internal fun sendDmpEventsViaApi(events: List<EventRecord>) {
         try {
             events.map { it.data }
                 .takeUnless { it.isEmpty() }
@@ -39,6 +39,7 @@ class SendTask(
                             if (isSuccessful) {
                                 events.forEach { r ->
                                     r.isSent = true
+                                    eventRepository.putEventRecordInDatabase(r)
                                 }
                             }
                             errorParser.parseError(this)
@@ -50,7 +51,7 @@ class SendTask(
         }
     }
 
-    private fun sendEventsOneByOne(events: List<EventRecord>, sendFunc: (EventRecord) -> Exception?) {
+    internal fun sendEventsOneByOne(events: List<EventRecord>, sendFunc: (EventRecord) -> Exception?) {
         events.map { record ->
             try {
                 record.toEventStatus(sendFunc(record))
@@ -60,7 +61,7 @@ class SendTask(
         }.notifyCallback()
     }
 
-    private fun sendDmpEventsViaPersisted(events: List<EventRecord>) = sendEventsOneByOne(events) { record ->
+    internal fun sendDmpEventsViaPersisted(events: List<EventRecord>) = sendEventsOneByOne(events) { record ->
         performanceEventConverter.extractQueryData(record)?.let { (segments, data) ->
             with(
                 cxApi.trackDmpEvent(
@@ -78,19 +79,17 @@ class SendTask(
         }
     }
 
-    private fun sendPageViewEvents(events: List<EventRecord>) = sendEventsOneByOne(events) { record ->
-        pageViewEventConverter.extractQueryData(record, userProvider::userId)?.let { data ->
-            with(cxApi.trackInsightEvent(data).execute()) {
-                if (isSuccessful) {
-                    record.isSent = true
-                    eventRepository.putEventRecordInDatabase(record)
-                }
-                errorParser.parseError(this)
+    internal fun sendPageViewEvents(events: List<EventRecord>) = sendEventsOneByOne(events) { record ->
+        with(cxApi.trackInsightEvent(pageViewEventConverter.extractQueryData(record, userProvider::userId)).execute()) {
+            if (isSuccessful) {
+                record.isSent = true
+                eventRepository.putEventRecordInDatabase(record)
             }
+            errorParser.parseError(this)
         }
     }
 
-    private fun sendConversionEvents(events: List<EventRecord>) = sendEventsOneByOne(events) { record ->
+    internal fun sendConversionEvents(events: List<EventRecord>) = sendEventsOneByOne(events) { record ->
         with(cxApi.pushConversionEvents(EventDataRequest(listOf(record.data))).execute()) {
             if (isSuccessful) {
                 record.isSent = true
@@ -103,9 +102,7 @@ class SendTask(
     override fun run() {
         try {
             eventRepository.deleteOutdatedEvents(configuration.outdatePeriod)
-            if (configuration.dispatchMode == CxenseConfiguration.DispatchMode.OFFLINE ||
-                deviceInfoProvider.getCurrentNetworkStatus() < configuration.minimumNetworkStatus
-            )
+            if (deviceInfoProvider.getCurrentNetworkStatus() < configuration.minimumNetworkStatus)
                 return
             val consentOptions = configuration.consentOptions
             if (ConsentOption.CONSENT_REQUIRED in consentOptions && ConsentOption.PV_ALLOWED !in consentOptions)

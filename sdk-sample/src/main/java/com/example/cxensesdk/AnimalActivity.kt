@@ -86,7 +86,6 @@ class AnimalActivity : AppCompatActivity() {
                     Timber.e(throwable)
                 }
             })
-
     }
 
     companion object {

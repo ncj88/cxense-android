@@ -13,6 +13,7 @@ class ContentUser() {
     /**
      * Map from ID-types to IDs (String to String). ID-types are defined as a customer-prefix.
      */
+    @Suppress("MemberVisibilityCanBePrivate")
     val ids: MutableMap<String, String> = mutableMapOf()
     /**
      * User's likes
