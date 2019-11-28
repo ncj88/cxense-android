@@ -109,11 +109,6 @@ dependencies {
     testImplementation(Libs.kotlinJunit)
     testImplementation(Libs.mockitoKotlin)
     testImplementation(Libs.mockitoCore)
-    testImplementation(Libs.kluent)
     testImplementation(Libs.junit)
     testImplementation(Libs.okhttpMockServer)
-
-    androidTestImplementation(Libs.testRunner)
-    androidTestImplementation(Libs.testJunitExt)
-    androidTestImplementation(Libs.testCore)
 }

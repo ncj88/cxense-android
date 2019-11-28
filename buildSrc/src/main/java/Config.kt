@@ -34,17 +34,12 @@ object Versions {
 
     // Test Libraries
     const val junit = "4.12"
-    const val testRunner = "1.1.1"
-    const val powermock = "2.0.4"
-    const val hamcrest = "2.2"
     const val mockitoKotlin = "2.2.0"
     const val mockitoCore = "3.0.0"
-    const val kluent = "1.57"
 }
 
 object Plugins {
     const val kotlin = "gradle-plugin"
-    const val buildScan = "com.gradle.build-scan"
     const val versions = "com.github.ben-manes.versions"
     const val release = "pl.allegro.tech.build.axion-release"
     const val androidTools = "com.android.tools.build:gradle:${Versions.androidToolsPlugin}"
@@ -74,13 +69,6 @@ object Libs {
     const val kotlinJunit = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
     const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.mockitoKotlin}"
     const val mockitoCore = "org.mockito:mockito-core:${Versions.mockitoCore}"
-    const val kluent = "org.amshove.kluent:kluent-android:${Versions.kluent}"
     const val junit = "junit:junit:${Versions.junit}"
-    const val testRunner = "androidx.test:runner:${Versions.testRunner}"
-    const val testJunitExt = "androidx.test.ext:junit:${Versions.testRunner}"
-    const val testCore = "androidx.test:core:${Versions.testRunner}"
-    const val powermockJunit = "org.powermock:powermock-module-junit4:${Versions.powermock}"
-    const val powermockMockito = "org.powermock:powermock-api-mockito2:${Versions.powermock}"
     const val okhttpMockServer = "com.squareup.okhttp3:mockwebserver:${Versions.okhttp}"
-    const val hamcrest = "org.hamcrest:hamcrest:${Versions.hamcrest}"
 }
