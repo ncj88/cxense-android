@@ -7,7 +7,10 @@ import com.google.gson.TypeAdapter
 import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 
-class WidgetItemTypeAdapterFactory : TypeAdapterFactory {
+/**
+ * Factory for creating [WidgetItemTypeAdapter]
+ */
+internal class WidgetItemTypeAdapterFactory : TypeAdapterFactory {
     override fun <T : Any?> create(gson: Gson, type: TypeToken<T>): TypeAdapter<T>? {
         @Suppress("UNCHECKED_CAST")
         return if (WidgetItem::class.java.isAssignableFrom(type.rawType))

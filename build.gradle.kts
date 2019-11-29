@@ -8,6 +8,8 @@ plugins {
     id(Plugins.release) version Versions.releasePlugin
     id(Plugins.spotbugs) version Versions.spotbugsPlugin
     id(Plugins.ktlint) version Versions.ktlint
+    id(Plugins.androidMaven) version Versions.androidMavenPlugin
+    id(Plugins.dokka) version Versions.dokka
 }
 
 buildscript {
@@ -19,7 +21,6 @@ buildscript {
 
     dependencies {
         classpath(Plugins.androidTools)
-        classpath(Plugins.androidMavenPlugin)
         classpath(kotlin(Plugins.kotlin, Versions.kotlin))
     }
 }
@@ -47,9 +48,6 @@ allprojects {
 }
 
 tasks {
-    register("clean", Delete::class) {
-        delete(buildDir)
-    }
     named<DependencyUpdatesTask>("dependencyUpdates") {
         resolutionStrategy {
             componentSelection {
@@ -74,4 +72,3 @@ tasks {
         reportfileName = "report"
     }
 }
-

@@ -2,21 +2,49 @@ package com.cxense.cxensesdk.model
 
 import com.google.gson.annotations.SerializedName
 
-@Suppress("unused") // Public API.
+/**
+ * Data associated with the user(s).
+ * @property items stored key-values for the user.
+ */
+@Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class UserExternalData private constructor(
     type: String,
     id: String,
     @SerializedName("profile") val items: List<ExternalItem>
 ) : UserIdentity(type, id) {
 
+    /**
+     * @constructor Initialize Builder with required parameters
+     * @property identity user identifier with type and id
+     * @property externalItems stored key-values for the user.
+     */
     data class Builder(
         var identity: UserIdentity,
         var externalItems: MutableList<ExternalItem> = mutableListOf()
     ) {
-        fun addExternalItems(vararg externalItems: ExternalItem) = apply { this.externalItems.addAll(externalItems) }
-        fun addExternalItems(externalItems: Iterable<ExternalItem>) = apply { this.externalItems.addAll(externalItems) }
+
+        /**
+         * Adds known user identities to identify the user.
+         * @param items one or multiple [UserIdentity] objects.
+         */
+        fun addExternalItems(vararg items: ExternalItem) = apply { this.externalItems.addAll(items) }
+
+        /**
+         * Adds known user identities to identify the user.
+         * @param items [Iterable] with [UserIdentity] objects.
+         */
+        fun addExternalItems(items: Iterable<ExternalItem>) = apply { this.externalItems.addAll(items) }
+
+        /**
+         * Sets user identity
+         * @param identity user identity
+         */
         fun identity(identity: UserIdentity) = apply { this.identity = identity }
 
+        /**
+         * Builds user external data
+         * @throws [IllegalArgumentException] if constraints failed
+         */
         fun build(): UserExternalData {
             check(externalItems.size <= MAX_PROFILE_ITEMS) {
                 "Too many profile items. Current size: ${externalItems.size}, allowed max size: $MAX_PROFILE_ITEMS"

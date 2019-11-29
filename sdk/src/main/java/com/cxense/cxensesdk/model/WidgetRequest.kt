@@ -1,5 +1,8 @@
 package com.cxense.cxensesdk.model
 
+/**
+ * Request widget data object for server
+ */
 class WidgetRequest(
     val widgetId: String,
     val consent: List<String>,

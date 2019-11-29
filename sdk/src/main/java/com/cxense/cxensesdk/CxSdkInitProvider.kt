@@ -7,7 +7,10 @@ import android.content.pm.ProviderInfo
 import android.database.Cursor
 import android.net.Uri
 
-open class CxSdkInitProvider : ContentProvider() {
+/**
+ * ContentProvider for init magic. It doesn't provide any content, only auto init.
+ */
+class CxSdkInitProvider : ContentProvider() {
     override fun onCreate(): Boolean {
         context?.let { initCxense(it) }
         return false
@@ -28,7 +31,7 @@ open class CxSdkInitProvider : ContentProvider() {
      */
     internal fun initCxense(context: Context) = DependenciesProvider.init(context)
 
-    internal open fun checkAttachInfo(info: ProviderInfo) {
+    internal fun checkAttachInfo(info: ProviderInfo) {
         // So if the authorities equal the library internal ones, the developer forgot to set his applicationId
         check(BuildConfig.AUTHORITY != info.authority) {
             "Incorrect provider authority in manifest. Most likely due to a missing applicationId variable" +

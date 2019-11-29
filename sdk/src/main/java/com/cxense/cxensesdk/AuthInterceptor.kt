@@ -11,6 +11,9 @@ import java.util.Locale
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
+/**
+ * Interceptor for adding `X-cXense-Authentication` auth header.
+ */
 class AuthInterceptor(
     private val cxenseConfiguration: CxenseConfiguration
 ) : Interceptor {
@@ -54,6 +57,7 @@ class AuthInterceptor(
     companion object {
         const val AUTH_HEADER = "X-cXense-Authentication"
         private const val ISO_8601 = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        @JvmStatic
         val DATE_FORMAT: DateFormat = SimpleDateFormat(ISO_8601, Locale.US)
         private const val ALGORITHM = "HmacSHA256"
     }

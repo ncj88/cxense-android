@@ -27,12 +27,12 @@ import java.util.concurrent.TimeUnit
 /**
  * Singleton class used as a facade to the Cxense services
  * Read full documentation <a href="https://wiki.cxense.com/display/cust/Cxense+SDK+for+Android">here</a>
- *
+ * @property configuration Cxense SDK configuration, see [CxenseConfiguration]
  */
-@Suppress("unused") // Public API.
+@Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class CxenseSdk(
     private val executor: ScheduledExecutorService,
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     val configuration: CxenseConfiguration,
     private val advertisingIdProvider: AdvertisingIdProvider,
     private val userProvider: UserProvider,
@@ -54,7 +54,7 @@ class CxenseSdk(
      * Allowed characters are: A-Z, a-z, 0-9, "_", "-", "+" and ".".
      *
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     var userId: String
         get() = userProvider.userId
         set(value) {
@@ -66,14 +66,14 @@ class CxenseSdk(
      *
      * @return advertising ID (if available)
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     val defaultUserId: String?
         get() = advertisingIdProvider.defaultUserId
 
     /**
      * Retrieves whether the user has limit ad tracking enabled or not.
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     val limitAdTrackingEnabled: Boolean
         get() = advertisingIdProvider.limitAdTrackingEnabled
 
@@ -83,7 +83,7 @@ class CxenseSdk(
      *
      * @param callback callback instance
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun setDispatchEventsCallback(callback: DispatchEventsCallback?) {
         sendTask.sendCallback = callback
     }
@@ -93,7 +93,7 @@ class CxenseSdk(
      *
      * @param events the events that should be pushed.
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun pushEvents(vararg events: Event) =
         executor.execute { eventRepository.putEventsInDatabase(events) }
 
@@ -103,14 +103,14 @@ class CxenseSdk(
      * @param eventId the event to report active time for.
      * @param activeTime the active time in seconds.
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun trackActiveTime(eventId: String, activeTime: Long = 0) =
         executor.execute { eventRepository.putEventTime(eventId, activeTime) }
 
     /**
      * Forces sending events from queue to server.
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun flushEventQueue() = executor.execute(sendTask)
 
     /**
@@ -118,12 +118,12 @@ class CxenseSdk(
      *
      * @return queue status
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     val queueStatus: QueueStatus
         get() = QueueStatus(eventRepository.getEventStatuses())
 
     // -------- Content API
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     val defaultContentUser: ContentUser
         get() = userProvider.defaultUser
 
@@ -133,7 +133,7 @@ class CxenseSdk(
      * @param item the item that contains the click-url
      * @param callback callback for checking status
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun trackClick(item: WidgetItem, callback: LoadCallback<Void>) =
         item.clickUrl?.let { trackClick(it, callback) }
             ?: callback.onError(BaseException("Can't track this item. Click url is null"))
@@ -144,7 +144,7 @@ class CxenseSdk(
      * @param url the click-url
      * @param callback callback for checking status
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun trackClick(url: String, callback: LoadCallback<Void>) = cxApi.trackUrlClick(url).enqueue(callback)
 
     /**
@@ -157,7 +157,7 @@ class CxenseSdk(
      * @param prnd Identifier for the page view where the result of this call will be displayed.
      * @param callback listener for returning result
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun loadWidgetRecommendations(
         widgetId: String,
         widgetContext: WidgetContext? = null,
@@ -181,7 +181,7 @@ class CxenseSdk(
      *
      * @param impressions The list of seen recommendations (impressions) you'd like to report visibility of.
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun reportWidgetVisibilities(callback: LoadCallback<Void>, vararg impressions: Impression) =
         cxApi.reportWidgetVisibility(
             WidgetVisibilityReport(impressions.toList())
@@ -195,7 +195,7 @@ class CxenseSdk(
      * @param siteGroupIds the list of site groups to retrieve segments for
      * @param callback a  callback to receive a list of segment identifiers where the specified user is a member
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun getUserSegmentIds(
         identities: List<UserIdentity>,
         siteGroupIds: List<String>,
@@ -218,7 +218,7 @@ class CxenseSdk(
      * @param identityTypes a collection of external customer identifier types. If an external customer identifier exists for the user, it will be included in the response
      * @param callback a callback with {@link User} profile
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun getUser(
         identity: UserIdentity,
         groups: List<String>? = null,
@@ -235,7 +235,7 @@ class CxenseSdk(
      * @param filter a traffic filter of type user-external with required group and optional item/items specified
      * @param callback a callback with {@link UserExternalData}
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun getUserExternalData(
         type: String,
         id: String? = null,
@@ -249,7 +249,7 @@ class CxenseSdk(
      * @param userExternalData external data associated with a user
      * @param callback a callback
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun setUserExternalData(userExternalData: UserExternalData, callback: LoadCallback<Void>) =
         cxApi.setUserExternalData(userExternalData).enqueue(callback)
 
@@ -259,7 +259,7 @@ class CxenseSdk(
      * @param identity user identifier with type and id
      * @param callback a callback
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun deleteUserExternalData(identity: UserIdentity, callback: LoadCallback<Void>) =
         cxApi.deleteExternalUserData(identity).enqueue(callback)
 
@@ -270,7 +270,7 @@ class CxenseSdk(
      * @param type the identity mapping type (customer identifier type) that contains the mapping.
      * @param callback a callback with {@link UserIdentity}
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun getUserExternalLink(cxenseId: String, type: String, callback: LoadCallback<UserIdentity>) =
         cxApi.getUserExternalLink(UserIdentityMappingRequest(cxenseId, type)).enqueue(callback)
 
@@ -281,12 +281,12 @@ class CxenseSdk(
      * @param identity user identifier with type and id
      * @param callback a callback with {@link UserIdentity}
      */
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun addUserExternalLink(cxenseId: String, identity: UserIdentity, callback: LoadCallback<UserIdentity>) =
         cxApi.addUserExternalLink(UserIdentityMappingRequest(cxenseId, identity.type, identity.id)).enqueue(callback)
 
     // -------- Persisted API
-    @Suppress("unused") // Public API.
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun <T> executePersistedQuery(
         url: String,
         persistentQueryId: String,
@@ -340,6 +340,9 @@ class CxenseSdk(
     }
 
     companion object {
+        /**
+         * Gets singleton SDK instance.
+         */
         @JvmStatic
         @Suppress("unused")
         fun getInstance(): CxenseSdk = DependenciesProvider.getInstance().cxenseSdk

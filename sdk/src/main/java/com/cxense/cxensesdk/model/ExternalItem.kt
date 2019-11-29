@@ -4,8 +4,15 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * Stored key-values for the user.
+ * @param group group name
+ * @property group group name
  *
+ * @param item the item which is to be associated with the group name.
+ * @property item the item which is to be associated with the group name.
+ *
+ * @throws IllegalArgumentException if [group] or [item] doesn't meet a criteria.
  */
+@Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class ExternalItem(
     group: String,
     item: String

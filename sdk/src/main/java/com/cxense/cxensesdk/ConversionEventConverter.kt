@@ -1,10 +1,15 @@
 package com.cxense.cxensesdk
 
+import androidx.annotation.RestrictTo
 import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.ConversionEvent
 import com.cxense.cxensesdk.model.Event
 import com.google.gson.Gson
 
+/**
+ * Supports [ConversionEvent] to [EventRecord] converting
+ */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
 class ConversionEventConverter(
     private val gson: Gson
 ) : EventConverter() {

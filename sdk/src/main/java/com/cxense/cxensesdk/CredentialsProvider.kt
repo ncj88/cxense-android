@@ -1,5 +1,9 @@
 package com.cxense.cxensesdk
 
+/**
+ * Interface for providing API credentials.
+ * Note that SDK doesn't cache results from these methods, which allows you to dynamically change credentials without replacing provider
+ */
 interface CredentialsProvider {
     /**
      * Returns username

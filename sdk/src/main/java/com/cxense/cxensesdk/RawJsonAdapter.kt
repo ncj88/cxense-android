@@ -1,10 +1,16 @@
 package com.cxense.cxensesdk
 
+import androidx.annotation.RestrictTo
 import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 
-class RawJsonAdapter : TypeAdapter<List<String>>() {
+/**
+ * Used for writing prepared json as raw string.
+ *
+ */
+@RestrictTo(RestrictTo.Scope.LIBRARY)
+internal class RawJsonAdapter : TypeAdapter<List<String>>() {
     override fun write(output: JsonWriter, value: List<String>?) {
         with(output) {
             beginArray()

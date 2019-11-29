@@ -1,6 +1,11 @@
 package com.cxense.cxensesdk.model
 
-@Suppress("unused") // Public API.
+/**
+ * Describes current events' sending queue status
+ * @property sentEvents statuses for sent events
+ * @property notSentEvents statuses for not sent events
+ */
+@Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class QueueStatus(
     eventStatuses: List<EventStatus>
 ) {

@@ -7,7 +7,10 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
 
-class WidgetItemTypeAdapter(
+/**
+ * Special adapter for [WidgetItem] reading via Gson
+ */
+internal class WidgetItemTypeAdapter(
     private val jsonElementTypeAdapter: TypeAdapter<JsonElement>
 ) : TypeAdapter<WidgetItem>() {
     override fun write(output: JsonWriter, value: WidgetItem) {

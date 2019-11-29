@@ -5,9 +5,11 @@ import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.CustomParameter
 import com.cxense.cxensesdk.model.Event
 import com.cxense.cxensesdk.model.PerformanceEvent
-import com.cxense.cxensesdk.model.UserIdentity
 import com.google.gson.Gson
 
+/**
+ * Supports [PerformanceEvent] to [EventRecord] converting
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class PerformanceEventConverter(
     private val gson: Gson
@@ -27,8 +29,8 @@ class PerformanceEventConverter(
             val ids = identities.asSequence().map {
                 prepareKey(
                     PerformanceEvent.USER_IDS,
-                    UserIdentity.TYPE,
-                    UserIdentity.ID,
+                    USER_TYPE,
+                    USER_ID,
                     it.type
                 ) to it.id
             }
@@ -64,6 +66,8 @@ class PerformanceEventConverter(
         ).joinToString(separator = "/")
 
     companion object {
-        const val CONSENT = "con"
+        private const val CONSENT = "con"
+        private const val USER_ID = "id"
+        private const val USER_TYPE = "type"
     }
 }

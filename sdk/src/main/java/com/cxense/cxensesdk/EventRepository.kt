@@ -11,6 +11,9 @@ import com.google.gson.JsonIOException
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
+/**
+ * Repository for saving/getting events via local database.
+ */
 class EventRepository(
     private val databaseHelper: DatabaseHelper,
     private val eventConverters: List<EventConverter>

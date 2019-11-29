@@ -4,8 +4,13 @@ import com.google.gson.annotations.SerializedName
 
 /**
  * Describes impression data
+ * @param clickUrl click URL
+ * @property clickUrl click URL
  *
+ * @param seconds visibility seconds
+ * @property seconds visibility seconds
  */
+@Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class Impression(
     clickUrl: String,
     seconds: Int

@@ -6,7 +6,11 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import timber.log.Timber
 
-class UserAgentProvider(
+/**
+ * Provides User-Agent
+ *
+ */
+internal class UserAgentProvider(
     sdkVersion: String,
     context: Context
 ) {

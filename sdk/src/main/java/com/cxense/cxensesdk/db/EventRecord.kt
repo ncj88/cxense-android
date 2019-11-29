@@ -4,6 +4,10 @@ import android.content.ContentValues
 import android.provider.BaseColumns
 import androidx.annotation.RestrictTo
 
+/**
+ * Database class for events
+ *
+ **/
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 data class EventRecord(
     val eventType: String,

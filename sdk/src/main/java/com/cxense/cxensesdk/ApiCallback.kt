@@ -4,6 +4,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Basic callback for API
+ * @param T success data type
+ */
 class ApiCallback<T>(
     private val callback: LoadCallback<T>,
     private val errorParser: ApiErrorParser

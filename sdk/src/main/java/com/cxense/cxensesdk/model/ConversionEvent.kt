@@ -4,7 +4,17 @@ import com.cxense.cxensesdk.DependenciesProvider
 import com.google.gson.annotations.SerializedName
 import java.util.Collections
 
-@Suppress("unused") // Public API.
+/**
+ * Conversion event description
+ * @property eventType Predefined event type
+ * @property siteId The Cxense site identifier to be associated with the events.
+ * @property productId Product identifier.
+ * @property funnelStep Funnel step.
+ * @property identities List of known user identities to identify the user. Note that different users must be fed as different events.
+ * @property price A price to override the original value in the conversion product object.
+ * @property renewalFrequency A renewal frequency to override the original value in the conversion product object.
+ */
+@Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class ConversionEvent private constructor(
     @SerializedName("userIds") val identities: List<UserIdentity>,
     @SerializedName("siteId") val siteId: String,
@@ -17,6 +27,18 @@ class ConversionEvent private constructor(
     @SerializedName("eventType")
     val eventType = EVENT_TYPE
 
+    /**
+     * @constructor Initialize Builder with required parameters
+     * @property siteId The Cxense site identifier to be associated with the events.
+     * @property productId Product identifier.
+     * @property funnelStep Funnel step. Can be one of the pre-defined [FUNNEL_TYPE_CONVERT_PRODUCT], [FUNNEL_TYPE_TERMINATE_PRODUCT] and [FUNNEL_TYPE_RENEW_PRODUCT] or alternatively any string representing the step e.g. 'creditCardDetails'.
+     * @property identities List of known user identities to identify the user. Note that different users must be fed as different events.
+     * @property productPrice A price to override the original value in the conversion product object.
+     * @property renewalFrequency A renewal frequency to override the original value in the conversion product object.
+     * The renewal frequency has the format "`<number><units><type>`". If the renewal frequency is set on the product, the system will automatically renew all the conversions to this product every `<number>` of `<units>` until the conversion is explicitly stopped, renewed or started over.
+     * The `<number>` is limited to 3 digits. Only 'd' (days), 'w' (weeks), 'M' (months) and 'y' (years) are supported as `<units>`. The `<type>` can be one of 'R' (relative to the time the user has converted) or 'C' (calendar-based: happening at the beginning of the `<unit>`).
+     * Examples: "`1yC`", "`28wR`" and so on.
+     */
     data class Builder(
         var siteId: String,
         var productId: String,
@@ -26,14 +48,52 @@ class ConversionEvent private constructor(
         var renewalFrequency: String? = null
     ) {
 
+        /**
+         * Adds known user identities to identify the user.
+         * @param identities one or multiple [UserIdentity] objects.
+         */
         fun addIdentities(vararg identities: UserIdentity) = apply { this.identities.addAll(identities) }
+
+        /**
+         * Adds known user identities to identify the user.
+         * @param identities [Iterable] with [UserIdentity] objects.
+         */
         fun addIdentities(identities: Iterable<UserIdentity>) = apply { this.identities.addAll(identities) }
+
+        /**
+         * Sets site identifier
+         * @param siteId The Cxense site identifier to be associated with the events.
+         */
         fun siteId(siteId: String) = apply { this.siteId = siteId }
+
+        /**
+         * Sets product identifier
+         * @param productId Product identifier.
+         */
         fun productId(productId: String) = apply { this.productId = productId }
+
+        /**
+         * Sets funnel step
+         * @param funnelStep Funnel step. Can be one of the pre-defined [FUNNEL_TYPE_CONVERT_PRODUCT], [FUNNEL_TYPE_TERMINATE_PRODUCT] and [FUNNEL_TYPE_RENEW_PRODUCT] or alternatively any string representing the step e.g. 'creditCardDetails'.
+         */
         fun funnelStep(funnelStep: String) = apply { this.funnelStep = funnelStep }
+
+        /**
+         * Sets product price
+         * @param productPrice A price to override the original value in the conversion product object.
+         */
         fun productPrice(productPrice: Double?) = apply { this.productPrice = productPrice }
+
+        /**
+         * Sets renewal frequency
+         * @param renewalFrequency A renewal frequency to override the original value in the conversion product object.
+         */
         fun renewalFrequency(renewalFrequency: String?) = apply { this.renewalFrequency = renewalFrequency }
 
+        /**
+         * Builds conversion event
+         * @throws [IllegalArgumentException] if constraints failed
+         */
         fun build(): ConversionEvent {
             check(siteId.isNotEmpty()) {
                 "Site id can't be empty"
@@ -52,11 +112,12 @@ class ConversionEvent private constructor(
             }
             renewalFrequency?.let {
                 check(it.matches("^\\d{1,3}[dwMy][CR]$".toRegex())) {
-                    "The renewal frequency has the format \"<number><units><type>\"." +
-                            " The <number> is limited to 3 digits." +
-                            " Only 'd' (days), 'w' (weeks), 'M' (months) and 'y' (years) are supported as <units>." +
-                            " The <type> can be one of 'R' (relative to the time the user has converted)" +
-                            " or 'C' (calendar-based: happening at the beginning of the <unit>)."
+                    """
+                        The renewal frequency has the format "<number><units><type>". The <number> is limited to 3 digits. 
+                        Only 'd' (days), 'w' (weeks), 'M' (months) and 'y' (years) are supported as <units>. 
+                        The <type> can be one of 'R' (relative to the time the user has converted) or 'C' (calendar-based:
+                         happening at the beginning of the <unit>).
+                    """.trimIndent()
                 }
             }
 

@@ -21,6 +21,7 @@ object Versions {
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "2.0.1"
     const val ktlint = "9.1.1"
+    const val dokka = "0.10.0"
     // Android libraries
     const val compatLibrary = "1.1.0"
     const val annotationsLibrary = "1.1.0"
@@ -51,6 +52,7 @@ object Plugins {
     const val androidMaven = "com.github.dcendents.android-maven"
     const val spotbugs = "com.github.spotbugs"
     const val ktlint = "org.jlleitschuh.gradle.ktlint"
+    const val dokka = "org.jetbrains.dokka"
 }
 
 object Libs {

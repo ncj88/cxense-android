@@ -1,11 +1,20 @@
 package com.cxense.cxensesdk.model
 
+import com.cxense.cxensesdk.model.CustomParameter.Companion.MAX_CUSTOM_PARAMETER_KEY_LENGTH
+import com.cxense.cxensesdk.model.CustomParameter.Companion.MAX_CUSTOM_PARAMETER_VALUE_LENGTH
 import com.google.gson.annotations.SerializedName
 
 /**
  * Customer-defined parameter object
+ * @param name Parameter name, e.g., "campaign", "adspace" or "creative".
+ * @property name Parameter name, e.g., "campaign", "adspace" or "creative".
  *
+ * @param value Parameter value, e.g. "sale", "42".
+ * @property value Parameter value, e.g. "sale", "42".
+ *
+ * @throws IllegalArgumentException if [name] longer than [MAX_CUSTOM_PARAMETER_KEY_LENGTH] or [value] longer than [MAX_CUSTOM_PARAMETER_VALUE_LENGTH]
  */
+@Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class CustomParameter(
     name: String,
     value: String

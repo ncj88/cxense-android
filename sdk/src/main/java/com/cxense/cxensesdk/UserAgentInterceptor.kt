@@ -7,7 +7,7 @@ import okhttp3.Response
  * Interceptor for setting User-Agent header.
  *
  */
-class UserAgentInterceptor(
+internal class UserAgentInterceptor(
     private val userAgentProvider: UserAgentProvider
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response =

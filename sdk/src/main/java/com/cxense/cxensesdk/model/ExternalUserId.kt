@@ -1,5 +1,16 @@
 package com.cxense.cxensesdk.model
 
+/**
+ * External User Id description.
+ * @param userType external user type
+ * @property userType external user type
+ *
+ * @param userId external user id
+ * @property userId external user id
+ *
+ * @throws IllegalArgumentException if [userType] is long or [userId] doesn't meet a criteria.
+ */
+@Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class ExternalUserId(
     userType: String,
     userId: String

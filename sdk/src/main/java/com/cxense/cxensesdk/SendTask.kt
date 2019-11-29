@@ -6,6 +6,10 @@ import com.cxense.cxensesdk.model.EventDataRequest
 import com.cxense.cxensesdk.model.EventStatus
 import timber.log.Timber
 
+/**
+ * Runnable, which sends all events from local database to server
+ *
+ */
 class SendTask(
     private val cxApi: CxApi,
     private val eventRepository: EventRepository,

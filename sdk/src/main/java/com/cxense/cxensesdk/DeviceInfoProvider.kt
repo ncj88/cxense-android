@@ -11,6 +11,9 @@ import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import timber.log.Timber
 
+/**
+ * Provides device info
+ */
 class DeviceInfoProvider(
     private val context: Context
 ) {

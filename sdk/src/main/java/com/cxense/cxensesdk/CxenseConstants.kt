@@ -2,6 +2,9 @@ package com.cxense.cxensesdk
 
 import java.util.concurrent.TimeUnit
 
+/**
+ * Default dispatch period for events in milliseconds
+ */
 val DEFAULT_DISPATCH_PERIOD = TimeUnit.SECONDS.toMillis(300)
 /**
  * Minimum dispatch period for events in seconds
@@ -12,7 +15,7 @@ const val MIN_DISPATCH_PERIOD_SECONDS = 10L
  */
 val MIN_DISPATCH_PERIOD = TimeUnit.SECONDS.toMillis(MIN_DISPATCH_PERIOD_SECONDS)
 /**
- * Default outdate period for events in milliseconds
+ * Default out-date period for events in milliseconds
  */
 val DEFAULT_OUTDATED_PERIOD = TimeUnit.DAYS.toMillis(7)
 /**

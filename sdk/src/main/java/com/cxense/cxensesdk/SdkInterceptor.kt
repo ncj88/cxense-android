@@ -8,7 +8,7 @@ import okhttp3.Response
  * Interceptor for setting params for analytic.
  *
  */
-class SdkInterceptor(
+internal class SdkInterceptor(
     private val sdkName: String,
     private val sdkVersion: String
 ) : Interceptor {

@@ -11,6 +11,9 @@ open class BaseException : RuntimeException {
     constructor(cause: Throwable?) : super(cause)
 }
 
+/**
+ * Exception that is thrown when `consent required` flag was set, but user doesn't provide consent
+ */
 class ConsentRequiredException : BaseException {
     constructor() : super("Required user consent wasn't provided.")
     constructor(message: String?) : super(message)
@@ -38,6 +41,7 @@ class ForbiddenException : BaseException {
         "Request failed! Please make sure that all the request parameters are valid" +
                 " and uses authorized values."
     )
+
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)
     constructor(cause: Throwable?) : super(cause)
@@ -52,6 +56,7 @@ class NotAuthorizedException : BaseException {
         "Request failed! Please make sure that all the request parameters are valid" +
                 " and uses authorized values."
     )
+
     constructor(message: String?) : super(message)
     constructor(message: String?, cause: Throwable?) : super(message, cause)
     constructor(cause: Throwable?) : super(cause)

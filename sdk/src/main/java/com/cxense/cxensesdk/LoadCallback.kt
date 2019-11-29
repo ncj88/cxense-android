@@ -12,6 +12,7 @@ interface LoadCallback<in T> {
      * @param data result data
      */
     fun onSuccess(data: T)
+
     /**
      * Called when load has completed with error.
      *

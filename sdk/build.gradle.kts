@@ -1,6 +1,9 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     id(Plugins.androidLibrary)
     id(Plugins.kotlinAndroid)
+    id(Plugins.dokka)
     id(Plugins.androidMaven)
     id(Plugins.spotbugs)
     id(Plugins.ktlint)
@@ -49,24 +52,26 @@ android {
 }
 
 tasks {
-    val javadoc by creating(Javadoc::class) {
-        source = android.sourceSets["main"].java.sourceFiles
-        classpath += files(android.bootClasspath)
-        classpath += configurations["compile"]
-        isFailOnError = false
-        exclude("**/BuildConfig.java", "**/R.java")
-        (options as StandardJavadocDocletOptions).apply {
-            encoding = "UTF-8"
-            links("http://docs.oracle.com/javase/7/docs/api/", "http://developer.android.com/reference/")
-            linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference")
-            addStringOption("Xdoclint:none", "-quiet")
+    val dokka by getting(DokkaTask::class) {
+        outputFormat = "html"
+        outputDirectory = "$buildDir/doc"
+        configuration {
+            reportUndocumented = true
+        }
+    }
+
+    val javadoc by creating(DokkaTask::class) {
+        outputFormat = "javadoc"
+        outputDirectory = "$buildDir/javadoc"
+        configuration {
+            reportUndocumented = true
         }
     }
 
     val javadocJar by creating(Jar::class) {
         dependsOn(javadoc)
         archiveClassifier.set("javadoc")
-        from(javadoc.destinationDir)
+        from(javadoc.outputDirectory)
     }
 
     artifacts.add("archives", javadocJar)

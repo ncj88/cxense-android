@@ -11,6 +11,9 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
+/**
+ * Supports [PageViewEvent] to [EventRecord] converting
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class PageViewEventConverter(
     private val gson: Gson,
@@ -33,7 +36,6 @@ class PageViewEventConverter(
             ACCOUNT to accountId?.toString(),
             LOCATION to (contentId?.let { "http://$siteId.content.id/$contentId" } ?: location),
             REFERRER to referrer,
-            GOAL to goalId,
             PAGE_NAME to pageName,
             TIME to time.toString(),
             // The client's timezone.
@@ -140,7 +142,6 @@ class PageViewEventConverter(
         internal const val SITE_ID = "sid"
         internal const val LOCATION = "loc"
         internal const val REFERRER = "ref"
-        private const val GOAL = "gol"
         private const val PAGE_NAME = "pgn"
         internal const val TIME_OFFSET = "tzo"
         private const val RESOLUTION = "res"

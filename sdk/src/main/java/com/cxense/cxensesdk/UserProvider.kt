@@ -4,6 +4,9 @@ import androidx.annotation.RestrictTo
 import com.cxense.cxensesdk.model.ContentUser
 import java.util.UUID
 
+/**
+ * Provides user id and content user
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class UserProvider(
     private val advertisingIdProvider: AdvertisingIdProvider

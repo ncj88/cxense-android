@@ -4,53 +4,34 @@ import com.cxense.cxensesdk.model.ConsentOption
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
-@Suppress("unused") // Public API.
+/**
+ * Cxense SDK configuration class
+ * @property autoMetaInfoTrackingEnabled Should meta information about application be tracked automatically.
+ * Note: if 'true', events will be enriched by custom parameters with information about application's name, version and etc.
+ * @property dispatchPeriod Current dispatch period in milliseconds.
+ * @property minimumNetworkStatus The minimum network status for sending events.
+ * @property outdatePeriod Current out-date period in milliseconds.
+ * @property credentialsProvider Credential provider, which provide username/api key dynamically.
+ * @property consentOptions Current consent options for user.
+ */
+@Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class CxenseConfiguration {
-    /**
-     * Should meta information about application be tracked automatically.
-     * Note: if 'true', events will be enriched by custom parameters with information
-     * about application's name, version and etc.
-     *
-     */
     var autoMetaInfoTrackingEnabled: Boolean = true
-
-    /**
-     * Gets current dispatch period in milliseconds
-     *
-     */
     var dispatchPeriod: Long by Delegates.observable(DEFAULT_DISPATCH_PERIOD) { _, oldValue, newValue ->
         if (oldValue != newValue)
             dispatchPeriodListener?.invoke(newValue)
     }
         private set
 
-    /**
-     * the minimum network status for sending events
-     */
     var minimumNetworkStatus: NetworkStatus = NetworkStatus.NONE
-
-    /**
-     * Gets current outdate period in milliseconds.
-     *
-     */
     var outdatePeriod: Long = DEFAULT_OUTDATED_PERIOD
         private set
-
-    /**
-     * Credential provider, which provide username/api key dynamically
-     *
-     */
     var credentialsProvider: CredentialsProvider = object : CredentialsProvider {
         override fun getUsername(): String = ""
-
         override fun getApiKey(): String = ""
-
         override fun getDmpPushPersistentId(): String = ""
     }
 
-    /**
-     * current consent options for user
-     */
     val consentOptions: MutableSet<ConsentOption> = mutableSetOf()
 
     internal val consentOptionsValues
@@ -75,7 +56,7 @@ class CxenseConfiguration {
     }
 
     /**
-     * Sets outdate period for events. The dispatcher will delete all events, that tracked more than {@code period}.
+     * Sets out-date period for events. The dispatcher will delete all events, that tracked more than {@code period}.
      *
      * @param period the dispatch period
      * @param unit the time unit of the period parameter

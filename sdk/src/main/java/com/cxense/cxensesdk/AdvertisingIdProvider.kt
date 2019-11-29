@@ -8,6 +8,9 @@ import java.io.IOException
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
+/**
+ * Provides AAID
+ */
 class AdvertisingIdProvider(
     private val context: Context,
     private val executor: ScheduledExecutorService

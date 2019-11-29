@@ -16,6 +16,9 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
+/**
+ * Builds and provides all other classes
+ */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class DependenciesProvider private constructor(
     context: Context

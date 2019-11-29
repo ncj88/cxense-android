@@ -7,6 +7,9 @@ import retrofit2.Response
 import timber.log.Timber
 import java.io.IOException
 
+/**
+ * Error parser
+ */
 class ApiErrorParser(
     private val converter: Converter<ResponseBody, ApiError>
 ) {
