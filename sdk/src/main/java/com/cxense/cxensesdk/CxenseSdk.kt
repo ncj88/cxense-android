@@ -104,6 +104,7 @@ class CxenseSdk(
      * @param activeTime the active time in seconds.
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    @JvmOverloads
     fun trackActiveTime(eventId: String, activeTime: Long = 0) =
         executor.execute { eventRepository.putEventTime(eventId, activeTime) }
 
@@ -134,7 +135,7 @@ class CxenseSdk(
      * @param callback callback for checking status
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun trackClick(item: WidgetItem, callback: LoadCallback<Void>) =
+    fun trackClick(item: WidgetItem, callback: LoadCallback<@JvmSuppressWildcards Void>) =
         item.clickUrl?.let { trackClick(it, callback) }
             ?: callback.onError(BaseException("Can't track this item. Click url is null"))
 
@@ -145,7 +146,7 @@ class CxenseSdk(
      * @param callback callback for checking status
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun trackClick(url: String, callback: LoadCallback<Void>) = cxApi.trackUrlClick(url).enqueue(callback)
+    fun trackClick(url: String, callback: LoadCallback<@JvmSuppressWildcards Void>) = cxApi.trackUrlClick(url).enqueue(callback)
 
     /**
      * Load widget recommendations
@@ -158,6 +159,7 @@ class CxenseSdk(
      * @param callback listener for returning result
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    @JvmOverloads
     fun loadWidgetRecommendations(
         widgetId: String,
         widgetContext: WidgetContext? = null,
@@ -182,7 +184,7 @@ class CxenseSdk(
      * @param impressions The list of seen recommendations (impressions) you'd like to report visibility of.
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun reportWidgetVisibilities(callback: LoadCallback<Void>, vararg impressions: Impression) =
+    fun reportWidgetVisibilities(callback: LoadCallback<@JvmSuppressWildcards Void>, vararg impressions: Impression) =
         cxApi.reportWidgetVisibility(
             WidgetVisibilityReport(impressions.toList())
         ).enqueue(callback)
@@ -219,6 +221,7 @@ class CxenseSdk(
      * @param callback a callback with {@link User} profile
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    @JvmOverloads
     fun getUser(
         identity: UserIdentity,
         groups: List<String>? = null,
@@ -236,11 +239,12 @@ class CxenseSdk(
      * @param callback a callback with {@link UserExternalData}
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    @JvmOverloads
     fun getUserExternalData(
         type: String,
         id: String? = null,
         filter: String? = null,
-        callback: LoadCallback<List<UserExternalData>>
+        callback: LoadCallback<List<@JvmSuppressWildcards UserExternalData>>
     ) = cxApi.getUserExternalData(UserExternalDataRequest(type, id, filter)).enqueue(callback) { it.items }
 
     /**
@@ -250,7 +254,7 @@ class CxenseSdk(
      * @param callback a callback
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun setUserExternalData(userExternalData: UserExternalData, callback: LoadCallback<Void>) =
+    fun setUserExternalData(userExternalData: UserExternalData, callback: LoadCallback<@JvmSuppressWildcards Void>) =
         cxApi.setUserExternalData(userExternalData).enqueue(callback)
 
     /**
@@ -260,7 +264,7 @@ class CxenseSdk(
      * @param callback a callback
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun deleteUserExternalData(identity: UserIdentity, callback: LoadCallback<Void>) =
+    fun deleteUserExternalData(identity: UserIdentity, callback: LoadCallback<@JvmSuppressWildcards Void>) =
         cxApi.deleteExternalUserData(identity).enqueue(callback)
 
     /**
@@ -287,6 +291,7 @@ class CxenseSdk(
 
     // -------- Persisted API
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    @JvmOverloads
     fun <T> executePersistedQuery(
         url: String,
         persistentQueryId: String,
