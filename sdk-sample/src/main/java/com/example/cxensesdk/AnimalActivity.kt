@@ -6,6 +6,7 @@ import com.cxense.cxensesdk.CxenseSdk
 import com.cxense.cxensesdk.LoadCallback
 import com.cxense.cxensesdk.model.ConversionEvent
 import com.cxense.cxensesdk.model.CustomParameter
+import com.cxense.cxensesdk.model.EventStatus
 import com.cxense.cxensesdk.model.Impression
 import com.cxense.cxensesdk.model.PageViewEvent
 import com.cxense.cxensesdk.model.PerformanceEvent
@@ -34,13 +35,16 @@ class AnimalActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        CxenseSdk.getInstance().setDispatchEventsCallback { statuses ->
-            val grouped = statuses.groupBy { it.isSent }
-            val message = "Sent: '${grouped[true]?.joinToString {
-                it.eventId ?: ""
-            }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'"
-            Snackbar.make(animalText, message, Snackbar.LENGTH_LONG).show()
-        }
+        CxenseSdk.getInstance().setDispatchEventsCallback(object :
+            CxenseSdk.DispatchEventsCallback {
+            override fun onDispatch(statuses: List<EventStatus>) {
+                val grouped = statuses.groupBy { it.isSent }
+                val message = "Sent: '${grouped[true]?.joinToString {
+                    it.eventId ?: ""
+                }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'"
+                Snackbar.make(animalText, message, Snackbar.LENGTH_LONG).show()
+            }
+        })
         CxenseSdk.getInstance().pushEvents(
             PageViewEvent.Builder(BuildConfig.SITE_ID)
                 .contentId(item)

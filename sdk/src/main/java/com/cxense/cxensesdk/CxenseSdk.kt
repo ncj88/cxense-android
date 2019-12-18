@@ -3,6 +3,7 @@ package com.cxense.cxensesdk
 import com.cxense.cxensesdk.model.ConsentOption
 import com.cxense.cxensesdk.model.ContentUser
 import com.cxense.cxensesdk.model.Event
+import com.cxense.cxensesdk.model.EventStatus
 import com.cxense.cxensesdk.model.Impression
 import com.cxense.cxensesdk.model.QueueStatus
 import com.cxense.cxensesdk.model.User
@@ -353,5 +354,9 @@ class CxenseSdk(
         fun getInstance(): CxenseSdk = DependenciesProvider.getInstance().cxenseSdk
 
         private val DISPATCH_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(10)
+    }
+
+    interface DispatchEventsCallback {
+        fun onDispatch(statuses: List<EventStatus>)
     }
 }

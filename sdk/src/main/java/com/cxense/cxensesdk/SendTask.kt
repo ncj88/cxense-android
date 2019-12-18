@@ -19,7 +19,7 @@ class SendTask(
     private val pageViewEventConverter: PageViewEventConverter,
     private val performanceEventConverter: PerformanceEventConverter,
     private val errorParser: ApiErrorParser,
-    var sendCallback: DispatchEventsCallback?
+    var sendCallback: CxenseSdk.DispatchEventsCallback?
 ) : Runnable {
 
     private fun EventRecord.toEventStatus(e: Exception? = null) =
@@ -31,7 +31,7 @@ class SendTask(
 
     private fun List<EventRecord>.notifyCallback(e: Exception? = null) = map { it.toEventStatus(e) }.notifyCallback()
 
-    private fun List<EventStatus>.notifyCallback() = sendCallback?.invoke(this)
+    private fun List<EventStatus>.notifyCallback() = sendCallback?.onDispatch(this)
 
     internal fun sendDmpEventsViaApi(events: List<EventRecord>) {
         try {

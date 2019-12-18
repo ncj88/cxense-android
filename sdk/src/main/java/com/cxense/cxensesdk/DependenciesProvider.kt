@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.RestrictTo
 import com.cxense.cxensesdk.db.DatabaseHelper
 import com.cxense.cxensesdk.model.ApiError
+import com.cxense.cxensesdk.model.EventStatus
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
@@ -97,9 +98,12 @@ internal class DependenciesProvider private constructor(
             )
         )
     }
-    private val eventsSendCallback: DispatchEventsCallback = { statuses ->
-        statuses.mapNotNull { it.exception }.forEach {
-            Timber.tag("CxenseEventCallback").e(it)
+    private val eventsSendCallback: CxenseSdk.DispatchEventsCallback = object :
+        CxenseSdk.DispatchEventsCallback {
+        override fun onDispatch(statuses: List<EventStatus>) {
+            statuses.mapNotNull { it.exception }.forEach {
+                Timber.tag("CxenseEventCallback").e(it)
+            }
         }
     }
 

@@ -13,6 +13,7 @@ import com.cxense.cxensesdk.ENDPOINT_USER_SEGMENTS
 import com.cxense.cxensesdk.LoadCallback
 import com.cxense.cxensesdk.MIN_DISPATCH_PERIOD
 import com.cxense.cxensesdk.model.CustomParameter
+import com.cxense.cxensesdk.model.EventStatus
 import com.cxense.cxensesdk.model.ExternalItem
 import com.cxense.cxensesdk.model.PerformanceEvent
 import com.cxense.cxensesdk.model.SegmentsResponse
@@ -65,12 +66,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        CxenseSdk.getInstance().setDispatchEventsCallback { statuses ->
-            val grouped = statuses.groupBy { it.isSent }
-            showText("Sent: '${grouped[true]?.joinToString {
-                it.eventId ?: ""
-            }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'")
-        }
+        CxenseSdk.getInstance().setDispatchEventsCallback(object :
+            CxenseSdk.DispatchEventsCallback {
+            override fun onDispatch(statuses: List<EventStatus>) {
+                val grouped = statuses.groupBy { it.isSent }
+                showText("Sent: '${grouped[true]?.joinToString {
+                    it.eventId ?: ""
+                }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'")
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

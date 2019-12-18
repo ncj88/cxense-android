@@ -7,8 +7,6 @@ import com.cxense.cxensesdk.model.EventStatus
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 
-typealias DispatchEventsCallback = (List<EventStatus>) -> Unit
-
 fun <T : Any> JsonReader.readList(nextFunction: (JsonReader) -> T): List<T> {
     beginArray()
     return generateSequence { if (peek() != JsonToken.END_ARRAY) nextFunction(this) else null }
