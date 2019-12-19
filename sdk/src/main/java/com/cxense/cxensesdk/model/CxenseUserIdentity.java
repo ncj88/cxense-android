@@ -13,7 +13,7 @@ import com.google.gson.annotations.SerializedName;
  */
 @SuppressWarnings({"UnusedDeclaration", "WeakerAccess"}) // Public API.
 public final class CxenseUserIdentity extends UserIdentity {
-    @SerializedName("cxenseId")
+    @SerializedName("cxid")
     private String cxenseId;
 
     /**

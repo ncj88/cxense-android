@@ -11,8 +11,9 @@ import androidx.annotation.NonNull;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class UserAgentProvider {
+class UserAgentProvider {
     private static final String TAG = UserAgentProvider.class.getSimpleName();
+    private static final String WEBVIEW_SUFFIX = "CxenseSDK";
     private static final long DELAY = 300;
     private String userAgent;
 
@@ -37,6 +38,9 @@ public class UserAgentProvider {
      */
     private String getDefaultUserAgent(Context context) {
         try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                WebView.setDataDirectorySuffix(WEBVIEW_SUFFIX);
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 return WebSettings.getDefaultUserAgent(context);
             }
