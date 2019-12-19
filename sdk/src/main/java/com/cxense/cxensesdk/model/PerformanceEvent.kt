@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
  * @property customParameters optional collection of customer-defined parameters to event.
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-class PerformanceEvent(
+class PerformanceEvent private constructor(
     eventId: String?,
     @SerializedName(USER_IDS) val identities: List<UserIdentity>,
     @SerializedName(SITE_ID) val siteId: String,
@@ -49,7 +49,7 @@ class PerformanceEvent(
      * @property segments optional collection of matching segments to be reported.
      * @property customParameters optional collection of customer-defined parameters to event.
      */
-    data class Builder(
+    data class Builder @JvmOverloads constructor(
         var siteId: String,
         var origin: String,
         var eventType: String,

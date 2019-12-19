@@ -39,7 +39,7 @@ class WidgetContext private constructor(
      * @property neighbors list of linked articles IDs.
      * @property parameters list of [ContextParameter] objects.
      */
-    data class Builder(
+    data class Builder @JvmOverloads constructor(
         var url: String,
         var referrer: String? = null,
         var pageclass: String? = null,

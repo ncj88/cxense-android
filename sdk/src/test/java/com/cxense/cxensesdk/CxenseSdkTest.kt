@@ -75,7 +75,7 @@ class CxenseSdkTest {
 
     @Test
     fun setDispatchEventsCallback() {
-        cxenseSdk.setDispatchEventsCallback { }
+        cxenseSdk.setDispatchEventsCallback(mock())
         verify(sendTask).sendCallback = any()
     }
 

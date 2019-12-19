@@ -2,7 +2,6 @@ package com.cxense.cxensesdk
 
 import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.ConsentOption
-import com.cxense.cxensesdk.model.EventStatus
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.doReturn
@@ -48,7 +47,7 @@ class SendTaskTest {
         on { extractQueryData(any()) } doReturn (listOf("") to mapOf<String, String>())
     }
     private val errorParser: ApiErrorParser = mock()
-    private val sendCallback: ((List<EventStatus>) -> Unit) = mock()
+    private val sendCallback: CxenseSdk.DispatchEventsCallback = mock()
 
     private val sendTask = spy(
         SendTask(
@@ -71,7 +70,7 @@ class SendTaskTest {
         verify(cxApi).pushEvents(any())
         verify(eventRepository, times(events.size)).putEventRecordInDatabase(any())
         verify(errorParser).parseError(any())
-        verify(sendCallback).invoke(any())
+        verify(sendCallback).onDispatch(any())
     }
 
     @Test
@@ -84,7 +83,7 @@ class SendTaskTest {
         }
         sendTask.sendEventsOneByOne(listOf(event1, event2), sendFunc)
         verify(sendFunc, times(2)).invoke(any())
-        verify(sendCallback).invoke(any())
+        verify(sendCallback).onDispatch(any())
     }
 
     @Test

@@ -293,7 +293,7 @@ class CxenseSdk(
     // -------- Persisted API
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     @JvmOverloads
-    fun <T> executePersistedQuery(
+    fun <T : Any> executePersistedQuery(
         url: String,
         persistentQueryId: String,
         data: Any? = null,
@@ -305,20 +305,20 @@ class CxenseSdk(
     }
 
     // -------- Internal methods
-    private fun <T> Call<T>.enqueue(callback: LoadCallback<T>) = enqueue(callback.transform())
+    private fun <T : Any> Call<T>.enqueue(callback: LoadCallback<T>) = enqueue(callback.transform())
 
-    private fun <T, U> Call<T>.enqueue(callback: LoadCallback<U>, function: (T) -> U) =
+    private fun <T : Any, U : Any> Call<T>.enqueue(callback: LoadCallback<U>, function: (T) -> U) =
         enqueue(callback.transform(function))
 
-    private fun <T, U> LoadCallback<U>.transform(function: (T) -> U) = object : LoadCallback<T> {
+    private fun <T : Any, U : Any> LoadCallback<U>.transform(function: (T) -> U) = object : LoadCallback<T> {
         override fun onSuccess(data: T) = this@transform.onSuccess(function(data))
 
         override fun onError(throwable: Throwable) = this@transform.onError(throwable)
     }.transform()
 
-    private fun <T> LoadCallback<T>.transform() = ApiCallback(this, errorParser)
+    private fun <T : Any> LoadCallback<T>.transform() = ApiCallback(this, errorParser)
 
-    private fun <T> createGenericCallback(callback: LoadCallback<T>) = object : LoadCallback<ResponseBody> {
+    private fun <T : Any> createGenericCallback(callback: LoadCallback<T>) = object : LoadCallback<ResponseBody> {
         override fun onSuccess(data: ResponseBody) =
             try {
                 @Suppress("UNCHECKED_CAST")

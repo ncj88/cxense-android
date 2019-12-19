@@ -8,7 +8,7 @@ import retrofit2.Response
  * Basic callback for API
  * @param T success data type
  */
-class ApiCallback<T>(
+class ApiCallback<T : Any>(
     private val callback: LoadCallback<T>,
     private val errorParser: ApiErrorParser
 ) : Callback<T> {

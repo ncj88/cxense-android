@@ -26,7 +26,7 @@ import java.util.Collections
  * @property externalUserIds External user ids.
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-class PageViewEvent(
+class PageViewEvent private constructor(
     eventId: String?,
     val userId: String,
     val siteId: String,
@@ -78,6 +78,7 @@ class PageViewEvent(
         /**
          * Initialize Builder with required parameters
          */
+        @JvmOverloads
         constructor(
             siteId: String,
             location: String? = null,

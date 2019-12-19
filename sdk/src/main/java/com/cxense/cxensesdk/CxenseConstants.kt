@@ -1,3 +1,5 @@
+@file:JvmName("CxenseConstants")
+
 package com.cxense.cxensesdk
 
 import java.util.concurrent.TimeUnit
@@ -5,26 +7,31 @@ import java.util.concurrent.TimeUnit
 /**
  * Default dispatch period for events in milliseconds
  */
+@get:JvmName("getDefaultDispatchPeriod")
 val DEFAULT_DISPATCH_PERIOD = TimeUnit.SECONDS.toMillis(300)
 /**
  * Minimum dispatch period for events in seconds
  */
-const val MIN_DISPATCH_PERIOD_SECONDS = 10L
+internal const val MIN_DISPATCH_PERIOD_SECONDS = 10L
 /**
  * Minimum dispatch period for events in milliseconds
  */
+@get:JvmName("getMinDispatchPeriod")
 val MIN_DISPATCH_PERIOD = TimeUnit.SECONDS.toMillis(MIN_DISPATCH_PERIOD_SECONDS)
 /**
  * Default out-date period for events in milliseconds
  */
+@get:JvmName("getDefaultOutdatedPeriod")
 val DEFAULT_OUTDATED_PERIOD = TimeUnit.DAYS.toMillis(7)
 /**
  * Minimum outdate period for events in milliseconds
  */
-val MIN_OUTDATE_PERIOD_SECONDS = TimeUnit.MINUTES.toSeconds(10)
+@get:JvmName("getMinOutdatePeriodSeconds")
+internal val MIN_OUTDATE_PERIOD_SECONDS = TimeUnit.MINUTES.toSeconds(10)
 /**
  * Minimum outdate period for events in milliseconds
  */
+@get:JvmName("getMinOutdatePeriod")
 val MIN_OUTDATE_PERIOD = TimeUnit.MINUTES.toMillis(10)
 
 /**

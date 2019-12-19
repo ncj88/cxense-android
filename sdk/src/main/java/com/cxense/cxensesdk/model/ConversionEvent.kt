@@ -39,7 +39,7 @@ class ConversionEvent private constructor(
      * The `<number>` is limited to 3 digits. Only 'd' (days), 'w' (weeks), 'M' (months) and 'y' (years) are supported as `<units>`. The `<type>` can be one of 'R' (relative to the time the user has converted) or 'C' (calendar-based: happening at the beginning of the `<unit>`).
      * Examples: "`1yC`", "`28wR`" and so on.
      */
-    data class Builder(
+    data class Builder @JvmOverloads constructor(
         var siteId: String,
         var productId: String,
         var funnelStep: String,

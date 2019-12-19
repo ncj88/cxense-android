@@ -18,7 +18,7 @@ class UserExternalData private constructor(
      * @property identity user identifier with type and id
      * @property externalItems stored key-values for the user.
      */
-    data class Builder(
+    data class Builder @JvmOverloads constructor(
         var identity: UserIdentity,
         var externalItems: MutableList<ExternalItem> = mutableListOf()
     ) {

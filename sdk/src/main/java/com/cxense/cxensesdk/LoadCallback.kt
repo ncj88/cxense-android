@@ -5,7 +5,7 @@ package com.cxense.cxensesdk
  *
  * @param <T> success data type
  */
-interface LoadCallback<in T> {
+interface LoadCallback<in T : Any> {
     /**
      * Called when load has completed successfully.
      *
