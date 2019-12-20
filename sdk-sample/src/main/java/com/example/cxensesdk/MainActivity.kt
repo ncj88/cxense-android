@@ -3,29 +3,42 @@ package com.example.cxensesdk
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cxense.cxensesdk.CredentialsProvider
-import com.cxense.cxensesdk.CxenseConstants
 import com.cxense.cxensesdk.CxenseSdk
+import com.cxense.cxensesdk.ENDPOINT_USER_SEGMENTS
 import com.cxense.cxensesdk.LoadCallback
-import com.cxense.cxensesdk.model.*
+import com.cxense.cxensesdk.MIN_DISPATCH_PERIOD
+import com.cxense.cxensesdk.model.CustomParameter
+import com.cxense.cxensesdk.model.EventStatus
+import com.cxense.cxensesdk.model.ExternalItem
+import com.cxense.cxensesdk.model.PerformanceEvent
+import com.cxense.cxensesdk.model.SegmentsResponse
+import com.cxense.cxensesdk.model.User
+import com.cxense.cxensesdk.model.UserExternalData
+import com.cxense.cxensesdk.model.UserIdentity
+import com.cxense.cxensesdk.model.UserSegmentRequest
+import com.cxense.cxensesdk.model.WidgetContext
+import com.cxense.cxensesdk.model.WidgetItem
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
-import java.util.*
+import timber.log.Timber
+import java.util.Locale
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 class MainActivity : AppCompatActivity() {
 
-    private val animals = listOf("alligator", "ant", "bear", "bee", "bird", "camel", "cat",
-            "cheetah", "chicken", "chimpanzee", "cow", "crocodile", "deer", "dog", "dolphin", "duck",
-            "eagle", "elephant", "fish", "fly", "fox", "frog", "giraffe", "goat", "goldfish", "hamster",
-            "hippopotamus", "horse", "kangaroo", "kitten", "lion", "lobster", "monkey", "octopus", "owl",
-            "panda", "pig", "puppy", "rabbit", "rat", "scorpion", "seal", "shark", "sheep", "snail",
-            "snake", "spider", "squirrel", "tiger", "turtle", "wolf", "zebra"
+    private val animals = listOf(
+        "alligator", "ant", "bear", "bee", "bird", "camel", "cat",
+        "cheetah", "chicken", "chimpanzee", "cow", "crocodile", "deer", "dog", "dolphin", "duck",
+        "eagle", "elephant", "fish", "fly", "fox", "frog", "giraffe", "goat", "goldfish", "hamster",
+        "hippopotamus", "horse", "kangaroo", "kitten", "lion", "lobster", "monkey", "octopus", "owl",
+        "panda", "pig", "puppy", "rabbit", "rat", "scorpion", "seal", "shark", "sheep", "snail",
+        "snake", "spider", "squirrel", "tiger", "turtle", "wolf", "zebra"
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +48,7 @@ class MainActivity : AppCompatActivity() {
         recyclerview.adapter = MainAdapter(animals, this::onItemClick)
 
         CxenseSdk.getInstance().configuration.apply {
-            setDispatchPeriod(CxenseConstants.MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS)
+            dispatchPeriod(MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS)
             credentialsProvider = object : CredentialsProvider {
                 override fun getUsername(): String = BuildConfig.USERNAME // load it from secured store
 
@@ -53,10 +66,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        CxenseSdk.getInstance().setDispatchEventsCallback { statuses ->
-            val grouped = statuses.groupBy { it.isSent }
-            showText("Sent: '${grouped[true]?.joinToString { it.eventId ?: "" }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'")
-        }
+        CxenseSdk.getInstance().setDispatchEventsCallback(object :
+            CxenseSdk.DispatchEventsCallback {
+            override fun onDispatch(statuses: List<EventStatus>) {
+                val grouped = statuses.groupBy { it.isSent }
+                showText("Sent: '${grouped[true]?.joinToString {
+                    it.eventId ?: ""
+                }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'")
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -80,8 +98,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun onItemClick(item: String) {
         Intent(this, AnimalActivity::class.java)
-                .putExtra(AnimalActivity.ITEM_KEY, item)
-                .also { startActivity(it) }
+            .putExtra(AnimalActivity.ITEM_KEY, item)
+            .also { startActivity(it) }
     }
 
     private fun showText(str: String) {
@@ -89,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showError(t: Throwable) {
-        Log.e(TAG, t.message, t)
+        Timber.e(t)
         showText(t.message ?: "")
     }
 
@@ -98,105 +116,109 @@ class MainActivity : AppCompatActivity() {
         val type = "cxd"
         val segmentsPersistentId = "some_persistemt_id"
         val cxenseSdk = CxenseSdk.getInstance()
-        val identity = UserIdentity(id, type)
-        val identities = listOf(UserIdentity(id, type))
-        cxenseSdk.loadWidgetRecommendations("w", WidgetContext.Builder("").build(), object : LoadCallback<List<WidgetItem>> {
-            override fun onSuccess(data: List<WidgetItem>) {
-                showText("TEXT")
-            }
+        val identity = UserIdentity(type, id)
+        val identities = listOf(identity)
+        cxenseSdk.loadWidgetRecommendations(
+            "w",
+            WidgetContext.Builder("").build(),
+            callback = object : LoadCallback<List<WidgetItem>> {
+                override fun onSuccess(data: List<WidgetItem>) {
+                    showText("TEXT")
+                }
 
-            override fun onError(throwable: Throwable) {
-                showError(throwable)
-            }
-        })
-        cxenseSdk.executePersistedQuery(CxenseConstants.ENDPOINT_USER_SEGMENTS, segmentsPersistentId, UserSegmentRequest(listOf(UserIdentity(id, type)), null), object : LoadCallback<SegmentsResponse> {
-            override fun onSuccess(segmentsResponse: SegmentsResponse) {
-                showText(TextUtils.join(" ", segmentsResponse.ids))
-            }
+                override fun onError(throwable: Throwable) {
+                    showError(throwable)
+                }
+            })
+        cxenseSdk.executePersistedQuery(
+            ENDPOINT_USER_SEGMENTS,
+            segmentsPersistentId,
+            UserSegmentRequest(identities, listOf(BuildConfig.SITEGROUP_ID)),
+            object : LoadCallback<SegmentsResponse> {
+                override fun onSuccess(data: SegmentsResponse) {
+                    showText(TextUtils.join(" ", data.ids))
+                }
 
-            override fun onError(throwable: Throwable) {
-                showError(throwable)
-            }
-        })
-        cxenseSdk.getUserSegmentIds(identities, listOf(BuildConfig.SITE_ID), object : LoadCallback<List<String>> {
+                override fun onError(throwable: Throwable) {
+                    showError(throwable)
+                }
+            })
+        cxenseSdk.getUserSegmentIds(identities, listOf(BuildConfig.SITEGROUP_ID), object : LoadCallback<List<String>> {
             override fun onSuccess(data: List<String>) {
                 showText(TextUtils.join(" ", data))
             }
 
-            override fun onError(t: Throwable) {
-                showError(t)
+            override fun onError(throwable: Throwable) {
+                showError(throwable)
             }
         })
-        cxenseSdk.getUser(identity, object : LoadCallback<User> {
+        cxenseSdk.getUser(identity, callback = object : LoadCallback<User> {
             override fun onSuccess(data: User) {
                 showText(String.format(Locale.US, "User id = %s", data.id))
             }
 
-            override fun onError(t: Throwable) {
-                showError(t)
+            override fun onError(throwable: Throwable) {
+                showError(throwable)
             }
         })
 
         // read external data for user
-        cxenseSdk.getUserExternalData(id, type, object : LoadCallback<List<UserExternalData>> {
+        cxenseSdk.getUserExternalData(type, id, callback = object : LoadCallback<List<UserExternalData>> {
             override fun onSuccess(data: List<UserExternalData>) {
                 showText(String.format(Locale.US, "We have %d items", data.size))
             }
 
-            override fun onError(t: Throwable) {
-                showError(t)
+            override fun onError(throwable: Throwable) {
+                showError(throwable)
             }
         })
 
-        // read external data for all users with type
-        cxenseSdk.getUserExternalData(type, object : LoadCallback<List<UserExternalData>> {
-            override fun onSuccess(data: List<UserExternalData>) {
-                showText(String.format(Locale.US, "We have %d items", data.size))
-            }
-
-            override fun onError(t: Throwable) {
-                showError(t)
-            }
-        })
+//        // read external data for all users with type
+//        cxenseSdk.getUserExternalData(type, callback = object : LoadCallback<List<UserExternalData>> {
+//            override fun onSuccess(data: List<UserExternalData>) {
+//                showText(String.format(Locale.US, "We have %d items", data.size))
+//            }
+//
+//            override fun onError(throwable: Throwable) {
+//                showError(throwable)
+//            }
+//        })
 
         // delete external data for user
-        cxenseSdk.deleteUserExternalData(UserIdentity(id, type), object : LoadCallback<Void> {
+        cxenseSdk.deleteUserExternalData(identity, object : LoadCallback<Void> {
             override fun onSuccess(data: Void) {
                 showText("Success")
             }
 
-            override fun onError(t: Throwable) {
-                showError(t)
+            override fun onError(throwable: Throwable) {
+                showError(throwable)
             }
         })
 
         // update external data for user
-        val userExternalData = UserExternalData.Builder(UserIdentity(id, type))
-                .addExternalItem("gender", "male")
-                .addExternalItem("interests", "football")
-                .addExternalItem("sports", "football")
-                .build()
+        val userExternalData = UserExternalData.Builder(identity)
+            .addExternalItems(
+                ExternalItem("gender", "male"),
+                ExternalItem("interests", "football"),
+                ExternalItem("sports", "football")
+            )
+            .build()
         cxenseSdk.setUserExternalData(userExternalData, object : LoadCallback<Void> {
             override fun onSuccess(data: Void) {
                 showText("Success")
             }
 
-            override fun onError(t: Throwable) {
-                showError(t)
+            override fun onError(throwable: Throwable) {
+                showError(throwable)
             }
         })
 
-        val builder = PerformanceEvent.Builder(listOf(identity), BuildConfig.SITE_ID, "cxd-origin", "tap")
-                .setPrnd(UUID.randomUUID().toString())
-                .addCustomParameters(Arrays.asList(
-                        CustomParameter("cxd-interests", "TEST"),
-                        CustomParameter("cxd-test", "TEST")
-                ))
+        val builder = PerformanceEvent.Builder(BuildConfig.SITE_ID, "cxd-origin", "tap", mutableListOf(identity))
+            .prnd(UUID.randomUUID().toString())
+            .addCustomParameters(
+                CustomParameter("cxd-interests", "TEST"),
+                CustomParameter("cxd-test", "TEST")
+            )
         cxenseSdk.pushEvents(builder.build(), builder.build())
     }
-
-    companion object {
-        val TAG = MainActivity::class.java.simpleName
-    }
-
 }

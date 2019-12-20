@@ -5,34 +5,34 @@ import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
 plugins {
     id(Plugins.versions) version Versions.versionsPlugin
-    id(Plugins.buildScan) version Versions.buildScanPlugin
     id(Plugins.release) version Versions.releasePlugin
     id(Plugins.spotbugs) version Versions.spotbugsPlugin
+    id(Plugins.ktlint) version Versions.ktlint
+    id(Plugins.androidMaven) version Versions.androidMavenPlugin
+    id(Plugins.dokka) version Versions.dokka
 }
 
 buildscript {
     repositories {
         google()
         jcenter()
-
     }
 
     dependencies {
         classpath(Plugins.androidTools)
-        classpath(Plugins.androidMavenPlugin)
         classpath(kotlin(Plugins.kotlin, Versions.kotlin))
     }
 }
 
 buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    setTermsOfServiceAgree("yes")
+    termsOfServiceAgree = "yes"
 }
 
 scmVersion {
     tag(closureOf<TagNameSerializationConfig> {
         prefix = ""
-        initialVersion = KotlinClosure2({ _: TagProperties, _: ScmPosition -> "1.0.0"}, this, this)
+        initialVersion = KotlinClosure2({ _: TagProperties, _: ScmPosition -> "1.0.0" }, this, this)
     })
     rootProject.version = version
 }
@@ -41,20 +41,19 @@ allprojects {
     repositories {
         google()
         jcenter()
+        // temporary fix
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
 
 tasks {
-    register("clean", Delete::class) {
-        delete(buildDir)
-    }
     named<DependencyUpdatesTask>("dependencyUpdates") {
         resolutionStrategy {
             componentSelection {
                 all {
                     val rejected = listOf("alpha", "beta", "rc", "cr", "m", "preview")
-                            .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]*") }
-                            .any { it.matches(candidate.version) }
+                        .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]*") }
+                        .any { it.matches(candidate.version) }
                     if (rejected) {
                         reject("Release candidate")
                     }
@@ -72,4 +71,3 @@ tasks {
         reportfileName = "report"
     }
 }
-

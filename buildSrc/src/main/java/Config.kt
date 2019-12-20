@@ -12,14 +12,16 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.3.50"
+    const val kotlin = "1.3.60"
     //Plugins
     const val buildScanPlugin = "2.4.2"
     const val versionsPlugin = "0.25.0"
     const val releasePlugin = "1.10.2"
-    const val androidToolsPlugin = "3.6.0-alpha12"
+    const val androidToolsPlugin = "4.0.0-alpha06"
     const val androidMavenPlugin = "2.1"
-    const val spotbugsPlugin = "2.0.0"
+    const val spotbugsPlugin = "2.0.1"
+    const val ktlint = "9.1.1"
+    const val dokka = "0.10.0"
     // Android libraries
     const val compatLibrary = "1.1.0"
     const val annotationsLibrary = "1.1.0"
@@ -27,19 +29,18 @@ object Versions {
 
     // Third party Libraries
     const val googlePlayServices = "17.0.0"
-    const val retrofit = "2.6.1"
-    const val okhttp = "3.12.5"
+    const val retrofit = "2.6.2"
+    const val okhttp = "3.12.6"
+    const val timber = "4.7.1"
 
     // Test Libraries
     const val junit = "4.12"
-    const val testRunner = "1.1.1"
-    const val powermock = "2.0.2"
-    const val hamcrest = "2.1"
+    const val mockitoKotlin = "2.2.0"
+    const val mockitoCore = "3.0.0"
 }
 
 object Plugins {
     const val kotlin = "gradle-plugin"
-    const val buildScan = "com.gradle.build-scan"
     const val versions = "com.github.ben-manes.versions"
     const val release = "pl.allegro.tech.build.axion-release"
     const val androidTools = "com.android.tools.build:gradle:${Versions.androidToolsPlugin}"
@@ -50,6 +51,8 @@ object Plugins {
     const val kotlinAndroidExt = "kotlin-android-extensions"
     const val androidMaven = "com.github.dcendents.android-maven"
     const val spotbugs = "com.github.spotbugs"
+    const val ktlint = "org.jlleitschuh.gradle.ktlint"
+    const val dokka = "org.jetbrains.dokka"
 }
 
 object Libs {
@@ -62,14 +65,12 @@ object Libs {
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val retrofitConverter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
     const val okhttpLogging = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
+    const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
 
 
+    const val kotlinJunit = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
+    const val mockitoKotlin = "com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.mockitoKotlin}"
+    const val mockitoCore = "org.mockito:mockito-core:${Versions.mockitoCore}"
     const val junit = "junit:junit:${Versions.junit}"
-    const val testRunner = "androidx.test:runner:${Versions.testRunner}"
-    const val testJunitExt = "androidx.test.ext:junit:${Versions.testRunner}"
-    const val testCore = "androidx.test:core:${Versions.testRunner}"
-    const val powermockJunit = "org.powermock:powermock-module-junit4:${Versions.powermock}"
-    const val powermockMockito = "org.powermock:powermock-api-mockito2:${Versions.powermock}"
     const val okhttpMockServer = "com.squareup.okhttp3:mockwebserver:${Versions.okhttp}"
-    const val hamcrest = "org.hamcrest:hamcrest:${Versions.hamcrest}"
 }

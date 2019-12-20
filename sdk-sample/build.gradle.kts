@@ -4,6 +4,7 @@ plugins {
     id(Plugins.androidApp)
     id(Plugins.kotlinAndroid)
     id(Plugins.kotlinAndroidExt)
+    id(Plugins.ktlint)
 }
 
 androidExtensions {
@@ -22,6 +23,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "SITEGROUP_ID", """"9222291112880224990"""")
         buildConfigField("String", "SITE_ID", """"1131746995643019840"""")
         buildConfigField("String", "USERNAME", """"PUT_USERNAME_HERE"""")
         buildConfigField("String", "API_KEY", """"PUT_API_KEY_HERE"""")
@@ -39,8 +41,10 @@ android {
         sourceCompatibility = Config.compileSourceVersion
         targetCompatibility = Config.compileTargetVersion
     }
+}
 
-
+ktlint {
+    android.set(true)
 }
 
 dependencies {
