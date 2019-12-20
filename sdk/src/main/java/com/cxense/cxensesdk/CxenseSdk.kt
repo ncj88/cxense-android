@@ -147,7 +147,8 @@ class CxenseSdk(
      * @param callback callback for checking status
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun trackClick(url: String, callback: LoadCallback<@JvmSuppressWildcards Void>) = cxApi.trackUrlClick(url).enqueue(callback)
+    fun trackClick(url: String, callback: LoadCallback<@JvmSuppressWildcards Void>) =
+        cxApi.trackUrlClick(url).enqueue(callback)
 
     /**
      * Load widget recommendations
