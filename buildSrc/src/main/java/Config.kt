@@ -56,7 +56,7 @@ object Plugins {
 }
 
 object Libs {
-    const val kotlinStdlib = "stdlib-jdk8"
+    const val kotlinStdlib = "stdlib-jdk7"
     const val annotations = "androidx.annotation:annotation:${Versions.annotationsLibrary}"
     const val appcompat = "androidx.appcompat:appcompat:${Versions.compatLibrary}"
     const val material = "com.google.android.material:material:${Versions.materialLibrary}"
