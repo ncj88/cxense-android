@@ -12,29 +12,28 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.3.60"
+    const val kotlin = "1.3.61"
     //Plugins
-    const val buildScanPlugin = "2.4.2"
-    const val versionsPlugin = "0.25.0"
-    const val releasePlugin = "1.10.2"
-    const val androidToolsPlugin = "4.0.0-alpha06"
+    const val versionsPlugin = "0.27.0"
+    const val releasePlugin = "1.11.0"
+    const val androidToolsPlugin = "4.0.0-alpha09"
     const val androidMavenPlugin = "2.1"
-    const val spotbugsPlugin = "2.0.1"
-    const val ktlint = "9.1.1"
-    const val dokka = "0.10.0"
+    const val spotbugsPlugin = "3.0.0"
+    const val ktlint = "9.2.0"
+    const val dokka = "0.10.1"
     // Android libraries
     const val compatLibrary = "1.1.0"
     const val annotationsLibrary = "1.1.0"
-    const val materialLibrary = "1.0.0"
+    const val materialLibrary = "1.1.0"
 
     // Third party Libraries
     const val googlePlayServices = "17.0.0"
-    const val retrofit = "2.6.2"
+    const val retrofit = "2.6.4"
     const val okhttp = "3.12.6"
     const val timber = "4.7.1"
 
     // Test Libraries
-    const val junit = "4.12"
+    const val junit = "4.13"
     const val mockitoKotlin = "2.2.0"
     const val mockitoCore = "3.0.0"
 }

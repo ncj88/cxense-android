@@ -26,3 +26,15 @@
 }
 
 ##---------------End: proguard configuration for Gson  ----------
+
+# Adapt Kotlin metadata.
+-adaptkotlinmetadata
+
+# Adapt information about Kotlin file facades.
+-adaptresourcefilecontents **.kotlin_module
+
+# Preserve Kotlin metadata.
+-keep class kotlin.Metadata { *; }
+
+# Temporarily disable optimization on Kotlin classes.
+-keep,includecode,allowobfuscation,allowshrinking @kotlin.Metadata class ** { *; }

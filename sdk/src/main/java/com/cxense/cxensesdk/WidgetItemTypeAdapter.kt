@@ -34,7 +34,7 @@ internal class WidgetItemTypeAdapter(
     override fun read(input: JsonReader): WidgetItem =
         with(input) {
             beginObject()
-            val properties = generateSequence { if (hasNext()) nextString() to readValue() else null }
+            val properties = generateSequence { if (hasNext()) nextName() to readValue() else null }
                 .toMap(mutableMapOf())
             endObject()
             WidgetItem(
