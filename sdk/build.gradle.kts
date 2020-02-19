@@ -1,7 +1,12 @@
+import org.jetbrains.dokka.gradle.DokkaTask
+
 plugins {
     id(Plugins.androidLibrary)
+    id(Plugins.kotlinAndroid)
+    id(Plugins.dokka)
     id(Plugins.androidMaven)
     id(Plugins.spotbugs)
+    id(Plugins.ktlint)
     checkstyle
     pmd
 }
@@ -17,15 +22,12 @@ android {
 
         buildConfigField("String", "SDK_NAME", """"cxense"""")
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
-        buildConfigField("String", "AUTHORITY", """APPLICATION_ID + ".${Config.authority}"""")
-        buildConfigField("String", "CX_USER", """"${project.property("CX_USER") ?: ""}"""")
-        buildConfigField("String", "CX_KEY", """"${project.property("CX_KEY") ?: ""}"""")
-        buildConfigField("String", "CX_SITE_ID", """"${project.property("CX_SITE_ID") ?: ""}"""")
+        buildConfigField("String", "AUTHORITY", """LIBRARY_PACKAGE_NAME + ".${Config.authority}"""")
 
         manifestPlaceholders = mapOf("authority" to Config.authority)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("cxensesdk.pro", "gson.pro")
+        consumerProguardFiles("cxensesdk.pro")
     }
 
     buildTypes {
@@ -50,32 +52,29 @@ android {
 }
 
 tasks {
-    val javadoc by creating(Javadoc::class) {
-        source = android.sourceSets["main"].java.sourceFiles
-        classpath += files(android.bootClasspath)
-        classpath += configurations["compile"]
-        isFailOnError = false
-        exclude("**/BuildConfig.java", "**/R.java")
-        (options as StandardJavadocDocletOptions).apply {
-            encoding = "UTF-8"
-            links("http://docs.oracle.com/javase/7/docs/api/", "http://developer.android.com/reference/")
-            linksOffline("http://d.android.com/reference", "${android.sdkDirectory}/docs/reference")
-            addStringOption("Xdoclint:none", "-quiet")
+    val dokka by getting(DokkaTask::class) {
+        outputFormat = "html"
+        outputDirectory = "$buildDir/doc"
+        configuration {
+            reportUndocumented = true
+        }
+    }
+
+    val javadoc by creating(DokkaTask::class) {
+        outputFormat = "javadoc"
+        outputDirectory = "$buildDir/javadoc"
+        configuration {
+            reportUndocumented = true
         }
     }
 
     val javadocJar by creating(Jar::class) {
         dependsOn(javadoc)
         archiveClassifier.set("javadoc")
-        from(javadoc.destinationDir)
+        from(javadoc.outputDirectory)
     }
 
     artifacts.add("archives", javadocJar)
-
-    val updates by rootProject.tasks.named("dependencyUpdates")
-    named("build") {
-        dependsOn(updates)
-    }
 }
 
 version = rootProject.version
@@ -86,7 +85,6 @@ checkstyle {
     isIgnoreFailures = true
     isShowViolations = true
 }
-
 
 spotbugs {
     excludeBugsFilter = file("$checkStyleConfigDir/findbugs-exclude-filter.xml")
@@ -100,20 +98,22 @@ pmd {
     isIgnoreFailures = true
 }
 
+ktlint {
+    android.set(true)
+}
+
 dependencies {
+    implementation(kotlin(Libs.kotlinStdlib, Versions.kotlin))
     api(Libs.annotations)
     implementation(Libs.googleAds)
     api(Libs.retrofit)
     api(Libs.retrofitConverter)
     api(Libs.okhttpLogging)
+    api(Libs.timber)
 
-    testImplementation(Libs.powermockJunit)
-    testImplementation(Libs.powermockMockito)
+    testImplementation(Libs.kotlinJunit)
+    testImplementation(Libs.mockitoKotlin)
+    testImplementation(Libs.mockitoCore)
     testImplementation(Libs.junit)
     testImplementation(Libs.okhttpMockServer)
-    testImplementation(Libs.hamcrest)
-
-    androidTestImplementation(Libs.testRunner)
-    androidTestImplementation(Libs.testJunitExt)
-    androidTestImplementation(Libs.testCore)
 }

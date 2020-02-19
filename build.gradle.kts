@@ -5,34 +5,34 @@ import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
 plugins {
     id(Plugins.versions) version Versions.versionsPlugin
-    id(Plugins.buildScan) version Versions.buildScanPlugin
     id(Plugins.release) version Versions.releasePlugin
     id(Plugins.spotbugs) version Versions.spotbugsPlugin
+    id(Plugins.ktlint) version Versions.ktlint
+    id(Plugins.androidMaven) version Versions.androidMavenPlugin
+    id(Plugins.dokka) version Versions.dokka
 }
 
 buildscript {
     repositories {
         google()
         jcenter()
-
     }
 
     dependencies {
         classpath(Plugins.androidTools)
-        classpath(Plugins.androidMavenPlugin)
         classpath(kotlin(Plugins.kotlin, Versions.kotlin))
     }
 }
 
 buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
-    setTermsOfServiceAgree("yes")
+    termsOfServiceAgree = "yes"
 }
 
 scmVersion {
     tag(closureOf<TagNameSerializationConfig> {
         prefix = ""
-        initialVersion = KotlinClosure2({ _: TagProperties, _: ScmPosition -> "1.0.0"}, this, this)
+        initialVersion = KotlinClosure2({ _: TagProperties, _: ScmPosition -> "1.0.0" }, this, this)
     })
     rootProject.version = version
 }
@@ -41,35 +41,42 @@ allprojects {
     repositories {
         google()
         jcenter()
+        // temporary fix
+        maven("https://dl.bintray.com/kotlin/kotlin-eap")
     }
 }
 
-tasks {
-    register("clean", Delete::class) {
-        delete(buildDir)
+// We use okhttp 3.12.* and retrofit 2.6.*, because okhttp 3.13+ requires API 21 and retrofit 2.7+ requires API 21
+val maxSupportedSquareLib = mapOf(
+    "com.squareup.okhttp3" to arrayOf(3, 12),
+    "com.squareup.retrofit2" to arrayOf(2, 6)
+)
+
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.toUpperCase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return !isStable
+}
+
+fun isNotSupportedSquareLib(group: String, version: String): Boolean =
+    maxSupportedSquareLib.any { (key, value) ->
+        group == key && version.split(".")
+            .map { it.toInt() }
+            .zip(value)
+            .any { it.first > it.second }
     }
+
+tasks {
     named<DependencyUpdatesTask>("dependencyUpdates") {
-        resolutionStrategy {
-            componentSelection {
-                all {
-                    val rejected = listOf("alpha", "beta", "rc", "cr", "m", "preview")
-                            .map { qualifier -> Regex("(?i).*[.-]$qualifier[.\\d-]*") }
-                            .any { it.matches(candidate.version) }
-                    if (rejected) {
-                        reject("Release candidate")
-                    }
-                    if (candidate.group == "com.squareup.okhttp3") {
-                        val version = candidate.version.split(".")
-                        if (version.component1().toInt() > 3 || version.component2().toInt() > 12)
-                            reject("We use okhttp 3.12.*, because okhttp 3.13+ requires API 21")
-                    }
-                }
-            }
+        rejectVersionIf {
+            isNotSupportedSquareLib(candidate.group, candidate.version)
+                    || isNonStable(candidate.version) && !isNonStable(currentVersion)
         }
+
         checkForGradleUpdate = true
         outputFormatter = "json"
         outputDir = "build/dependencyUpdates"
         reportfileName = "report"
     }
 }
-
