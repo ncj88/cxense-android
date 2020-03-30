@@ -1,4 +1,6 @@
 import org.jetbrains.dokka.gradle.DokkaTask
+import com.github.spotbugs.snom.Confidence
+import com.github.spotbugs.snom.Effort
 
 plugins {
     id(Plugins.androidLibrary)
@@ -24,7 +26,7 @@ android {
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
         buildConfigField("String", "AUTHORITY", """LIBRARY_PACKAGE_NAME + ".${Config.authority}"""")
 
-        manifestPlaceholders = mapOf("authority" to Config.authority)
+        manifestPlaceholders = mutableMapOf("authority" to Config.authority)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("cxensesdk.pro")
@@ -87,10 +89,10 @@ checkstyle {
 }
 
 spotbugs {
-    excludeBugsFilter = file("$checkStyleConfigDir/findbugs-exclude-filter.xml")
-    effort = "max"
-    reportLevel = "high"
-    isIgnoreFailures = true
+    excludeFilter.set(file("$checkStyleConfigDir/findbugs-exclude-filter.xml"))
+    effort.set(Effort.MAX)
+    reportLevel.set(Confidence.HIGH)
+    ignoreFailures.set(true)
 }
 
 pmd {
