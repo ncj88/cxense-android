@@ -11,7 +11,7 @@
 #-keep class com.google.gson.stream.** { *; }
 
 # Application classes that will be serialized/deserialized over Gson
--keep class com.cxense.cxensesdk.model.** { <fields>; }
+-keep class com.cxense.cxensesdk.model.* { <fields>; }
 
 # Prevent proguard from stripping interface information from TypeAdapterFactory,
 # JsonSerializer, JsonDeserializer instances (so they can be used in @JsonAdapter)
@@ -27,9 +27,6 @@
 
 ##---------------End: proguard configuration for Gson  ----------
 
-# Adapt Kotlin metadata.
--adaptkotlinmetadata
-
 # Adapt information about Kotlin file facades.
 -adaptresourcefilecontents **.kotlin_module
 
@@ -38,3 +35,12 @@
 
 # Temporarily disable optimization on Kotlin classes.
 -keep,includecode,allowobfuscation,allowshrinking @kotlin.Metadata class ** { *; }
+
+-keep class kotlin.Metadata { *; }
+-dontwarn kotlin.**
+-keepclassmembers class **$WhenMappings {
+    <fields>;
+}
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+}

@@ -12,14 +12,14 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.3.61"
+    const val kotlin = "1.3.72"
     //Plugins
-    const val versionsPlugin = "0.27.0"
+    const val versionsPlugin = "0.28.0"
     const val releasePlugin = "1.11.0"
-    const val androidToolsPlugin = "4.0.0-alpha09"
+    const val androidToolsPlugin = "4.1.0-alpha04"
     const val androidMavenPlugin = "2.1"
-    const val spotbugsPlugin = "3.0.0"
-    const val ktlint = "9.2.0"
+    const val spotbugsPlugin = "4.0.8"
+    const val ktlint = "9.2.1"
     const val dokka = "0.10.1"
     // Android libraries
     const val compatLibrary = "1.1.0"
