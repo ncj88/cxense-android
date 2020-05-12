@@ -36,7 +36,6 @@
 # Temporarily disable optimization on Kotlin classes.
 -keep,includecode,allowobfuscation,allowshrinking @kotlin.Metadata class ** { *; }
 
--keep class kotlin.** { *; }
 -keep class kotlin.Metadata { *; }
 -dontwarn kotlin.**
 -keepclassmembers class **$WhenMappings {
