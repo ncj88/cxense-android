@@ -26,7 +26,7 @@ android {
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
         buildConfigField("String", "AUTHORITY", """LIBRARY_PACKAGE_NAME + ".${Config.authority}"""")
 
-        manifestPlaceholders = mutableMapOf("authority" to Config.authority)
+        manifestPlaceholders = mutableMapOf<String, Any>("authority" to Config.authority)
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("cxensesdk.pro")
