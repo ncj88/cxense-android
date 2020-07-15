@@ -2,7 +2,7 @@ import org.gradle.api.JavaVersion
 
 object Config {
     // Android config
-    const val androidBuildTools = "29.0.2"
+    const val androidBuildTools = "29.0.3"
     const val androidMinSdk = 15
     const val androidTargetSdk = 29
     const val androidCompileSdk = 29
@@ -13,14 +13,16 @@ object Config {
 
 object Versions {
     const val kotlin = "1.3.72"
+
     //Plugins
     const val versionsPlugin = "0.28.0"
-    const val releasePlugin = "1.11.0"
-    const val androidToolsPlugin = "4.0.0"
+    const val releasePlugin = "1.12.0"
+    const val androidToolsPlugin = "4.0.1"
     const val androidMavenPlugin = "2.1"
-    const val spotbugsPlugin = "4.0.8"
+    const val spotbugsPlugin = "4.4.4"
     const val ktlint = "9.2.1"
     const val dokka = "0.10.1"
+
     // Android libraries
     const val compatLibrary = "1.1.0"
     const val annotationsLibrary = "1.1.0"

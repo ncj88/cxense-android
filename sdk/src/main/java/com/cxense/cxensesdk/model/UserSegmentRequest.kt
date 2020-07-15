@@ -7,21 +7,6 @@ import com.google.gson.annotations.SerializedName
  *
  */
 class UserSegmentRequest(
-    identities: List<UserIdentity>,
-    siteGroups: List<String>
-) {
-    @SerializedName("identities")
-    val identities: List<UserIdentity> = identities.also {
-        require(it.isNotEmpty()) {
-            "You should provide at least one user identity"
-        }
-    }
-    @SerializedName("siteGroupIds")
-    val siteGroups: List<String> = siteGroups
-        .filterNot { it.isEmpty() }
-        .also {
-            require(it.isNotEmpty()) {
-                "You should provide at least one not empty site group id"
-            }
-        }
-}
+    @SerializedName("identities") private val identities: List<UserIdentity>,
+    @SerializedName("siteGroupIds") private val siteGroups: List<String>
+)

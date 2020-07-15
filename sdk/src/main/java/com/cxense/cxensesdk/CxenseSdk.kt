@@ -205,12 +205,22 @@ class CxenseSdk(
         siteGroupIds: List<String>,
         callback: LoadCallback<List<String>>
     ) {
+        require(identities.isNotEmpty()) {
+            "You should provide at least one user identity"
+        }
+        val siteGroups = siteGroupIds
+            .filterNot { it.isEmpty() }
+            .also {
+                require(it.isNotEmpty()) {
+                    "You should provide at least one not empty site group id"
+                }
+            }
         val consentOptions = configuration.consentOptions
         if (ConsentOption.CONSENT_REQUIRED in consentOptions && ConsentOption.SEGMENT_ALLOWED !in consentOptions) {
             callback.onError(ConsentRequiredException())
             return
         }
-        cxApi.getUserSegments(UserSegmentRequest(identities, siteGroupIds)).enqueue(callback) { it.ids }
+        cxApi.getUserSegments(UserSegmentRequest(identities, siteGroups)).enqueue(callback) { it.ids }
     }
 
     /**
