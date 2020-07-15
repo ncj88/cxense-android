@@ -2,7 +2,7 @@ import org.gradle.api.JavaVersion
 
 object Config {
     // Android config
-    const val androidBuildTools = "29.0.3"
+    const val androidBuildTools = "30.0.1"
     const val androidMinSdk = 15
     const val androidTargetSdk = 29
     const val androidCompileSdk = 29

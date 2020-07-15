@@ -158,6 +158,23 @@ class CxenseSdkTest {
     }
 
     @Test
+    fun buildWithoutIdentities() {
+        assertFailsWithMessage<IllegalArgumentException>("at least one user identity", "Expected fail for identities") {
+            cxenseSdk.getUserSegmentIds(listOf(), listOf("sitegroupId"), mock())
+        }
+    }
+
+    @Test
+    fun buildWithoutSitegroups() {
+        assertFailsWithMessage<IllegalArgumentException>(
+            "at least one not empty site group id",
+            "Expected fail for sitegroups"
+        ) {
+            cxenseSdk.getUserSegmentIds(listOf(mock()), listOf(""), mock())
+        }
+    }
+
+    @Test
     fun getUserSegmentIdsNoConsent() {
         val callback: LoadCallback<List<String>> = mock()
         whenever(configuration.consentOptions).thenReturn(mutableSetOf(ConsentOption.CONSENT_REQUIRED))
