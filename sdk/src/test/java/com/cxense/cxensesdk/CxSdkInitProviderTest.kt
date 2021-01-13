@@ -35,9 +35,11 @@ class CxSdkInitProviderTest {
             "Incorrect provider authority in manifest",
             "Expected fail for attach info"
         ) {
-            provider.checkAttachInfo(ProviderInfo().apply {
-                authority = BuildConfig.AUTHORITY
-            })
+            provider.checkAttachInfo(
+                ProviderInfo().apply {
+                    authority = BuildConfig.AUTHORITY
+                }
+            )
         }
     }
 }

@@ -69,19 +69,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onResume() {
         super.onResume()
-        CxenseSdk.getInstance().setDispatchEventsCallback(object :
-            CxenseSdk.DispatchEventsCallback {
-            override fun onDispatch(statuses: List<EventStatus>) {
-                val grouped = statuses.groupBy { it.isSent }
-                showText(
-                    "Sent: '${
-                        grouped[true]?.joinToString {
-                            it.eventId ?: ""
-                        }
-                    }'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'"
-                )
+        CxenseSdk.getInstance().setDispatchEventsCallback(
+            object : CxenseSdk.DispatchEventsCallback {
+                override fun onDispatch(statuses: List<EventStatus>) {
+                    val grouped = statuses.groupBy { it.isSent }
+                    showText(
+                        """
+                            Sent: '${grouped[true]?.joinToString { it.eventId ?: ""}}'
+                            Not sent: '${grouped[false]?.joinToString { it.eventId ?: ""}}'
+                        """.trimIndent()
+                    )
+                }
             }
-        })
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -136,7 +136,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 override fun onError(throwable: Throwable) {
                     showError(throwable)
                 }
-            })
+            }
+        )
         cxenseSdk.executePersistedQuery(
             ENDPOINT_USER_SEGMENTS,
             segmentsPersistentId,
@@ -149,58 +150,76 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 override fun onError(throwable: Throwable) {
                     showError(throwable)
                 }
-            })
-        cxenseSdk.getUserSegmentIds(identities, listOf(BuildConfig.SITEGROUP_ID), object : LoadCallback<List<String>> {
-            override fun onSuccess(data: List<String>) {
-                showText(TextUtils.join(" ", data))
             }
+        )
+        cxenseSdk.getUserSegmentIds(
+            identities,
+            listOf(BuildConfig.SITEGROUP_ID),
+            object : LoadCallback<List<String>> {
+                override fun onSuccess(data: List<String>) {
+                    showText(TextUtils.join(" ", data))
+                }
 
-            override fun onError(throwable: Throwable) {
-                showError(throwable)
+                override fun onError(throwable: Throwable) {
+                    showError(throwable)
+                }
             }
-        })
-        cxenseSdk.getUser(identity, callback = object : LoadCallback<User> {
-            override fun onSuccess(data: User) {
-                showText(String.format(Locale.US, "User id = %s", data.id))
-            }
+        )
+        cxenseSdk.getUser(
+            identity,
+            callback = object : LoadCallback<User> {
+                override fun onSuccess(data: User) {
+                    showText(String.format(Locale.US, "User id = %s", data.id))
+                }
 
-            override fun onError(throwable: Throwable) {
-                showError(throwable)
+                override fun onError(throwable: Throwable) {
+                    showError(throwable)
+                }
             }
-        })
+        )
 
         // read external data for user
-        cxenseSdk.getUserExternalData(type, id, callback = object : LoadCallback<List<UserExternalData>> {
-            override fun onSuccess(data: List<UserExternalData>) {
-                showText(String.format(Locale.US, "We have %d items", data.size))
-            }
+        cxenseSdk.getUserExternalData(
+            type,
+            id,
+            callback = object : LoadCallback<List<UserExternalData>> {
+                override fun onSuccess(data: List<UserExternalData>) {
+                    showText(String.format(Locale.US, "We have %d items", data.size))
+                }
 
-            override fun onError(throwable: Throwable) {
-                showError(throwable)
+                override fun onError(throwable: Throwable) {
+                    showError(throwable)
+                }
             }
-        })
+        )
 
 //        // read external data for all users with type
-//        cxenseSdk.getUserExternalData(type, callback = object : LoadCallback<List<UserExternalData>> {
-//            override fun onSuccess(data: List<UserExternalData>) {
-//                showText(String.format(Locale.US, "We have %d items", data.size))
-//            }
+//        cxenseSdk.getUserExternalData(
+//            type,
+//            callback = object : LoadCallback<List<UserExternalData>> {
+//                override fun onSuccess(data: List<UserExternalData>) {
+//                    showText(String.format(Locale.US, "We have %d items", data.size))
+//                }
 //
-//            override fun onError(throwable: Throwable) {
-//                showError(throwable)
+//                override fun onError(throwable: Throwable) {
+//                    showError(throwable)
+//                }
 //            }
-//        })
+//        )
 
         // delete external data for user
-        cxenseSdk.deleteUserExternalData(identity, object : LoadCallback<Void> {
-            override fun onSuccess(data: Void) {
-                showText("Success")
-            }
+        cxenseSdk.deleteUserExternalData(
+            identity,
+            object : LoadCallback<Void> {
+                override fun onSuccess(data: Void) {
+                    showText("Success")
+                }
 
-            override fun onError(throwable: Throwable) {
-                showError(throwable)
+                override fun onError(throwable: Throwable) {
+                    showError(throwable)
+                }
             }
-        })
+        )
 
         // update external data for user
         val userExternalData = UserExternalData.Builder(identity)
@@ -210,15 +229,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 ExternalItem("sports", "football")
             )
             .build()
-        cxenseSdk.setUserExternalData(userExternalData, object : LoadCallback<Void> {
-            override fun onSuccess(data: Void) {
-                showText("Success")
-            }
+        cxenseSdk.setUserExternalData(
+            userExternalData,
+            object : LoadCallback<Void> {
+                override fun onSuccess(data: Void) {
+                    showText("Success")
+                }
 
-            override fun onError(throwable: Throwable) {
-                showError(throwable)
+                override fun onError(throwable: Throwable) {
+                    showError(throwable)
+                }
             }
-        })
+        )
 
         val builder = PerformanceEvent.Builder(BuildConfig.SITE_ID, "cxd-origin", "tap", mutableListOf(identity))
             .prnd(UUID.randomUUID().toString())

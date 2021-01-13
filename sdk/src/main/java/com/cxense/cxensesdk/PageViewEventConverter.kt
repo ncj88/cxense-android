@@ -67,8 +67,8 @@ class PageViewEventConverter(
             )
         }
         val result = pairs + appMetadata + userLocation + ids +
-                customParameters.asSequence().map { "$CUSTOM_PARAMETER_PREFIX${it.name}" to it.value } +
-                customUserParameters.asSequence().map { "$CUSTOM_USER_PARAMETER_PREFIX${it.name}" to it.value }
+            customParameters.asSequence().map { "$CUSTOM_PARAMETER_PREFIX${it.name}" to it.value } +
+            customUserParameters.asSequence().map { "$CUSTOM_USER_PARAMETER_PREFIX${it.name}" to it.value }
         return result.toMap()
     }
 
@@ -135,6 +135,7 @@ class PageViewEventConverter(
         private const val DEFAULT_API_VERSION = "1"
         private const val DEFAULT_COLOR_DEPTH = "32"
         private const val DEFAULT_ENCODING = "UTF-8"
+
         // Map keys constants
         internal const val VERSION = "ver"
         internal const val TYPE = "typ"

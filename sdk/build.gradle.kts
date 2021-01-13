@@ -95,7 +95,6 @@ ktlint {
 }
 
 dependencies {
-    implementation(kotlin(Libs.kotlinStdlib, Versions.kotlin))
     api(Libs.annotations)
     implementation(Libs.googleAds)
     api(Libs.retrofit)

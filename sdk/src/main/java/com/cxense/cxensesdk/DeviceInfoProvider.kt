@@ -18,6 +18,7 @@ class DeviceInfoProvider(
     private val context: Context
 ) {
     val displayMetrics: DisplayMetrics by lazy { context.resources.displayMetrics }
+
     /**
      * Get version of the application in which SDK is used.
      *
@@ -31,6 +32,7 @@ class DeviceInfoProvider(
             null
         }
     }
+
     /**
      * Get name of the application in which SDK is used.
      *
@@ -44,7 +46,7 @@ class DeviceInfoProvider(
     private fun NetworkCapabilities.toNetworkStatus(): CxenseConfiguration.NetworkStatus {
         return when {
             hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                    hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> CxenseConfiguration.NetworkStatus.WIFI
+                hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> CxenseConfiguration.NetworkStatus.WIFI
             hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> CxenseConfiguration.NetworkStatus.MOBILE
             hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) -> CxenseConfiguration.NetworkStatus.GPRS
             else -> CxenseConfiguration.NetworkStatus.NONE

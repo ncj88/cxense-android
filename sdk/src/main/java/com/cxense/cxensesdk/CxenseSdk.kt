@@ -332,12 +332,9 @@ class CxenseSdk(
     private fun <T : Any> createGenericCallback(callback: LoadCallback<T>) = object : LoadCallback<ResponseBody> {
         override fun onSuccess(data: ResponseBody) =
             try {
+                val callbackClazz = callback::class.java.genericInterfaces.first() as ParameterizedType
                 @Suppress("UNCHECKED_CAST")
-                val clazz = (callback::class.java
-                    .genericInterfaces
-                    .first() as ParameterizedType)
-                    .actualTypeArguments
-                    .first() as Class<T>
+                val clazz = callbackClazz.actualTypeArguments.first() as Class<T>
                 callback.onSuccess(gson.fromJson(data.charStream(), clazz))
             } catch (e: Exception) {
                 callback.onError(e)

@@ -36,16 +36,19 @@ class AnimalActivity : AppCompatActivity(R.layout.activity_animal) {
 
     override fun onResume() {
         super.onResume()
-        CxenseSdk.getInstance().setDispatchEventsCallback(object :
-            CxenseSdk.DispatchEventsCallback {
-            override fun onDispatch(statuses: List<EventStatus>) {
-                val grouped = statuses.groupBy { it.isSent }
-                val message = "Sent: '${grouped[true]?.joinToString {
-                    it.eventId ?: ""
-                }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'"
-                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+        CxenseSdk.getInstance().setDispatchEventsCallback(
+            object : CxenseSdk.DispatchEventsCallback {
+                override fun onDispatch(statuses: List<EventStatus>) {
+                    val grouped = statuses.groupBy { it.isSent }
+                    val message =
+                        """
+                        Sent: '${grouped[true]?.joinToString { it.eventId ?: "" }}'
+                        Not sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'
+                        """.trimIndent()
+                    Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                }
             }
-        })
+        )
         CxenseSdk.getInstance().pushEvents(
             PageViewEvent.Builder(BuildConfig.SITE_ID)
                 .contentId(item)
@@ -90,7 +93,8 @@ class AnimalActivity : AppCompatActivity(R.layout.activity_animal) {
                 override fun onError(throwable: Throwable) {
                     Timber.e(throwable)
                 }
-            })
+            }
+        )
     }
 
     companion object {

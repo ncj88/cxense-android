@@ -64,7 +64,6 @@ class AuthInterceptorTest : BaseInterceptorTest() {
         private const val SECRET_VALUE = "secret"
         private const val DATE_VALUE = "1970-01-01T04:00:00.001+0400"
         private const val HASH_VALUE = "C266EF8D0CF01BE4ADA9DC6E4D4DBB9870DE3BD3A20BB3E060326D691597382A"
-        private const val AUTH_VALUE = "username=$USER_VALUE date=$DATE_VALUE " +
-                "hmac-sha256-hex=$HASH_VALUE"
+        private const val AUTH_VALUE = "username=$USER_VALUE date=$DATE_VALUE hmac-sha256-hex=$HASH_VALUE"
     }
 }

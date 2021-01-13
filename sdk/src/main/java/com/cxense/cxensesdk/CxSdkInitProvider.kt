@@ -35,7 +35,7 @@ class CxSdkInitProvider : ContentProvider() {
         // So if the authorities equal the library internal ones, the developer forgot to set his applicationId
         check(BuildConfig.AUTHORITY != info.authority) {
             "Incorrect provider authority in manifest. Most likely due to a missing applicationId variable" +
-                    " in application's build.gradle."
+                " in application's build.gradle."
         }
     }
 

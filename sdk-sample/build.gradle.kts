@@ -46,7 +46,6 @@ ktlint {
 }
 
 dependencies {
-    implementation(kotlin(Libs.kotlinStdlib, Versions.kotlin))
     implementation(project(":sdk"))
     implementation(Libs.appcompat)
     implementation(Libs.material)

@@ -39,10 +39,13 @@ internal class DependenciesProvider private constructor(
             .addInterceptor(AuthInterceptor(cxenseConfiguration))
             .addInterceptor(SdkInterceptor(BuildConfig.SDK_NAME, BuildConfig.VERSION_NAME))
             .addInterceptor(UserAgentInterceptor(userAgentProvider))
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level =
-                    if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.HEADERS else HttpLoggingInterceptor.Level.NONE
-            })
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = if (BuildConfig.DEBUG)
+                        HttpLoggingInterceptor.Level.HEADERS
+                    else HttpLoggingInterceptor.Level.NONE
+                }
+            )
             .build()
     }
 
@@ -91,7 +94,8 @@ internal class DependenciesProvider private constructor(
     private val databaseHelper: DatabaseHelper by lazy { DatabaseHelper(appContext) }
     private val eventRepository: EventRepository by lazy {
         EventRepository(
-            databaseHelper, listOf(
+            databaseHelper,
+            listOf(
                 pageViewEventConverter,
                 performanceEventConverter,
                 conversionEventConverter
