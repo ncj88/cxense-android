@@ -22,7 +22,7 @@ class PageViewEventConverter(
 ) : EventConverter() {
     override fun canConvert(event: Event): Boolean = event is PageViewEvent
 
-    private fun PageViewEvent.toQueryMap(): Map<String, String?>? {
+    private fun PageViewEvent.toQueryMap(): Map<String, String?> {
         val offset = with(Calendar.getInstance()) {
             TimeUnit.MILLISECONDS.toMinutes(timeZone.getOffset(timeInMillis).toLong())
         }

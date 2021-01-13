@@ -1,4 +1,3 @@
-import org.jetbrains.dokka.gradle.DokkaTask
 import com.github.spotbugs.snom.Confidence
 import com.github.spotbugs.snom.Effort
 
@@ -54,26 +53,17 @@ android {
 }
 
 tasks {
-    val dokka by getting(DokkaTask::class) {
-        outputFormat = "html"
-        outputDirectory = "$buildDir/doc"
-        configuration {
-            reportUndocumented = true
-        }
+    dokkaHtml.configure {
+        outputDirectory.set(file("$buildDir/doc"))
     }
-
-    val javadoc by creating(DokkaTask::class) {
-        outputFormat = "javadoc"
-        outputDirectory = "$buildDir/javadoc"
-        configuration {
-            reportUndocumented = true
-        }
+    dokkaJavadoc.configure {
+        outputDirectory.set(file("$buildDir/javadoc"))
     }
 
     val javadocJar by creating(Jar::class) {
-        dependsOn(javadoc)
+        dependsOn(dokkaJavadoc)
         archiveClassifier.set("javadoc")
-        from(javadoc.outputDirectory)
+        from(dokkaJavadoc.get().outputDirectory.get())
     }
 
     artifacts.add("archives", javadocJar)

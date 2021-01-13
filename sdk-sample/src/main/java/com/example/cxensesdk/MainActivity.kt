@@ -7,6 +7,7 @@ import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.cxense.cxensesdk.CredentialsProvider
 import com.cxense.cxensesdk.CxenseSdk
 import com.cxense.cxensesdk.ENDPOINT_USER_SEGMENTS
@@ -23,14 +24,15 @@ import com.cxense.cxensesdk.model.UserIdentity
 import com.cxense.cxensesdk.model.UserSegmentRequest
 import com.cxense.cxensesdk.model.WidgetContext
 import com.cxense.cxensesdk.model.WidgetItem
+import com.example.cxensesdk.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
 import timber.log.Timber
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
+    private val binding: ActivityMainBinding by viewBinding(R.id.recyclerview)
 
     private val animals = listOf(
         "alligator", "ant", "bear", "bee", "bird", "camel", "cat",
@@ -43,9 +45,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        recyclerview.layoutManager = LinearLayoutManager(this)
-        recyclerview.adapter = MainAdapter(animals, this::onItemClick)
+        binding.recyclerview.apply {
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = MainAdapter(animals, this@MainActivity::onItemClick)
+        }
 
         CxenseSdk.getInstance().configuration.apply {
             dispatchPeriod(MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS)
@@ -70,9 +73,13 @@ class MainActivity : AppCompatActivity() {
             CxenseSdk.DispatchEventsCallback {
             override fun onDispatch(statuses: List<EventStatus>) {
                 val grouped = statuses.groupBy { it.isSent }
-                showText("Sent: '${grouped[true]?.joinToString {
-                    it.eventId ?: ""
-                }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'")
+                showText(
+                    "Sent: '${
+                        grouped[true]?.joinToString {
+                            it.eventId ?: ""
+                        }
+                    }'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'"
+                )
             }
         })
     }
@@ -103,7 +110,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showText(str: String) {
-        Snackbar.make(recyclerview, str, Snackbar.LENGTH_LONG).show()
+        Snackbar.make(binding.root, str, Snackbar.LENGTH_LONG).show()
     }
 
     private fun showError(t: Throwable) {

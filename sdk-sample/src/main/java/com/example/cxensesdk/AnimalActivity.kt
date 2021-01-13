@@ -2,6 +2,7 @@ package com.example.cxensesdk
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import by.kirich1409.viewbindingdelegate.viewBinding
 import com.cxense.cxensesdk.CxenseSdk
 import com.cxense.cxensesdk.LoadCallback
 import com.cxense.cxensesdk.model.ConversionEvent
@@ -13,18 +14,18 @@ import com.cxense.cxensesdk.model.PerformanceEvent
 import com.cxense.cxensesdk.model.UserIdentity
 import com.cxense.cxensesdk.model.WidgetContext
 import com.cxense.cxensesdk.model.WidgetItem
+import com.example.cxensesdk.databinding.ActivityAnimalBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_animal.*
 import timber.log.Timber
 
-class AnimalActivity : AppCompatActivity() {
+class AnimalActivity : AppCompatActivity(R.layout.activity_animal) {
+    private val binding: ActivityAnimalBinding by viewBinding(R.id.animalText)
     private lateinit var item: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_animal)
         item = intent.getStringExtra(ITEM_KEY) ?: ""
-        animalText.text = getString(R.string.item_text, item)
+        binding.animalText.text = getString(R.string.item_text, item)
     }
 
     override fun onPause() {
@@ -42,7 +43,7 @@ class AnimalActivity : AppCompatActivity() {
                 val message = "Sent: '${grouped[true]?.joinToString {
                     it.eventId ?: ""
                 }}'\nNot sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'"
-                Snackbar.make(animalText, message, Snackbar.LENGTH_LONG).show()
+                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
             }
         })
         CxenseSdk.getInstance().pushEvents(
