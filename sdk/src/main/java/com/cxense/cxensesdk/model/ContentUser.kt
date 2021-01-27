@@ -1,5 +1,7 @@
 package com.cxense.cxensesdk.model
 
+import com.squareup.moshi.JsonClass
+
 /**
  * This class describes user for server.
  * @property ids Map from ID-types to IDs (String to String). ID-types are defined as a customer-prefix.
@@ -7,12 +9,14 @@ package com.cxense.cxensesdk.model
  * @property dislikes User's dislikes
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+@JsonClass(generateAdapter = true)
 class ContentUser() {
     constructor(userId: String) : this() {
         ids[USI_ID] = userId
     }
 
-    val ids: MutableMap<String, String> = mutableMapOf()
+    var ids: MutableMap<String, String> = mutableMapOf()
+        internal set
     var likes: UserPreference? = null
     var dislikes: UserPreference? = null
 

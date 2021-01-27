@@ -1,12 +1,14 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Request object for getting user segments from server.
  *
  */
+@JsonClass(generateAdapter = true)
 class UserSegmentRequest(
-    @SerializedName("identities") private val identities: List<UserIdentity>,
-    @SerializedName("siteGroupIds") private val siteGroups: List<String>
+    @Json(name = "identities") val identities: List<UserIdentity>,
+    @Json(name = "siteGroupIds") val siteGroups: List<String>
 )

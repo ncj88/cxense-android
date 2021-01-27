@@ -2,11 +2,11 @@ package com.cxense.cxensesdk
 
 import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.PerformanceEvent
-import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.verify
+import com.squareup.moshi.JsonAdapter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -18,11 +18,11 @@ class PerformanceEventConverterTest {
     private val event: PerformanceEvent = mock {
         on { eventType } doReturn ""
     }
-    private val gson: Gson = mock {
-        on { fromJson<PerformanceEvent>(any<String>(), any<Class<PerformanceEvent>>()) } doReturn event
-        on { toJson(any<PerformanceEvent>()) } doReturn "{}"
+    private val jsonAdapter: JsonAdapter<PerformanceEvent> = mock {
+        on { fromJson(any<String>()) } doReturn event
+        on { toJson(any()) } doReturn "{}"
     }
-    private val converter = PerformanceEventConverter(gson)
+    private val converter = PerformanceEventConverter(jsonAdapter)
 
     @Test
     fun canConvertConversionEvent() {
@@ -46,7 +46,7 @@ class PerformanceEventConverterTest {
     @Test
     fun toEventRecord() {
         assertNotNull(converter.toEventRecord(event))
-        verify(gson).toJson(any<PerformanceEvent>())
+        verify(jsonAdapter).toJson(any())
     }
 
     @Test

@@ -1,7 +1,9 @@
 package com.cxense.cxensesdk.model
 
 import com.cxense.cxensesdk.DependenciesProvider
-import com.google.gson.annotations.SerializedName
+import com.cxense.cxensesdk.UserProvider
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import java.util.Collections
 import java.util.Date
 import java.util.concurrent.TimeUnit
@@ -20,21 +22,20 @@ import java.util.concurrent.TimeUnit
  * @property customParameters optional collection of customer-defined parameters to event.
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-class PerformanceEvent private constructor(
-    eventId: String?,
-    @SerializedName(USER_IDS) val identities: List<UserIdentity>,
-    @SerializedName(SITE_ID) val siteId: String,
-    @SerializedName(ORIGIN) val origin: String,
-    @SerializedName(TYPE) val eventType: String,
-    @SerializedName(PRND) val prnd: String?,
-    @SerializedName(TIME) val time: Long,
-    @SerializedName(SEGMENT_IDS) val segments: List<String>?,
-    @SerializedName(CUSTOM_PARAMETERS) val customParameters: List<CustomParameter>,
-    @SerializedName("consent") val consentOptions: List<String>
+@JsonClass(generateAdapter = true)
+class PerformanceEvent internal constructor(
+    eventId: String? = null,
+    @Json(name = USER_IDS) val identities: List<UserIdentity>,
+    @Json(name = SITE_ID) val siteId: String,
+    @Json(name = ORIGIN) val origin: String,
+    @Json(name = TYPE) val eventType: String,
+    @Json(name = PRND) val prnd: String?,
+    @Json(name = TIME) val time: Long,
+    @Json(name = SEGMENT_IDS) val segments: List<String>?,
+    @Json(name = CUSTOM_PARAMETERS) val customParameters: List<CustomParameter>,
+    @Json(name = "consent") val consentOptions: List<String>,
+    @Json(name = RND) val rnd: String = "${System.currentTimeMillis()}${(Math.random() * 10E8).toInt()}"
 ) : Event(eventId) {
-
-    @SerializedName(RND)
-    val rnd: String = "${System.currentTimeMillis()}${(Math.random() * 10E8).toInt()}"
 
     /**
      * @constructor Initialize Builder with required parameters
@@ -49,7 +50,8 @@ class PerformanceEvent private constructor(
      * @property segments optional collection of matching segments to be reported.
      * @property customParameters optional collection of customer-defined parameters to event.
      */
-    data class Builder @JvmOverloads constructor(
+    data class Builder internal constructor(
+        val userProvider: UserProvider,
         var siteId: String,
         var origin: String,
         var eventType: String,
@@ -60,6 +62,30 @@ class PerformanceEvent private constructor(
         var segments: MutableList<String> = mutableListOf(),
         var customParameters: MutableList<CustomParameter> = mutableListOf()
     ) {
+
+        @JvmOverloads
+        constructor(
+            siteId: String,
+            origin: String,
+            eventType: String,
+            identities: MutableList<UserIdentity> = mutableListOf(),
+            eventId: String? = null,
+            prnd: String? = null,
+            time: Long = System.currentTimeMillis(),
+            segments: MutableList<String> = mutableListOf(),
+            customParameters: MutableList<CustomParameter> = mutableListOf()
+        ) : this(
+            DependenciesProvider.getInstance().userProvider,
+            siteId,
+            origin,
+            eventType,
+            identities,
+            eventId,
+            prnd,
+            time,
+            segments,
+            customParameters
+        )
 
         /**
          * Adds known user identities to identify the user.
@@ -145,9 +171,6 @@ class PerformanceEvent private constructor(
          * @throws [IllegalArgumentException] if constraints failed
          */
         fun build(): PerformanceEvent {
-            check(identities.isNotEmpty()) {
-                "You should supply at least one user identity"
-            }
             check(siteId.isNotEmpty()) {
                 "Site id can't be empty"
             }
@@ -158,9 +181,15 @@ class PerformanceEvent private constructor(
                 "Origin must be prefixed by the customer prefix."
             }
 
+            val userIds = identities.firstOrNull {
+                it.type == UserIdentity.CX_USER_TYPE
+            }?.let {
+                identities
+            } ?: identities + UserIdentity(UserIdentity.CX_USER_TYPE, userProvider.userId)
+
             return PerformanceEvent(
                 eventId,
-                Collections.unmodifiableList(identities),
+                Collections.unmodifiableList(userIds),
                 siteId,
                 origin,
                 eventType,

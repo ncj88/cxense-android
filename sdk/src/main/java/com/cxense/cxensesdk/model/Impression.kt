@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Describes impression data
@@ -11,18 +12,19 @@ import com.google.gson.annotations.SerializedName
  * @property seconds visibility seconds
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+@JsonClass(generateAdapter = true)
 class Impression(
     clickUrl: String,
     seconds: Int
 ) {
-    @SerializedName("clickUrl")
+    @Json(name = "clickUrl")
     val clickUrl: String = clickUrl.also {
         require(it.isNotEmpty()) {
             "clickUrl should be filled"
         }
     }
 
-    @SerializedName("visibilitySeconds")
+    @Json(name = "visibilitySeconds")
     val seconds: Int = seconds.also {
         require(it > 0) {
             "Seconds value should be more than 0"

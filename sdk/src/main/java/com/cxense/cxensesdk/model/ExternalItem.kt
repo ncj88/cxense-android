@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Stored key-values for the user.
@@ -13,11 +14,12 @@ import com.google.gson.annotations.SerializedName
  * @throws IllegalArgumentException if [group] or [item] doesn't meet a criteria.
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+@JsonClass(generateAdapter = true)
 class ExternalItem(
     group: String,
     item: String
 ) {
-    @SerializedName("group")
+    @Json(name = "group")
     val group: String = group.also {
         require(it.matches(GROUP_REGEXP.toRegex())) {
             "Group should not be empty and can contains only letters, digits or dash," +
@@ -25,7 +27,7 @@ class ExternalItem(
         }
     }
 
-    @SerializedName("item")
+    @Json(name = "item")
     val item: String = item.also {
         require(it.length <= ITEM_NAME_MAX_LENGTH) {
             "Item can't be longer than $ITEM_NAME_MAX_LENGTH symbols"

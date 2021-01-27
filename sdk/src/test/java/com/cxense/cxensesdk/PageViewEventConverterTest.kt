@@ -3,14 +3,13 @@ package com.cxense.cxensesdk
 import android.util.DisplayMetrics
 import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.PageViewEvent
-import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
-import java.lang.reflect.Type
+import com.squareup.moshi.JsonAdapter
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
@@ -18,9 +17,9 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PageViewEventConverterTest {
-    private val gson: Gson = mock {
-        on { fromJson<MutableMap<String, String>>(any<String>(), any<Type>()) } doReturn mutableMapOf()
-        on { toJson(any<Map<String, String>>()) } doReturn "{}"
+    private val jsonAdapter: JsonAdapter<Map<String, String>> = mock {
+        on { fromJson(any<String>()) } doReturn mapOf()
+        on { toJson(any()) } doReturn "{}"
     }
     private val configuration: CxenseConfiguration = mock {
         on { autoMetaInfoTrackingEnabled } doReturn true
@@ -33,7 +32,7 @@ class PageViewEventConverterTest {
         }
     }
 
-    private val converter = PageViewEventConverter(gson, configuration, deviceInfoProvider)
+    private val converter = PageViewEventConverter(jsonAdapter, configuration, deviceInfoProvider)
     private val event: PageViewEvent = mock {
         on { userLocation } doReturn mock()
     }
@@ -56,19 +55,19 @@ class PageViewEventConverterTest {
     @Test
     fun extractQueryData() {
         assertNotNull(converter.extractQueryData(EventRecord("type", "", "{}"), fixUserIdFunc))
-        verify(gson).fromJson<MutableMap<String, String>>(any<String>(), any<Type>())
+        verify(jsonAdapter).fromJson(any<String>())
         verify(fixUserIdFunc).invoke()
     }
 
     @Test
     fun extractQueryDataWithCkp() {
-        whenever(gson.fromJson<MutableMap<String, String>>(any<String>(), any<Type>())).thenReturn(
+        whenever(jsonAdapter.fromJson(any<String>())).thenReturn(
             mutableMapOf(
                 PageViewEventConverter.CKP to "123"
             )
         )
         assertNotNull(converter.extractQueryData(EventRecord("type", "", "{}"), fixUserIdFunc))
-        verify(gson).fromJson<MutableMap<String, String>>(any<String>(), any<Type>())
+        verify(jsonAdapter).fromJson(any<String>())
         verify(fixUserIdFunc, never()).invoke()
     }
 
@@ -77,7 +76,7 @@ class PageViewEventConverterTest {
         assertNotNull(converter.toEventRecord(event))
         verify(deviceInfoProvider).displayMetrics
         verify(configuration).autoMetaInfoTrackingEnabled
-        verify(gson).toJson(any<Map<String, String>>())
+        verify(jsonAdapter).toJson(any())
     }
 
     @Test
@@ -88,7 +87,7 @@ class PageViewEventConverterTest {
     @Test
     fun updateActiveTimeData() {
         assertNotNull(converter.updateActiveTimeData("{}", 0))
-        verify(gson).fromJson<MutableMap<String, String>>(any<String>(), any<Type>())
-        verify(gson).toJson(any<Map<String, String>>())
+        verify(jsonAdapter).fromJson(any<String>())
+        verify(jsonAdapter).toJson(any())
     }
 }

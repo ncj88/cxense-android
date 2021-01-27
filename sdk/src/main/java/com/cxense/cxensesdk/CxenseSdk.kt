@@ -17,7 +17,8 @@ import com.cxense.cxensesdk.model.WidgetContext
 import com.cxense.cxensesdk.model.WidgetItem
 import com.cxense.cxensesdk.model.WidgetRequest
 import com.cxense.cxensesdk.model.WidgetVisibilityReport
-import com.google.gson.Gson
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.Moshi
 import okhttp3.ResponseBody
 import retrofit2.Call
 import java.lang.reflect.ParameterizedType
@@ -39,7 +40,7 @@ class CxenseSdk(
     private val userProvider: UserProvider,
     private val cxApi: CxApi,
     private val errorParser: ApiErrorParser,
-    private val gson: Gson,
+    private val moshi: Moshi,
     private val eventRepository: EventRepository,
     private val sendTask: SendTask
 ) {
@@ -335,7 +336,9 @@ class CxenseSdk(
                 val callbackClazz = callback::class.java.genericInterfaces.first() as ParameterizedType
                 @Suppress("UNCHECKED_CAST")
                 val clazz = callbackClazz.actualTypeArguments.first() as Class<T>
-                callback.onSuccess(gson.fromJson(data.charStream(), clazz))
+                val jsonAdapter = moshi.adapter(clazz)
+                val reader = JsonReader.of(data.source())
+                callback.onSuccess(requireNotNull(jsonAdapter.fromJson(reader)))
             } catch (e: Exception) {
                 callback.onError(e)
             }

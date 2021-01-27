@@ -8,8 +8,7 @@ plugins {
     id(Plugins.androidMaven)
     id(Plugins.spotbugs)
     id(Plugins.ktlint)
-    checkstyle
-    pmd
+    kotlin("kapt")
 }
 
 android {
@@ -19,13 +18,13 @@ android {
     defaultConfig {
         minSdkVersion(Config.androidMinSdk)
         targetSdkVersion(Config.androidTargetSdk)
-        versionName = rootProject.version.toString()
 
+        buildConfigField("String", "SDK_VERSION", """"${rootProject.version}"""")
         buildConfigField("String", "SDK_NAME", """"cxense"""")
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
         buildConfigField("String", "AUTHORITY", """LIBRARY_PACKAGE_NAME + ".${Config.authority}"""")
 
-        manifestPlaceholders = mutableMapOf<String, Any>("authority" to Config.authority)
+        manifestPlaceholders += "authority" to Config.authority
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("cxensesdk.pro")
@@ -50,6 +49,14 @@ android {
     lintOptions {
         isAbortOnError = false
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+kotlin {
+    explicitApi()
 }
 
 tasks {
@@ -72,22 +79,12 @@ tasks {
 version = rootProject.version
 
 val checkStyleConfigDir = "${project.rootDir}/config/"
-checkstyle {
-    configFile = file("$checkStyleConfigDir/checkstyle-rules.xml")
-    isIgnoreFailures = true
-    isShowViolations = true
-}
 
 spotbugs {
     excludeFilter.set(file("$checkStyleConfigDir/findbugs-exclude-filter.xml"))
     effort.set(Effort.MAX)
     reportLevel.set(Confidence.HIGH)
     ignoreFailures.set(true)
-}
-
-pmd {
-    ruleSetFiles = files("$checkStyleConfigDir/pmd-ruleset.xml")
-    isIgnoreFailures = true
 }
 
 ktlint {
@@ -99,6 +96,8 @@ dependencies {
     implementation(Libs.googleAds)
     api(Libs.retrofit)
     api(Libs.retrofitConverter)
+    implementation(Libs.moshi)
+    kapt(Libs.moshiCodegen)
     api(Libs.okhttpLogging)
     api(Libs.timber)
 

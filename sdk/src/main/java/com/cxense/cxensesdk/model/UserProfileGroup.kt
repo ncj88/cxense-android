@@ -1,13 +1,15 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Group object for item in {@link UserProfile}
  *
  */
+@JsonClass(generateAdapter = true)
 class UserProfileGroup(
-    @SerializedName("group") val group: String?,
-    @SerializedName("count") val count: Int,
-    @SerializedName("weight") val weight: Double
+    @Json(name = "group") val group: String?,
+    @Json(name = "count") val count: Int,
+    @Json(name = "weight") val weight: Double
 )

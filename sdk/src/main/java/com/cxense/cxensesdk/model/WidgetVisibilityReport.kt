@@ -1,11 +1,13 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Request object for reporting widgets visibilities to server.
  *
  */
+@JsonClass(generateAdapter = true)
 class WidgetVisibilityReport(
-    @SerializedName("impressions") val impressions: List<Impression>
+    @Json(name = "impressions") val impressions: List<Impression>
 )

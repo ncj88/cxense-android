@@ -1,11 +1,13 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Api Error answer
  *
  */
+@JsonClass(generateAdapter = true)
 class ApiError(
-    @SerializedName("error") val error: String? = null
+    @Json(name = "error") val error: String? = null
 )

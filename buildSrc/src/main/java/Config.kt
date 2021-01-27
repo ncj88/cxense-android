@@ -17,7 +17,7 @@ object Versions {
     //Plugins
     const val versionsPlugin = "0.36.0"
     const val releasePlugin = "1.12.1"
-    const val androidToolsPlugin = "4.0.1"
+    const val androidToolsPlugin = "4.1.2"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "4.6.0"
     const val ktlint = "9.4.1"
@@ -32,6 +32,7 @@ object Versions {
     const val googlePlayServices = "17.0.0"
     const val retrofit = "2.6.4"
     const val okhttp = "3.12.6"
+    const val moshi = "1.11.0"
     const val timber = "4.7.1"
     const val viewBindingProperty = "1.4.1"
 
@@ -57,15 +58,16 @@ object Plugins {
 }
 
 object Libs {
-    const val kotlinStdlib = "stdlib-jdk7"
     const val annotations = "androidx.annotation:annotation:${Versions.annotationsLibrary}"
     const val appcompat = "androidx.appcompat:appcompat:${Versions.compatLibrary}"
     const val material = "com.google.android.material:material:${Versions.materialLibrary}"
 
     const val googleAds = "com.google.android.gms:play-services-ads-identifier:${Versions.googlePlayServices}"
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
-    const val retrofitConverter = "com.squareup.retrofit2:converter-gson:${Versions.retrofit}"
+    const val retrofitConverter = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
     const val okhttpLogging = "com.squareup.okhttp3:logging-interceptor:${Versions.okhttp}"
+    const val moshi = "com.squareup.moshi:moshi:${Versions.moshi}"
+    const val moshiCodegen = "com.squareup.moshi:moshi-kotlin-codegen:${Versions.moshi}"
     const val timber = "com.jakewharton.timber:timber:${Versions.timber}"
     const val viewBindingProperty = "com.kirich1409.viewbindingpropertydelegate:viewbindingpropertydelegate:${Versions.viewBindingProperty}"
 

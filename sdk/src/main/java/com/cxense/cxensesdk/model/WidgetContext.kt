@@ -1,5 +1,6 @@
 package com.cxense.cxensesdk.model
 
+import com.squareup.moshi.JsonClass
 import okhttp3.HttpUrl
 import java.util.Collections
 
@@ -16,7 +17,8 @@ import java.util.Collections
  * @property parameters list of [ContextParameter] objects.
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-class WidgetContext private constructor(
+@JsonClass(generateAdapter = true)
+class WidgetContext internal constructor(
     val url: String,
     val referrer: String?,
     val pageclass: String?,

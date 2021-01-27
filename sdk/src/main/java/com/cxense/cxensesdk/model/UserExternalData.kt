@@ -1,16 +1,18 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Data associated with the user(s).
  * @property items stored key-values for the user.
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-class UserExternalData private constructor(
+@JsonClass(generateAdapter = true)
+class UserExternalData internal constructor(
     type: String,
     id: String,
-    @SerializedName("profile") val items: List<ExternalItem>
+    @Json(name = "profile") val items: List<ExternalItem>
 ) : UserIdentity(type, id) {
 
     /**

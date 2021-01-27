@@ -1,12 +1,14 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * User generated content profile
  *
  */
+@JsonClass(generateAdapter = true)
 class UserProfile(
-    @SerializedName("item") val item: String?,
-    @SerializedName("groups") val groups: List<UserProfileGroup>?
+    @Json(name = "item") val item: String?,
+    @Json(name = "groups") val groups: List<UserProfileGroup>?
 )

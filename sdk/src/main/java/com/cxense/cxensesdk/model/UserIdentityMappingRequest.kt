@@ -1,13 +1,15 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Request object for getting/adding user identity mapping from server
  *
  */
+@JsonClass(generateAdapter = true)
 class UserIdentityMappingRequest(
-    @SerializedName("cxid") val cxenseId: String,
-    @SerializedName("type") val type: String,
-    @SerializedName("id") val id: String? = null
+    @Json(name = "cxid") val cxenseId: String,
+    @Json(name = "type") val type: String,
+    @Json(name = "id") val id: String? = null
 )

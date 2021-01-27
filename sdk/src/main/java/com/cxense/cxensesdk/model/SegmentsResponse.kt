@@ -1,11 +1,13 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Response for segments from server.
  *
  */
+@JsonClass(generateAdapter = true)
 class SegmentsResponse(
-    @SerializedName("segments") val ids: List<String> = emptyList()
+    @Json(name = "segments") val ids: List<String> = emptyList()
 )
