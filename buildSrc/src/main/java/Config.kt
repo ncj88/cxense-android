@@ -12,7 +12,7 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.4.21-2"
+    const val kotlin = "1.4.30"
 
     //Plugins
     const val versionsPlugin = "0.36.0"
@@ -20,13 +20,13 @@ object Versions {
     const val androidToolsPlugin = "4.1.2"
     const val androidMavenPlugin = "2.1"
     const val spotbugsPlugin = "4.6.0"
-    const val ktlint = "9.4.1"
+    const val ktlint = "10.0.0"
     const val dokka = "1.4.20"
 
     // Android libraries
     const val compatLibrary = "1.2.0"
     const val annotationsLibrary = "1.1.0"
-    const val materialLibrary = "1.2.1"
+    const val materialLibrary = "1.3.0"
 
     // Third party Libraries
     const val googlePlayServices = "17.0.0"
@@ -37,7 +37,7 @@ object Versions {
     const val viewBindingProperty = "1.4.1"
 
     // Test Libraries
-    const val junit = "4.13.1"
+    const val junit = "4.13.2"
     const val mockitoKotlin = "2.2.0"
     const val mockitoCore = "3.0.0"
 }

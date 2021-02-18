@@ -46,7 +46,7 @@ class PerformanceEvent internal constructor(
      * @property eventId custom event id, that used for tracking locally.
      * @property prnd an alternative specification for page view event id. In order to link DMP events to page views this value
      * must be identical to the rnd value of the page view event.
-     * @property time the exact datetime of an event
+     * @property time the exact datetime of an event in milliseconds
      * @property segments optional collection of matching segments to be reported.
      * @property customParameters optional collection of customer-defined parameters to event.
      */
@@ -138,7 +138,7 @@ class PerformanceEvent internal constructor(
          * Sets datetime of an event
          * @param date the exact datetime of an event
          */
-        fun time(date: Date) = apply { this.time = TimeUnit.MILLISECONDS.toSeconds(date.time) }
+        fun time(date: Date) = apply { this.time = date.time }
 
         /**
          * Adds matching segments to be reported.
@@ -194,7 +194,7 @@ class PerformanceEvent internal constructor(
                 origin,
                 eventType,
                 prnd,
-                time,
+                TimeUnit.MILLISECONDS.toSeconds(time),
                 segments.takeUnless { it.isEmpty() }?.let { Collections.unmodifiableList(it) },
                 Collections.unmodifiableList(customParameters),
                 DependenciesProvider.getInstance().cxenseConfiguration.consentOptionsValues
