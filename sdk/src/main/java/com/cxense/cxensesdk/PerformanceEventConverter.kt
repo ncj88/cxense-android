@@ -6,6 +6,7 @@ import com.cxense.cxensesdk.model.CustomParameter
 import com.cxense.cxensesdk.model.Event
 import com.cxense.cxensesdk.model.PerformanceEvent
 import com.squareup.moshi.JsonAdapter
+import java.util.concurrent.TimeUnit
 
 /**
  * Supports [PerformanceEvent] to [EventRecord] converting
@@ -54,7 +55,7 @@ class PerformanceEventConverter(
                 jsonAdapter.toJson(this),
                 prnd,
                 rnd,
-                time
+                TimeUnit.SECONDS.toMillis(time)
             )
         }
 
