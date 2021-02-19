@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * User identity object.
@@ -8,11 +9,12 @@ import com.google.gson.annotations.SerializedName
  * @property type user identifier type
  * @property id user identifier
  */
+@JsonClass(generateAdapter = true)
 open class UserIdentity constructor(
     type: String,
-    @SerializedName("id") val id: String
+    @Json(name = "id") val id: String
 ) {
-    @SerializedName("type")
+    @Json(name = "type")
     val type: String = type.also {
         require(it == CX_USER_TYPE || it.matches(USER_TYPE_REGEX.toRegex())) {
             """Type should be "cx" or a three character lower-case alpha-numeric string"""
@@ -20,7 +22,7 @@ open class UserIdentity constructor(
     }
 
     companion object {
-        private const val CX_USER_TYPE = "cx"
+        internal const val CX_USER_TYPE = "cx"
         private const val USER_TYPE_REGEX = "\\w{3}"
     }
 }

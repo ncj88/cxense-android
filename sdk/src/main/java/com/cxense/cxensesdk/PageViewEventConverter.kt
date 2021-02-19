@@ -5,8 +5,7 @@ import androidx.annotation.RestrictTo
 import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.Event
 import com.cxense.cxensesdk.model.PageViewEvent
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.squareup.moshi.JsonAdapter
 import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
@@ -16,13 +15,13 @@ import java.util.concurrent.TimeUnit
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class PageViewEventConverter(
-    private val gson: Gson,
+    private val mapAdapter: JsonAdapter<Map<String, String>>,
     private val configuration: CxenseConfiguration,
     private val deviceInfoProvider: DeviceInfoProvider
 ) : EventConverter() {
     override fun canConvert(event: Event): Boolean = event is PageViewEvent
 
-    private fun PageViewEvent.toQueryMap(): Map<String, String?>? {
+    private fun PageViewEvent.toQueryMap(): Map<String, String> {
         val offset = with(Calendar.getInstance()) {
             TimeUnit.MILLISECONDS.toMinutes(timeZone.getOffset(timeInMillis).toLong())
         }
@@ -67,9 +66,9 @@ class PageViewEventConverter(
             )
         }
         val result = pairs + appMetadata + userLocation + ids +
-                customParameters.asSequence().map { "$CUSTOM_PARAMETER_PREFIX${it.name}" to it.value } +
-                customUserParameters.asSequence().map { "$CUSTOM_USER_PARAMETER_PREFIX${it.name}" to it.value }
-        return result.toMap()
+            customParameters.asSequence().map { "$CUSTOM_PARAMETER_PREFIX${it.name}" to it.value } +
+            customUserParameters.asSequence().map { "$CUSTOM_USER_PARAMETER_PREFIX${it.name}" to it.value }
+        return result.filterNotNullValues().toMap()
     }
 
     private fun Location.toPairs(): Sequence<Pair<String, String?>> {
@@ -83,23 +82,19 @@ class PageViewEventConverter(
         )
     }
 
-    internal fun extractQueryData(eventRecord: EventRecord, fixUserIdFunc: () -> String): Map<String, String> {
-        return gson.fromJson<MutableMap<String, String>>(
-            eventRecord.data,
-            object : TypeToken<MutableMap<String, String>>() {}.type
-        ).apply {
-            if (this[CKP].isNullOrEmpty()) {
-                this[CKP] = fixUserIdFunc()
-            }
+    internal fun extractQueryData(eventRecord: EventRecord, fixUserIdFunc: () -> String): Map<String, String> =
+        requireNotNull(mapAdapter.fromJson(eventRecord.data)).let {
+            if (it[CKP].isNullOrEmpty())
+                it + (CKP to fixUserIdFunc())
+            else it
         }
-    }
 
     override fun toEventRecord(event: Event): EventRecord? =
         (event as? PageViewEvent)?.run {
             EventRecord(
                 PageViewEvent.EVENT_TYPE,
                 eventId,
-                gson.toJson(toQueryMap()),
+                mapAdapter.toJson(toQueryMap()),
                 userId,
                 rnd,
                 time
@@ -108,16 +103,13 @@ class PageViewEventConverter(
 
     internal fun updateActiveTimeData(data: String, activeTime: Long): String =
         // some black magic with map
-        with(
-            gson.fromJson<MutableMap<String, String?>>(
-                data,
-                object : TypeToken<MutableMap<String, String?>>() {}.type
+        requireNotNull(mapAdapter.fromJson(data)).let {
+            val map = it + mapOf(
+                ACTIVE_RND to it[RND].toString(),
+                ACTIVE_TIME to it[TIME].toString(),
+                ACTIVE_SPENT_TIME to activeTime.toString()
             )
-        ) {
-            this[ACTIVE_RND] = this[RND]
-            this[ACTIVE_TIME] = this[TIME]
-            this[ACTIVE_SPENT_TIME] = activeTime.toString()
-            gson.toJson(this)
+            mapAdapter.toJson(map)
         }
 
     companion object {
@@ -135,6 +127,7 @@ class PageViewEventConverter(
         private const val DEFAULT_API_VERSION = "1"
         private const val DEFAULT_COLOR_DEPTH = "32"
         private const val DEFAULT_ENCODING = "UTF-8"
+
         // Map keys constants
         internal const val VERSION = "ver"
         internal const val TYPE = "typ"

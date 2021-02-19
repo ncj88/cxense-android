@@ -1,27 +1,14 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Request object for getting user segments from server.
  *
  */
+@JsonClass(generateAdapter = true)
 class UserSegmentRequest(
-    identities: List<UserIdentity>,
-    siteGroups: List<String>
-) {
-    @SerializedName("identities")
-    val identities: List<UserIdentity> = identities.also {
-        require(it.isNotEmpty()) {
-            "You should provide at least one user identity"
-        }
-    }
-    @SerializedName("siteGroupIds")
-    val siteGroups: List<String> = siteGroups
-        .filterNot { it.isEmpty() }
-        .also {
-            require(it.isNotEmpty()) {
-                "You should provide at least one not empty site group id"
-            }
-        }
-}
+    @Json(name = "identities") val identities: List<UserIdentity>,
+    @Json(name = "siteGroupIds") val siteGroups: List<String>
+)

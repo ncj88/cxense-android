@@ -1,5 +1,6 @@
 package com.cxense.cxensesdk
 
+import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.webkit.WebSettings
@@ -18,7 +19,7 @@ internal class UserAgentProvider(
 
     private fun Context.getDefaultUserAgent(): String {
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageName != Application.getProcessName()) {
                 WebView.setDataDirectorySuffix(WEBVIEW_SUFFIX)
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)

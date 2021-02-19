@@ -1,7 +1,8 @@
 package com.cxense.cxensesdk.model
 
 import com.cxense.cxensesdk.DependenciesProvider
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 import java.util.Collections
 
 /**
@@ -15,18 +16,17 @@ import java.util.Collections
  * @property renewalFrequency A renewal frequency to override the original value in the conversion product object.
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-class ConversionEvent private constructor(
-    @SerializedName("userIds") val identities: List<UserIdentity>,
-    @SerializedName("siteId") val siteId: String,
-    @SerializedName("consent") val consentOptions: List<String>,
-    @SerializedName("productId") val productId: String,
-    @SerializedName("funnelStep") val funnelStep: String,
-    @SerializedName("productPrice") val price: Double?,
-    @SerializedName("productRenewalFrequency") val renewalFrequency: String?
+@JsonClass(generateAdapter = true)
+class ConversionEvent internal constructor(
+    @Json(name = "userIds") val identities: List<UserIdentity>,
+    @Json(name = "siteId") val siteId: String,
+    @Json(name = "consent") val consentOptions: List<String>,
+    @Json(name = "productId") val productId: String,
+    @Json(name = "funnelStep") val funnelStep: String,
+    @Json(name = "productPrice") val price: Double?,
+    @Json(name = "productRenewalFrequency") val renewalFrequency: String?,
+    @Json(name = "eventType") val eventType: String = EVENT_TYPE
 ) : Event(null) {
-    @SerializedName("eventType")
-    val eventType = EVENT_TYPE
-
     /**
      * @constructor Initialize Builder with required parameters
      * @property siteId The Cxense site identifier to be associated with the events.

@@ -1,11 +1,13 @@
 package com.cxense.cxensesdk.model
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonClass
 
 /**
  * Response for data associated with the user(s) from server.
  *
  */
+@JsonClass(generateAdapter = true)
 class UserExternalDataResponse(
-    @SerializedName("data") val items: List<UserExternalData> = emptyList()
+    @Json(name = "data") val items: List<UserExternalData> = emptyList()
 )

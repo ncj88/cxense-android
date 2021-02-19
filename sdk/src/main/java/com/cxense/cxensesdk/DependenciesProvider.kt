@@ -4,13 +4,16 @@ import android.content.Context
 import androidx.annotation.RestrictTo
 import com.cxense.cxensesdk.db.DatabaseHelper
 import com.cxense.cxensesdk.model.ApiError
+import com.cxense.cxensesdk.model.ConversionEvent
+import com.cxense.cxensesdk.model.EventDataRequest
 import com.cxense.cxensesdk.model.EventStatus
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.cxense.cxensesdk.model.PerformanceEvent
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import timber.log.Timber
 import java.util.concurrent.Executors
@@ -26,7 +29,7 @@ internal class DependenciesProvider private constructor(
 ) {
     internal val appContext: Context by lazy { context.applicationContext }
     private val executor: ScheduledExecutorService by lazy { Executors.newSingleThreadScheduledExecutor() }
-    private val userAgentProvider: UserAgentProvider by lazy { UserAgentProvider(BuildConfig.VERSION_NAME, appContext) }
+    private val userAgentProvider: UserAgentProvider by lazy { UserAgentProvider(BuildConfig.SDK_VERSION, appContext) }
     private val deviceInfoProvider: DeviceInfoProvider by lazy { DeviceInfoProvider(appContext) }
     private val advertisingIdProvider: AdvertisingIdProvider = AdvertisingIdProvider(appContext, executor)
     internal val userProvider: UserProvider by lazy { UserProvider(advertisingIdProvider) }
@@ -37,47 +40,56 @@ internal class DependenciesProvider private constructor(
             .connectTimeout(10, TimeUnit.SECONDS)
             .readTimeout(10, TimeUnit.SECONDS)
             .addInterceptor(AuthInterceptor(cxenseConfiguration))
-            .addInterceptor(SdkInterceptor(BuildConfig.SDK_NAME, BuildConfig.VERSION_NAME))
+            .addInterceptor(SdkInterceptor(BuildConfig.SDK_NAME, BuildConfig.SDK_VERSION))
             .addInterceptor(UserAgentInterceptor(userAgentProvider))
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level =
-                    if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.HEADERS else HttpLoggingInterceptor.Level.NONE
-            })
+            .addInterceptor(
+                HttpLoggingInterceptor().apply {
+                    level = if (BuildConfig.DEBUG)
+                        HttpLoggingInterceptor.Level.HEADERS
+                    else HttpLoggingInterceptor.Level.NONE
+                }
+            )
             .build()
     }
 
-    private val gson: Gson by lazy {
-        GsonBuilder()
-            .setLenient()
-            .registerTypeAdapterFactory(WidgetItemTypeAdapterFactory())
-            .create()
-    }
+    private val moshi = Moshi.Builder()
+        .add(EventDataRequest::class.java, EventsRequestAdapter())
+        .add(WidgetItemAdapter())
+        .build()
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(BuildConfig.SDK_ENDPOINT)
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .client(okHttpClient)
             .build()
     }
 
     private val cxApi: CxApi by lazy {
-        retrofit.create<CxApi>()
+        retrofit.create()
     }
 
     private val pageViewEventConverter: PageViewEventConverter by lazy {
         PageViewEventConverter(
-            gson,
+            moshi.adapter(
+                Types.newParameterizedType(
+                    Map::class.java,
+                    String::class.java,
+                    String::class.java
+                )
+            ),
             cxenseConfiguration,
             deviceInfoProvider
         )
     }
     private val performanceEventConverter: PerformanceEventConverter by lazy {
         PerformanceEventConverter(
-            gson
+            moshi.adapter(PerformanceEvent::class.java)
         )
     }
-    private val conversionEventConverter: ConversionEventConverter by lazy { ConversionEventConverter(gson) }
+    private val conversionEventConverter: ConversionEventConverter by lazy {
+        ConversionEventConverter(moshi.adapter(ConversionEvent::class.java))
+    }
 
     private val errorParser: ApiErrorParser by lazy {
         ApiErrorParser(
@@ -91,7 +103,8 @@ internal class DependenciesProvider private constructor(
     private val databaseHelper: DatabaseHelper by lazy { DatabaseHelper(appContext) }
     private val eventRepository: EventRepository by lazy {
         EventRepository(
-            databaseHelper, listOf(
+            databaseHelper,
+            listOf(
                 pageViewEventConverter,
                 performanceEventConverter,
                 conversionEventConverter
@@ -129,7 +142,7 @@ internal class DependenciesProvider private constructor(
             userProvider,
             cxApi,
             errorParser,
-            gson,
+            moshi,
             eventRepository,
             eventsSendTask
         )

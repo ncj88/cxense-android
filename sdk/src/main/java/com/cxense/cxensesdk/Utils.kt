@@ -4,17 +4,10 @@ import android.content.ContentValues
 import android.provider.BaseColumns
 import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.EventStatus
-import com.google.gson.stream.JsonReader
-import com.google.gson.stream.JsonToken
 
-fun <T : Any> JsonReader.readList(nextFunction: (JsonReader) -> T): List<T> {
-    beginArray()
-    return generateSequence { if (peek() != JsonToken.END_ARRAY) nextFunction(this) else null }
-        .toList()
-        .also {
-            endArray()
-        }
-}
+@Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
+internal inline fun <T, R> Sequence<Pair<T, R?>>.filterNotNullValues(): Sequence<Pair<T, R>> =
+    filterNot { it.second == null } as Sequence<Pair<T, R>>
 
 fun ContentValues.toEventRecord(): EventRecord =
     EventRecord(

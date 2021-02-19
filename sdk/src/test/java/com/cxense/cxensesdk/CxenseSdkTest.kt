@@ -3,7 +3,6 @@ package com.cxense.cxensesdk
 import com.cxense.cxensesdk.model.ConsentOption
 import com.cxense.cxensesdk.model.UserIdentity
 import com.cxense.cxensesdk.model.WidgetItem
-import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.doReturn
@@ -13,6 +12,7 @@ import com.nhaarman.mockitokotlin2.never
 import com.nhaarman.mockitokotlin2.spy
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
+import com.squareup.moshi.Moshi
 import org.mockito.stubbing.Answer
 import retrofit2.Call
 import retrofit2.Callback
@@ -37,7 +37,7 @@ class CxenseSdkTest {
     }
     private val cxApi: CxApi = mock<CxApi>(defaultAnswer = Answer { call })
     private val errorParser: ApiErrorParser = mock()
-    private val gson: Gson = mock()
+    private val moshi: Moshi = mock()
     private val eventRepository: EventRepository = mock()
     private val sendTask: SendTask = mock()
 
@@ -49,7 +49,7 @@ class CxenseSdkTest {
             userProvider,
             cxApi,
             errorParser,
-            gson,
+            moshi,
             eventRepository,
             sendTask
         )
@@ -155,6 +155,23 @@ class CxenseSdkTest {
     fun getUserSegmentIds() {
         cxenseSdk.getUserSegmentIds(listOf(mock()), listOf("123"), mock())
         verify(call).enqueue(any<Callback<Any>>())
+    }
+
+    @Test
+    fun buildWithoutIdentities() {
+        assertFailsWithMessage<IllegalArgumentException>("at least one user identity", "Expected fail for identities") {
+            cxenseSdk.getUserSegmentIds(listOf(), listOf("sitegroupId"), mock())
+        }
+    }
+
+    @Test
+    fun buildWithoutSitegroups() {
+        assertFailsWithMessage<IllegalArgumentException>(
+            "at least one not empty site group id",
+            "Expected fail for sitegroups"
+        ) {
+            cxenseSdk.getUserSegmentIds(listOf(mock()), listOf(""), mock())
+        }
     }
 
     @Test

@@ -1,15 +1,7 @@
-import org.jetbrains.kotlin.gradle.internal.CacheImplementation
-
 plugins {
     id(Plugins.androidApp)
     id(Plugins.kotlinAndroid)
-    id(Plugins.kotlinAndroidExt)
     id(Plugins.ktlint)
-}
-
-androidExtensions {
-    isExperimental = true
-    defaultCacheImplementation = CacheImplementation.SPARSE_ARRAY
 }
 
 android {
@@ -41,6 +33,12 @@ android {
         sourceCompatibility = Config.compileSourceVersion
         targetCompatibility = Config.compileTargetVersion
     }
+    buildFeatures {
+        viewBinding = true
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 
 ktlint {
@@ -48,8 +46,8 @@ ktlint {
 }
 
 dependencies {
-    implementation(kotlin(Libs.kotlinStdlib, Versions.kotlin))
     implementation(project(":sdk"))
     implementation(Libs.appcompat)
     implementation(Libs.material)
+    implementation(Libs.viewBindingProperty)
 }

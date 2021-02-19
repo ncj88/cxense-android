@@ -15,13 +15,14 @@ class UserProvider(
 
     val defaultUser: ContentUser by lazy { ContentUser(userId) }
     var userId: String
-        get() = currentUserId ?: advertisingIdProvider.defaultUserId?.also { currentUserId = it }
-        ?: UUID.randomUUID().toString()
+        get() = currentUserId ?: advertisingIdProvider.defaultUserId?.also {
+            currentUserId = it
+        } ?: UUID.randomUUID().toString()
         set(value) {
             currentUserId = value.also {
                 require(it.matches(ID_REGEX.toRegex())) {
                     "The user id must be at least 16 characters long. Allowed characters are:" +
-                            " A-Z, a-z, 0-9, \"_\", \"-\", \"+\" and \".\"."
+                        " A-Z, a-z, 0-9, \"_\", \"-\", \"+\" and \".\"."
                 }
             }
         }

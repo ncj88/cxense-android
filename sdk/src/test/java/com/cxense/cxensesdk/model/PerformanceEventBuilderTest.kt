@@ -1,6 +1,8 @@
 package com.cxense.cxensesdk.model
 
+import com.cxense.cxensesdk.UserProvider
 import com.cxense.cxensesdk.assertFailsWithMessage
+import com.nhaarman.mockitokotlin2.doReturn
 import com.nhaarman.mockitokotlin2.mock
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -8,21 +10,15 @@ import kotlin.test.Test
 class PerformanceEventBuilderTest {
     private lateinit var builder: PerformanceEvent.Builder
 
+    private val userProvider: UserProvider = mock {
+        on { userId } doReturn "userId"
+    }
+
     private val identity: UserIdentity = mock()
 
     @BeforeTest
     fun setUp() {
-        builder = PerformanceEvent.Builder("siteId", "xyz-origin", "eventType", mutableListOf(identity))
-    }
-
-    @Test
-    fun buildWithoutIdentities() {
-        assertFailsWithMessage<IllegalStateException>(
-            "at least one user identity",
-            "Expected fail for user identities"
-        ) {
-            PerformanceEvent.Builder("", "", "").build()
-        }
+        builder = PerformanceEvent.Builder(userProvider, "siteId", "xyz-origin", "eventType", mutableListOf(identity))
     }
 
     @Test

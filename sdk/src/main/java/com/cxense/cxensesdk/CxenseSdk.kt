@@ -17,7 +17,8 @@ import com.cxense.cxensesdk.model.WidgetContext
 import com.cxense.cxensesdk.model.WidgetItem
 import com.cxense.cxensesdk.model.WidgetRequest
 import com.cxense.cxensesdk.model.WidgetVisibilityReport
-import com.google.gson.Gson
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.Moshi
 import okhttp3.ResponseBody
 import retrofit2.Call
 import java.lang.reflect.ParameterizedType
@@ -39,7 +40,7 @@ class CxenseSdk(
     private val userProvider: UserProvider,
     private val cxApi: CxApi,
     private val errorParser: ApiErrorParser,
-    private val gson: Gson,
+    private val moshi: Moshi,
     private val eventRepository: EventRepository,
     private val sendTask: SendTask
 ) {
@@ -205,12 +206,22 @@ class CxenseSdk(
         siteGroupIds: List<String>,
         callback: LoadCallback<List<String>>
     ) {
+        require(identities.isNotEmpty()) {
+            "You should provide at least one user identity"
+        }
+        val siteGroups = siteGroupIds
+            .filterNot { it.isEmpty() }
+            .also {
+                require(it.isNotEmpty()) {
+                    "You should provide at least one not empty site group id"
+                }
+            }
         val consentOptions = configuration.consentOptions
         if (ConsentOption.CONSENT_REQUIRED in consentOptions && ConsentOption.SEGMENT_ALLOWED !in consentOptions) {
             callback.onError(ConsentRequiredException())
             return
         }
-        cxApi.getUserSegments(UserSegmentRequest(identities, siteGroupIds)).enqueue(callback) { it.ids }
+        cxApi.getUserSegments(UserSegmentRequest(identities, siteGroups)).enqueue(callback) { it.ids }
     }
 
     /**
@@ -322,13 +333,12 @@ class CxenseSdk(
     private fun <T : Any> createGenericCallback(callback: LoadCallback<T>) = object : LoadCallback<ResponseBody> {
         override fun onSuccess(data: ResponseBody) =
             try {
+                val callbackClazz = callback::class.java.genericInterfaces.first() as ParameterizedType
                 @Suppress("UNCHECKED_CAST")
-                val clazz = (callback::class.java
-                    .genericInterfaces
-                    .first() as ParameterizedType)
-                    .actualTypeArguments
-                    .first() as Class<T>
-                callback.onSuccess(gson.fromJson(data.charStream(), clazz))
+                val clazz = callbackClazz.actualTypeArguments.first() as Class<T>
+                val jsonAdapter = moshi.adapter(clazz)
+                val reader = JsonReader.of(data.source())
+                callback.onSuccess(requireNotNull(jsonAdapter.fromJson(reader)))
             } catch (e: Exception) {
                 callback.onError(e)
             }

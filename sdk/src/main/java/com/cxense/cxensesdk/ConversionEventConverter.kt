@@ -4,14 +4,14 @@ import androidx.annotation.RestrictTo
 import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.ConversionEvent
 import com.cxense.cxensesdk.model.Event
-import com.google.gson.Gson
+import com.squareup.moshi.JsonAdapter
 
 /**
  * Supports [ConversionEvent] to [EventRecord] converting
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class ConversionEventConverter(
-    private val gson: Gson
+    private val jsonAdapter: JsonAdapter<ConversionEvent>
 ) : EventConverter() {
     override fun canConvert(event: Event): Boolean = event is ConversionEvent
 
@@ -20,7 +20,7 @@ class ConversionEventConverter(
             EventRecord(
                 ConversionEvent.EVENT_TYPE,
                 eventId,
-                gson.toJson(this)
+                jsonAdapter.toJson(this)
             )
         }
 }

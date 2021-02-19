@@ -30,10 +30,12 @@ buildScan {
 }
 
 scmVersion {
-    tag(closureOf<TagNameSerializationConfig> {
-        prefix = ""
-        initialVersion = KotlinClosure2({ _: TagProperties, _: ScmPosition -> "1.0.0" }, this, this)
-    })
+    tag(
+        closureOf<TagNameSerializationConfig> {
+            prefix = ""
+            initialVersion = KotlinClosure2({ _: TagProperties, _: ScmPosition -> "1.0.0" }, this, this)
+        }
+    )
     rootProject.version = version
 }
 
@@ -70,8 +72,8 @@ fun isNotSupportedSquareLib(group: String, version: String): Boolean =
 tasks {
     named<DependencyUpdatesTask>("dependencyUpdates") {
         rejectVersionIf {
-            isNotSupportedSquareLib(candidate.group, candidate.version)
-                    || isNonStable(candidate.version) && !isNonStable(currentVersion)
+            isNotSupportedSquareLib(candidate.group, candidate.version) ||
+                isNonStable(candidate.version) && !isNonStable(currentVersion)
         }
 
         checkForGradleUpdate = true

@@ -5,19 +5,20 @@ import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.CustomParameter
 import com.cxense.cxensesdk.model.Event
 import com.cxense.cxensesdk.model.PerformanceEvent
-import com.google.gson.Gson
+import com.squareup.moshi.JsonAdapter
+import java.util.concurrent.TimeUnit
 
 /**
  * Supports [PerformanceEvent] to [EventRecord] converting
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class PerformanceEventConverter(
-    private val gson: Gson
+    private val jsonAdapter: JsonAdapter<PerformanceEvent>
 ) : EventConverter() {
     override fun canConvert(event: Event): Boolean = event is PerformanceEvent
 
     internal fun extractQueryData(eventRecord: EventRecord): Pair<List<String>?, Map<String, String>>? =
-        gson.fromJson(eventRecord.data, PerformanceEvent::class.java)?.run {
+        jsonAdapter.fromJson(eventRecord.data)?.run {
             val parameters = customParameters.asSequence().map {
                 prepareKey(
                     PerformanceEvent.CUSTOM_PARAMETERS,
@@ -51,10 +52,10 @@ class PerformanceEventConverter(
             EventRecord(
                 eventType,
                 eventId,
-                gson.toJson(this),
+                jsonAdapter.toJson(this),
                 prnd,
                 rnd,
-                time
+                TimeUnit.SECONDS.toMillis(time)
             )
         }
 

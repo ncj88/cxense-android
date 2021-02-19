@@ -1,4 +1,3 @@
-import org.jetbrains.dokka.gradle.DokkaTask
 import com.github.spotbugs.snom.Confidence
 import com.github.spotbugs.snom.Effort
 
@@ -9,8 +8,7 @@ plugins {
     id(Plugins.androidMaven)
     id(Plugins.spotbugs)
     id(Plugins.ktlint)
-    checkstyle
-    pmd
+    kotlin("kapt")
 }
 
 android {
@@ -20,13 +18,13 @@ android {
     defaultConfig {
         minSdkVersion(Config.androidMinSdk)
         targetSdkVersion(Config.androidTargetSdk)
-        versionName = rootProject.version.toString()
 
+        buildConfigField("String", "SDK_VERSION", """"${rootProject.version}"""")
         buildConfigField("String", "SDK_NAME", """"cxense"""")
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
         buildConfigField("String", "AUTHORITY", """LIBRARY_PACKAGE_NAME + ".${Config.authority}"""")
 
-        manifestPlaceholders = mutableMapOf("authority" to Config.authority)
+        manifestPlaceholders += "authority" to Config.authority
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("cxensesdk.pro")
@@ -51,29 +49,28 @@ android {
     lintOptions {
         isAbortOnError = false
     }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+kotlin {
+    explicitApi()
 }
 
 tasks {
-    val dokka by getting(DokkaTask::class) {
-        outputFormat = "html"
-        outputDirectory = "$buildDir/doc"
-        configuration {
-            reportUndocumented = true
-        }
+    dokkaHtml.configure {
+        outputDirectory.set(file("$buildDir/doc"))
     }
-
-    val javadoc by creating(DokkaTask::class) {
-        outputFormat = "javadoc"
-        outputDirectory = "$buildDir/javadoc"
-        configuration {
-            reportUndocumented = true
-        }
+    dokkaJavadoc.configure {
+        outputDirectory.set(file("$buildDir/javadoc"))
     }
 
     val javadocJar by creating(Jar::class) {
-        dependsOn(javadoc)
+        dependsOn(dokkaJavadoc)
         archiveClassifier.set("javadoc")
-        from(javadoc.outputDirectory)
+        from(dokkaJavadoc.get().outputDirectory.get())
     }
 
     artifacts.add("archives", javadocJar)
@@ -82,11 +79,6 @@ tasks {
 version = rootProject.version
 
 val checkStyleConfigDir = "${project.rootDir}/config/"
-checkstyle {
-    configFile = file("$checkStyleConfigDir/checkstyle-rules.xml")
-    isIgnoreFailures = true
-    isShowViolations = true
-}
 
 spotbugs {
     excludeFilter.set(file("$checkStyleConfigDir/findbugs-exclude-filter.xml"))
@@ -95,21 +87,17 @@ spotbugs {
     ignoreFailures.set(true)
 }
 
-pmd {
-    ruleSetFiles = files("$checkStyleConfigDir/pmd-ruleset.xml")
-    isIgnoreFailures = true
-}
-
 ktlint {
     android.set(true)
 }
 
 dependencies {
-    implementation(kotlin(Libs.kotlinStdlib, Versions.kotlin))
     api(Libs.annotations)
     implementation(Libs.googleAds)
     api(Libs.retrofit)
     api(Libs.retrofitConverter)
+    implementation(Libs.moshi)
+    kapt(Libs.moshiCodegen)
     api(Libs.okhttpLogging)
     api(Libs.timber)
 

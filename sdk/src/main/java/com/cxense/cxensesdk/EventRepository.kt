@@ -7,7 +7,6 @@ import com.cxense.cxensesdk.model.ConversionEvent
 import com.cxense.cxensesdk.model.Event
 import com.cxense.cxensesdk.model.EventStatus
 import com.cxense.cxensesdk.model.PageViewEvent
-import com.google.gson.JsonIOException
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
@@ -26,8 +25,6 @@ class EventRepository(
                     ?.let {
                         putEventRecordInDatabase(it)
                     }
-            } catch (ex: JsonIOException) {
-                Timber.e(ex, "Can't serialize event data")
             } catch (ex: Exception) {
                 Timber.e(ex, "Error at pushing event")
             }
