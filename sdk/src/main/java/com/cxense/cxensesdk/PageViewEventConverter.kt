@@ -74,11 +74,7 @@ class PageViewEventConverter(
     private fun Location.toPairs(): Sequence<Pair<String, String?>> {
         return sequenceOf(
             LATITUDE to latitude.toString(),
-            LONGITUDE to longitude.toString(),
-            ACCURACY to accuracy.takeIf { hasAccuracy() }?.toString(),
-            ALTITUDE to altitude.takeIf { hasAltitude() }?.toString(),
-            HEADING to bearing.takeIf { hasBearing() }?.toString(),
-            SPEED to speed.takeIf { hasSpeed() }?.toString()
+            LONGITUDE to longitude.toString()
         )
     }
 
@@ -148,9 +144,5 @@ class PageViewEventConverter(
         private const val NEW_USER = "new"
         private const val LATITUDE = "plat"
         private const val LONGITUDE = "plon"
-        private const val ACCURACY = "pacc"
-        private const val ALTITUDE = "palt"
-        private const val HEADING = "phed"
-        private const val SPEED = "pspd"
     }
 }
