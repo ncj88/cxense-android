@@ -93,6 +93,7 @@ ktlint {
 
 dependencies {
     api(Libs.annotations)
+    implementation(Libs.startup)
     implementation(Libs.googleAds)
     api(Libs.retrofit)
     api(Libs.retrofitConverter)

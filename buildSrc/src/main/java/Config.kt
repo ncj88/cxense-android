@@ -12,21 +12,22 @@ object Config {
 }
 
 object Versions {
-    const val kotlin = "1.4.30"
+    const val kotlin = "1.4.31"
 
     //Plugins
     const val versionsPlugin = "0.36.0"
     const val releasePlugin = "1.12.1"
     const val androidToolsPlugin = "4.1.2"
     const val androidMavenPlugin = "2.1"
-    const val spotbugsPlugin = "4.6.0"
+    const val spotbugsPlugin = "4.6.2"
     const val ktlint = "10.0.0"
     const val dokka = "1.4.20"
 
-    // Android libraries
+    // Android/Jetpack libraries
     const val compatLibrary = "1.2.0"
     const val annotationsLibrary = "1.1.0"
     const val materialLibrary = "1.3.0"
+    const val startupLibrary = "1.0.0"
 
     // Third party Libraries
     const val googlePlayServices = "17.0.0"
@@ -61,6 +62,7 @@ object Libs {
     const val annotations = "androidx.annotation:annotation:${Versions.annotationsLibrary}"
     const val appcompat = "androidx.appcompat:appcompat:${Versions.compatLibrary}"
     const val material = "com.google.android.material:material:${Versions.materialLibrary}"
+    const val startup = "androidx.startup:startup-runtime:${Versions.startupLibrary}"
 
     const val googleAds = "com.google.android.gms:play-services-ads-identifier:${Versions.googlePlayServices}"
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"

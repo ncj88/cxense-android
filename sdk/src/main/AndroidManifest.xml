@@ -1,13 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.cxense.cxensesdk">
+        xmlns:tools="http://schemas.android.com/tools"
+        package="com.cxense.cxensesdk">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application>
         <provider
-            android:name=".CxSdkInitProvider"
-            android:authorities="${applicationId}.${authority}"
-            android:enabled="true"
-            android:exported="false" />
+                android:name="androidx.startup.InitializationProvider"
+                android:authorities="${applicationId}.androidx-startup"
+                android:exported="false"
+                tools:node="merge">
+            <meta-data  android:name="com.cxense.cxensesdk.CxSdkInitializer"
+                    android:value="androidx.startup" />
+        </provider>
     </application>
 </manifest>
