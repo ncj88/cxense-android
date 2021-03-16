@@ -1,6 +1,5 @@
 package com.cxense.cxensesdk
 
-import com.cxense.cxensesdk.model.ConsentOption
 import com.cxense.cxensesdk.model.ContentUser
 import com.cxense.cxensesdk.model.Event
 import com.cxense.cxensesdk.model.EventStatus
@@ -173,7 +172,7 @@ class CxenseSdk(
     ) = cxApi.getWidgetData(
         WidgetRequest(
             widgetId,
-            configuration.consentOptionsValues,
+            configuration.consentSettings.consents,
             widgetContext,
             user ?: defaultContentUser,
             tag,
@@ -216,8 +215,10 @@ class CxenseSdk(
                     "You should provide at least one not empty site group id"
                 }
             }
-        val consentOptions = configuration.consentOptions
-        if (ConsentOption.CONSENT_REQUIRED in consentOptions && ConsentOption.SEGMENT_ALLOWED !in consentOptions) {
+        val segmentsDenied = with(configuration.consentSettings) {
+            consentRequired && !segmentAllowed
+        }
+        if (segmentsDenied) {
             callback.onError(ConsentRequiredException())
             return
         }

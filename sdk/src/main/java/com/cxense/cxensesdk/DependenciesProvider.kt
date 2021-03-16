@@ -164,7 +164,7 @@ internal class DependenciesProvider private constructor(
         fun getInstance(): DependenciesProvider {
             checkNotNull(instance) {
                 "The Cxense SDK is not initialized! Make sure to call `AppInitializer.getInstance(context)" +
-                        ".initializeComponent(CxSdkInitializer::class.java)` before calling other methods."
+                    ".initializeComponent(CxSdkInitializer::class.java)` before calling other methods."
             }
             return instance as DependenciesProvider
         }

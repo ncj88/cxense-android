@@ -1,7 +1,6 @@
 package com.cxense.cxensesdk
 
 import com.cxense.cxensesdk.db.EventRecord
-import com.cxense.cxensesdk.model.ConsentOption
 import com.cxense.cxensesdk.model.EventDataRequest
 import com.cxense.cxensesdk.model.EventStatus
 import timber.log.Timber
@@ -108,8 +107,10 @@ class SendTask(
             eventRepository.deleteOutdatedEvents(configuration.outdatePeriod)
             if (deviceInfoProvider.getCurrentNetworkStatus() < configuration.minimumNetworkStatus)
                 return
-            val consentOptions = configuration.consentOptions
-            if (ConsentOption.CONSENT_REQUIRED in consentOptions && ConsentOption.PV_ALLOWED !in consentOptions)
+            val pvDenied = with(configuration.consentSettings) {
+                consentRequired && !pvAllowed
+            }
+            if (pvDenied)
                 return
             sendPageViewEvents(eventRepository.getNotSubmittedPvEvents())
             with(configuration.credentialsProvider) {

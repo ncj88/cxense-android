@@ -51,6 +51,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
 
         CxenseSdk.getInstance().configuration.apply {
+            consentSettings
+                .consentRequired(true)
+                .pvAllowed(true)
+                .deviceAllowed(true)
+            consentSettings.version = 2
             dispatchPeriod(MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS)
             credentialsProvider = object : CredentialsProvider {
                 override fun getUsername(): String = BuildConfig.USERNAME // load it from secured store

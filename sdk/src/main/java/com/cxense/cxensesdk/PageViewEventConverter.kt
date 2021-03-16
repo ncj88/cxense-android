@@ -52,7 +52,8 @@ class PageViewEventConverter(
             ENCODING to DEFAULT_ENCODING,
             FLASH to "0",
             NEW_USER to newUser?.let { if (it) "1" else "0" },
-            CONSENT to configuration.consentOptionsValues.takeUnless { it.isEmpty() }?.joinToString()
+            CONSENT to configuration.consentSettings.consents.joinToString(separator = ","),
+            CONSENT_VERSION to configuration.consentSettings.version.toString()
         )
         val appMetadata = if (configuration.autoMetaInfoTrackingEnabled) sequenceOf(
             "${CUSTOM_PARAMETER_PREFIX}app" to deviceInfoProvider.applicationName,
@@ -118,6 +119,7 @@ class PageViewEventConverter(
         internal const val EXTERNAL_USER_KEY = "eit"
         internal const val EXTERNAL_USER_VALUE = "eid"
         internal const val CONSENT = "con"
+        internal const val CONSENT_VERSION = "cv"
         internal const val CUSTOM_PARAMETER_PREFIX = "cp_"
         private const val CUSTOM_USER_PARAMETER_PREFIX = "cp_u_"
         private const val DEFAULT_API_VERSION = "1"

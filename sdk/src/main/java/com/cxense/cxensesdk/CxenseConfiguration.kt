@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk
 
 import com.cxense.cxensesdk.model.ConsentOption
+import com.cxense.cxensesdk.model.ConsentSettings
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
@@ -12,7 +13,7 @@ import kotlin.properties.Delegates
  * @property minimumNetworkStatus The minimum network status for sending events.
  * @property outdatePeriod Current out-date period in milliseconds.
  * @property credentialsProvider Credential provider, which provide username/api key dynamically.
- * @property consentOptions Current consent options for user.
+ * @property consentSettings Current consent settings for user.
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class CxenseConfiguration {
@@ -32,10 +33,18 @@ class CxenseConfiguration {
         override fun getDmpPushPersistentId(): String = ""
     }
 
-    val consentOptions: MutableSet<ConsentOption> = mutableSetOf()
-
-    internal val consentOptionsValues
-        get() = consentOptions.map { it.value }
+    var consentSettings = ConsentSettings()
+    @Deprecated(
+        "Use consentSettings instead"
+    )
+    val consentOptions: MutableSet<ConsentOption> by Delegates.observable(mutableSetOf()) { _, _, newValue ->
+        consentSettings
+            .consentRequired(ConsentOption.CONSENT_REQUIRED in newValue)
+            .pvAllowed(ConsentOption.PV_ALLOWED in newValue)
+            .recsAllowed(ConsentOption.RECS_ALLOWED in newValue)
+            .segmentAllowed(ConsentOption.SEGMENT_ALLOWED in newValue)
+            .adAllowed(ConsentOption.AD_ALLOWED in newValue)
+    }
 
     internal var dispatchPeriodListener: ((Long) -> Unit)? = null
 

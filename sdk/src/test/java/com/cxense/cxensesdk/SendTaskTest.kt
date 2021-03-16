@@ -1,7 +1,7 @@
 package com.cxense.cxensesdk
 
 import com.cxense.cxensesdk.db.EventRecord
-import com.cxense.cxensesdk.model.ConsentOption
+import com.cxense.cxensesdk.model.ConsentSettings
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doNothing
 import com.nhaarman.mockitokotlin2.doReturn
@@ -33,6 +33,7 @@ class SendTaskTest {
         on { deleteOutdatedEvents(any()) } doReturn 0
     }
     private val configuration: CxenseConfiguration = mock {
+        on { consentSettings } doReturn ConsentSettings()
         on { credentialsProvider } doReturn credentialsProvider
         on { minimumNetworkStatus } doReturn CxenseConfiguration.NetworkStatus.NONE
     }
@@ -125,7 +126,7 @@ class SendTaskTest {
         doNothing().`when`(sendTask).sendConversionEvents(any())
         sendTask.run()
         verify(eventRepository).deleteOutdatedEvents(any())
-        verify(configuration).consentOptions
+        verify(configuration).consentSettings
         verify(sendTask).sendPageViewEvents(any())
         verify(configuration).credentialsProvider
         verify(eventRepository).getNotSubmittedDmpEvents()
@@ -145,7 +146,7 @@ class SendTaskTest {
         doNothing().`when`(sendTask).sendConversionEvents(any())
         sendTask.run()
         verify(eventRepository).deleteOutdatedEvents(any())
-        verify(configuration).consentOptions
+        verify(configuration).consentSettings
         verify(sendTask).sendPageViewEvents(any())
         verify(configuration).credentialsProvider
         verify(eventRepository).getNotSubmittedDmpEvents()
@@ -164,7 +165,7 @@ class SendTaskTest {
         whenever(configuration.minimumNetworkStatus).thenReturn(CxenseConfiguration.NetworkStatus.WIFI)
         sendTask.run()
         verify(eventRepository).deleteOutdatedEvents(any())
-        verify(configuration, never()).consentOptions
+        verify(configuration, never()).consentSettings
         verify(sendTask, never()).sendPageViewEvents(any())
         verify(configuration, never()).credentialsProvider
         verify(eventRepository, never()).getNotSubmittedDmpEvents()
@@ -179,10 +180,10 @@ class SendTaskTest {
 
     @Test
     fun runWithoutConsent() {
-        whenever(configuration.consentOptions).thenReturn(mutableSetOf(ConsentOption.CONSENT_REQUIRED))
+        whenever(configuration.consentSettings).thenReturn(ConsentSettings().consentRequired(true))
         sendTask.run()
         verify(eventRepository).deleteOutdatedEvents(any())
-        verify(configuration).consentOptions
+        verify(configuration).consentSettings
         verify(sendTask, never()).sendPageViewEvents(any())
         verify(configuration, never()).credentialsProvider
         verify(eventRepository, never()).getNotSubmittedDmpEvents()

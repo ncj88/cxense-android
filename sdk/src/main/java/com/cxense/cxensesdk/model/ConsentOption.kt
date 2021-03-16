@@ -4,6 +4,7 @@ package com.cxense.cxensesdk.model
  * User consent options
  */
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+@Deprecated("Use flags in ConsentSettings")
 enum class ConsentOption(val value: String) {
     /**
      * Explicit consent from user is required before processing data

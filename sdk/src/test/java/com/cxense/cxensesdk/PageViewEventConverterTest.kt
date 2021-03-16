@@ -2,6 +2,7 @@ package com.cxense.cxensesdk
 
 import android.util.DisplayMetrics
 import com.cxense.cxensesdk.db.EventRecord
+import com.cxense.cxensesdk.model.ConsentSettings
 import com.cxense.cxensesdk.model.PageViewEvent
 import com.nhaarman.mockitokotlin2.any
 import com.nhaarman.mockitokotlin2.doReturn
@@ -23,6 +24,7 @@ class PageViewEventConverterTest {
     }
     private val configuration: CxenseConfiguration = mock {
         on { autoMetaInfoTrackingEnabled } doReturn true
+        on { consentSettings } doReturn ConsentSettings()
     }
     private val deviceInfoProvider: DeviceInfoProvider = mock {
         on { displayMetrics } doReturn DisplayMetrics().apply {

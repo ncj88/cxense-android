@@ -124,7 +124,7 @@ class ConversionEvent internal constructor(
             return ConversionEvent(
                 Collections.unmodifiableList(identities),
                 siteId,
-                DependenciesProvider.getInstance().cxenseConfiguration.consentOptionsValues,
+                DependenciesProvider.getInstance().cxenseConfiguration.consentSettings.consents,
                 productId,
                 funnelStep,
                 productPrice,
