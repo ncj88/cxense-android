@@ -215,8 +215,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         // delete external data for user
         cxenseSdk.deleteUserExternalData(
             identity,
-            object : LoadCallback<Void> {
-                override fun onSuccess(data: Void) {
+            object : LoadCallback<Unit> {
+                override fun onSuccess(data: Unit) {
                     showText("Success")
                 }
 
@@ -236,8 +236,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             .build()
         cxenseSdk.setUserExternalData(
             userExternalData,
-            object : LoadCallback<Void> {
-                override fun onSuccess(data: Void) {
+            object : LoadCallback<Unit> {
+                override fun onSuccess(data: Unit) {
                     showText("Success")
                 }
 

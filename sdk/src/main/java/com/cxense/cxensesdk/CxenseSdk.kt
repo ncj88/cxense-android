@@ -136,7 +136,7 @@ class CxenseSdk(
      * @param callback callback for checking status
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun trackClick(item: WidgetItem, callback: LoadCallback<@JvmSuppressWildcards Void>) =
+    fun trackClick(item: WidgetItem, callback: LoadCallback<@JvmSuppressWildcards Unit>) =
         item.clickUrl?.let { trackClick(it, callback) }
             ?: callback.onError(BaseException("Can't track this item. Click url is null"))
 
@@ -147,7 +147,7 @@ class CxenseSdk(
      * @param callback callback for checking status
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun trackClick(url: String, callback: LoadCallback<@JvmSuppressWildcards Void>) =
+    fun trackClick(url: String, callback: LoadCallback<@JvmSuppressWildcards Unit>) =
         cxApi.trackUrlClick(url).enqueue(callback)
 
     /**
@@ -186,7 +186,7 @@ class CxenseSdk(
      * @param impressions The list of seen recommendations (impressions) you'd like to report visibility of.
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun reportWidgetVisibilities(callback: LoadCallback<@JvmSuppressWildcards Void>, vararg impressions: Impression) =
+    fun reportWidgetVisibilities(callback: LoadCallback<@JvmSuppressWildcards Unit>, vararg impressions: Impression) =
         cxApi.reportWidgetVisibility(
             WidgetVisibilityReport(impressions.toList())
         ).enqueue(callback)
@@ -268,7 +268,7 @@ class CxenseSdk(
      * @param callback a callback
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun setUserExternalData(userExternalData: UserExternalData, callback: LoadCallback<@JvmSuppressWildcards Void>) =
+    fun setUserExternalData(userExternalData: UserExternalData, callback: LoadCallback<@JvmSuppressWildcards Unit>) =
         cxApi.setUserExternalData(userExternalData).enqueue(callback)
 
     /**
@@ -278,7 +278,7 @@ class CxenseSdk(
      * @param callback a callback
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-    fun deleteUserExternalData(identity: UserIdentity, callback: LoadCallback<@JvmSuppressWildcards Void>) =
+    fun deleteUserExternalData(identity: UserIdentity, callback: LoadCallback<@JvmSuppressWildcards Unit>) =
         cxApi.deleteExternalUserData(identity).enqueue(callback)
 
     /**
@@ -335,6 +335,7 @@ class CxenseSdk(
         override fun onSuccess(data: ResponseBody) =
             try {
                 val callbackClazz = callback::class.java.genericInterfaces.first() as ParameterizedType
+
                 @Suppress("UNCHECKED_CAST")
                 val clazz = callbackClazz.actualTypeArguments.first() as Class<T>
                 val jsonAdapter = moshi.adapter(clazz)
