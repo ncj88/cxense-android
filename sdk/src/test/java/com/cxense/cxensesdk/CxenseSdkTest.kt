@@ -121,7 +121,7 @@ class CxenseSdkTest {
 
     @Test
     fun trackClickNullUrl() {
-        val callback: LoadCallback<Void> = mock()
+        val callback: LoadCallback<Unit> = mock()
         cxenseSdk.trackClick(WidgetItem("title", "url", null, mapOf()), callback)
         verify(callback).onError(any())
         verify(cxenseSdk, never()).trackClick(any<String>(), eq(callback))
