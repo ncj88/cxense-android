@@ -5,10 +5,10 @@ plugins {
     id(Plugins.androidLibrary)
     id(Plugins.kotlinAndroid)
     id(Plugins.dokka)
-    id(Plugins.androidMaven)
     id(Plugins.spotbugs)
     id(Plugins.ktlint)
     kotlin("kapt")
+    `maven-publish`
 }
 
 android {
@@ -72,8 +72,6 @@ tasks {
         archiveClassifier.set("javadoc")
         from(dokkaJavadoc.get().outputDirectory.get())
     }
-
-    artifacts.add("archives", javadocJar)
 }
 
 version = rootProject.version
@@ -107,4 +105,19 @@ dependencies {
     testImplementation(Libs.mockitoCore)
     testImplementation(Libs.junit)
     testImplementation(Libs.okhttpMockServer)
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = group.toString()
+                artifactId = "cxense-android"
+                version = project.version.toString()
+
+                artifact(tasks["javadocJar"])
+            }
+        }
+    }
 }

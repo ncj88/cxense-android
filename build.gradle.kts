@@ -8,14 +8,13 @@ plugins {
     id(Plugins.release) version Versions.releasePlugin
     id(Plugins.spotbugs) version Versions.spotbugsPlugin
     id(Plugins.ktlint) version Versions.ktlint
-    id(Plugins.androidMaven) version Versions.androidMavenPlugin
     id(Plugins.dokka) version Versions.dokka
 }
 
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -42,9 +41,13 @@ scmVersion {
 allprojects {
     repositories {
         google()
-        jcenter()
-        // temporary fix
-        maven("https://dl.bintray.com/kotlin/kotlin-eap")
+        mavenCentral()
+        jcenter() {
+            content {
+                // https://github.com/Kotlin/dokka/issues/41
+                includeModule("org.jetbrains.kotlinx", "kotlinx-html-jvm")
+            }
+        }
     }
 }
 
