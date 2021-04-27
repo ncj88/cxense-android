@@ -53,7 +53,8 @@ class PageViewEventConverter(
             FLASH to "0",
             NEW_USER to newUser?.let { if (it) "1" else "0" },
             CONSENT to configuration.consentSettings.consents.joinToString(separator = ","),
-            CONSENT_VERSION to configuration.consentSettings.version.toString()
+            CONSENT_VERSION to configuration.consentSettings.version.toString(),
+            "${CUSTOM_PARAMETER_PREFIX}sdk_version" to BuildConfig.SDK_VERSION
         )
         val appMetadata = if (configuration.autoMetaInfoTrackingEnabled) sequenceOf(
             "${CUSTOM_PARAMETER_PREFIX}app" to deviceInfoProvider.applicationName,
