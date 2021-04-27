@@ -117,6 +117,16 @@ afterEvaluate {
                 version = project.version.toString()
 
                 artifact(tasks["javadocJar"])
+
+                pom {
+                    inceptionYear.set("2017")
+                    developers {
+                        developer {
+                            id.set("cXense")
+                            name.set("cXense")
+                        }
+                    }
+                }
             }
         }
     }
