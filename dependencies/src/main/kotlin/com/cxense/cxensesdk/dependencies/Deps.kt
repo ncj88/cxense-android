@@ -1,58 +1,26 @@
-import org.gradle.api.JavaVersion
+package com.cxense.cxensesdk.dependencies
 
-object Config {
-    // Android config
-    const val androidBuildTools = "30.0.3"
-    const val androidMinSdk = 15
-    const val androidTargetSdk = 30
-    const val androidCompileSdk = 30
-    const val authority = "CxSdkInitProvider"
-    val compileSourceVersion = JavaVersion.VERSION_1_8
-    val compileTargetVersion = JavaVersion.VERSION_1_8
-}
-
-object Versions {
-    const val kotlin = "1.4.32"
-
-    //Plugins
-    const val versionsPlugin = "0.36.0"
-    const val releasePlugin = "1.13.2"
-    const val androidToolsPlugin = "4.1.3"
-    const val spotbugsPlugin = "4.7.0"
-    const val ktlint = "10.0.0"
-    const val dokka = "1.4.32"
+private object Versions {
+    const val kotlin = "1.5.10"
 
     // Android/Jetpack libraries
-    const val compatLibrary = "1.2.0"
-    const val annotationsLibrary = "1.1.0"
+    const val compatLibrary = "1.3.0"
+    const val annotationsLibrary = "1.2.0"
     const val materialLibrary = "1.3.0"
     const val startupLibrary = "1.0.0"
 
     // Third party Libraries
-    const val googlePlayServices = "17.0.0"
+    const val googlePlayServices = "17.0.1"
     const val retrofit = "2.6.4"
     const val okhttp = "3.12.6"
     const val moshi = "1.12.0"
     const val timber = "4.7.1"
-    const val viewBindingProperty = "1.4.4"
+    const val viewBindingProperty = "1.4.6"
 
     // Test Libraries
     const val junit = "4.13.2"
     const val mockitoKotlin = "2.2.0"
     const val mockitoCore = "3.0.0"
-}
-
-object Plugins {
-    const val kotlin = "gradle-plugin"
-    const val versions = "com.github.ben-manes.versions"
-    const val release = "pl.allegro.tech.build.axion-release"
-    const val androidTools = "com.android.tools.build:gradle:${Versions.androidToolsPlugin}"
-    const val androidApp = "com.android.application"
-    const val androidLibrary = "com.android.library"
-    const val kotlinAndroid = "kotlin-android"
-    const val spotbugs = "com.github.spotbugs"
-    const val ktlint = "org.jlleitschuh.gradle.ktlint"
-    const val dokka = "org.jetbrains.dokka"
 }
 
 object Libs {

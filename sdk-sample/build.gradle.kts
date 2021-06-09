@@ -1,17 +1,15 @@
+import com.cxense.cxensesdk.dependencies.Libs
+
 plugins {
-    id(Plugins.androidApp)
-    id(Plugins.kotlinAndroid)
-    id(Plugins.ktlint)
+    id("com.android.application")
+    id("common-android-config")
+    id("dependencies")
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
-    compileSdkVersion(Config.androidCompileSdk)
-    buildToolsVersion(Config.androidBuildTools)
-
     defaultConfig {
         applicationId = "com.example.cxensesdk"
-        minSdkVersion(Config.androidMinSdk)
-        targetSdkVersion(Config.androidTargetSdk)
         versionCode = 1
         versionName = "1.0"
 
@@ -29,15 +27,8 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-    compileOptions {
-        sourceCompatibility = Config.compileSourceVersion
-        targetCompatibility = Config.compileTargetVersion
-    }
     buildFeatures {
         viewBinding = true
-    }
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }
 
