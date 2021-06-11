@@ -17,6 +17,7 @@ dependencies {
     implementation("com.github.ben-manes:gradle-versions-plugin:0.39.0")
     implementation("com.android.tools.build:gradle:4.2.1")
     implementation(kotlin("gradle-plugin", "1.5.10"))
+    implementation("org.jlleitschuh.gradle:ktlint-gradle:10.1.0")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.4.32")
 }
 
@@ -33,6 +34,10 @@ gradlePlugin {
         register("common-android-config") {
             id = "common-android-config"
             implementationClass = "com.cxense.cxensesdk.configuration.CommonAndroidConfigurationPlugin"
+        }
+        register("ktlint-config") {
+            id = "ktlint-config"
+            implementationClass = "com.cxense.cxensesdk.ktlint.KtlintConfigPlugin"
         }
         register("javadoc-config") {
             id = "javadoc-config"

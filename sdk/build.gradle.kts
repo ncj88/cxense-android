@@ -4,8 +4,6 @@ plugins {
     id("com.android.library")
     id("common-android-config")
     id("javadoc-config")
-    id("dependencies")
-    id("org.jlleitschuh.gradle.ktlint")
     kotlin("kapt")
     `maven-publish`
 }
@@ -25,7 +23,7 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        named("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -41,10 +39,6 @@ android {
 }
 
 version = rootProject.version
-
-ktlint {
-    android.set(true)
-}
 
 dependencies {
     api(Libs.annotations)

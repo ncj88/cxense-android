@@ -3,8 +3,6 @@ import com.cxense.cxensesdk.dependencies.Libs
 plugins {
     id("com.android.application")
     id("common-android-config")
-    id("dependencies")
-    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
@@ -22,7 +20,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        getByName("release") {
+        named("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -30,10 +28,6 @@ android {
     buildFeatures {
         viewBinding = true
     }
-}
-
-ktlint {
-    android.set(true)
 }
 
 dependencies {

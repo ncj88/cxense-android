@@ -4,8 +4,8 @@ import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
 
 plugins {
     id("dependencies-updater")
+    id("ktlint-config")
     id("pl.allegro.tech.build.axion-release") version "1.13.2"
-    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
 }
 
 buildScan {
