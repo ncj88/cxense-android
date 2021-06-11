@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - develop
+      - master
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,7 +19,9 @@ jobs:
             java-version: 1.8
     -   name: Grant execute permission for gradlew
         run: chmod +x gradlew
-    -   name: Check with Gradle
+    -   name: Check code style
         run: ./gradlew ktLiCh
+    -   name: Run tests
+        run: ./gradlew test
     -   name: Build APK
         run: ./gradlew assembleDebug --stacktrace
