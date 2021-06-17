@@ -38,11 +38,11 @@ interface CxApi {
 
     @Authorized
     @POST(ENDPOINT_UPDATE_USER_EXTERNAL_DATA)
-    fun setUserExternalData(@Body externalData: UserExternalData): Call<Void>
+    fun setUserExternalData(@Body externalData: UserExternalData): Call<Unit>
 
     @Authorized
     @POST(ENDPOINT_DELETE_USER_EXTERNAL_DATA)
-    fun deleteExternalUserData(@Body identity: UserIdentity): Call<Void>
+    fun deleteExternalUserData(@Body identity: UserIdentity): Call<Unit>
 
     @Authorized
     @POST(ENDPOINT_READ_USER_EXTERNAL_LINK)
@@ -73,10 +73,10 @@ interface CxApi {
     fun getWidgetData(@Body request: WidgetRequest): Call<WidgetResponse>
 
     @POST("/public/widget/visibility")
-    fun reportWidgetVisibility(@Body request: WidgetVisibilityReport): Call<Void>
+    fun reportWidgetVisibility(@Body request: WidgetVisibilityReport): Call<Unit>
 
     @GET
-    fun trackUrlClick(@Url url: String): Call<Void>
+    fun trackUrlClick(@Url url: String): Call<Unit>
 
     @GET
     fun getPersisted(

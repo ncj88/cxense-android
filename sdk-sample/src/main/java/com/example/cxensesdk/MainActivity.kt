@@ -51,6 +51,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         }
 
         CxenseSdk.getInstance().configuration.apply {
+            consentSettings
+                .consentRequired(true)
+                .pvAllowed(true)
+                .deviceAllowed(true)
+            consentSettings.version = 2
             dispatchPeriod(MIN_DISPATCH_PERIOD, TimeUnit.MILLISECONDS)
             credentialsProvider = object : CredentialsProvider {
                 override fun getUsername(): String = BuildConfig.USERNAME // load it from secured store
@@ -210,8 +215,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         // delete external data for user
         cxenseSdk.deleteUserExternalData(
             identity,
-            object : LoadCallback<Void> {
-                override fun onSuccess(data: Void) {
+            object : LoadCallback<Unit> {
+                override fun onSuccess(data: Unit) {
                     showText("Success")
                 }
 
@@ -231,8 +236,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             .build()
         cxenseSdk.setUserExternalData(
             userExternalData,
-            object : LoadCallback<Void> {
-                override fun onSuccess(data: Void) {
+            object : LoadCallback<Unit> {
+                override fun onSuccess(data: Unit) {
                     showText("Success")
                 }
 

@@ -27,11 +27,10 @@ import java.util.concurrent.TimeUnit
 internal class DependenciesProvider private constructor(
     context: Context
 ) {
-    internal val appContext: Context by lazy { context.applicationContext }
     private val executor: ScheduledExecutorService by lazy { Executors.newSingleThreadScheduledExecutor() }
-    private val userAgentProvider: UserAgentProvider by lazy { UserAgentProvider(BuildConfig.SDK_VERSION, appContext) }
-    private val deviceInfoProvider: DeviceInfoProvider by lazy { DeviceInfoProvider(appContext) }
-    private val advertisingIdProvider: AdvertisingIdProvider = AdvertisingIdProvider(appContext, executor)
+    private val userAgentProvider: UserAgentProvider by lazy { UserAgentProvider(BuildConfig.SDK_VERSION, context) }
+    private val deviceInfoProvider: DeviceInfoProvider by lazy { DeviceInfoProvider(context) }
+    private val advertisingIdProvider: AdvertisingIdProvider = AdvertisingIdProvider(context, executor)
     internal val userProvider: UserProvider by lazy { UserProvider(advertisingIdProvider) }
     internal val cxenseConfiguration: CxenseConfiguration by lazy { CxenseConfiguration() }
 
@@ -100,7 +99,7 @@ internal class DependenciesProvider private constructor(
         )
     }
 
-    private val databaseHelper: DatabaseHelper by lazy { DatabaseHelper(appContext) }
+    private val databaseHelper: DatabaseHelper by lazy { DatabaseHelper(context) }
     private val eventRepository: EventRepository by lazy {
         EventRepository(
             databaseHelper,
@@ -154,22 +153,18 @@ internal class DependenciesProvider private constructor(
         private var instance: DependenciesProvider? = null
 
         @JvmStatic
-        internal fun init(context: Context) {
-            val v1 = instance
-            if (v1 == null) {
-                synchronized(this) {
-                    val v2 = instance
-                    if (v2 == null) {
-                        instance = DependenciesProvider(context)
-                    }
-                }
+        internal fun init(context: Context): DependenciesProvider {
+            if (instance == null) {
+                instance = DependenciesProvider(context)
             }
+            return getInstance()
         }
 
         @JvmStatic
         fun getInstance(): DependenciesProvider {
             checkNotNull(instance) {
-                "The Cxense SDK is not initialized! Make sure to call init before calling other methods."
+                "The Cxense SDK is not initialized! Make sure to call `AppInitializer.getInstance(context)" +
+                    ".initializeComponent(CxSdkInitializer::class.java)` before calling other methods."
             }
             return instance as DependenciesProvider
         }

@@ -52,7 +52,9 @@ class PageViewEventConverter(
             ENCODING to DEFAULT_ENCODING,
             FLASH to "0",
             NEW_USER to newUser?.let { if (it) "1" else "0" },
-            CONSENT to configuration.consentOptionsValues.takeUnless { it.isEmpty() }?.joinToString()
+            CONSENT to configuration.consentSettings.consents.joinToString(separator = ","),
+            CONSENT_VERSION to configuration.consentSettings.version.toString(),
+            "${CUSTOM_PARAMETER_PREFIX}sdk_version" to BuildConfig.SDK_VERSION
         )
         val appMetadata = if (configuration.autoMetaInfoTrackingEnabled) sequenceOf(
             "${CUSTOM_PARAMETER_PREFIX}app" to deviceInfoProvider.applicationName,
@@ -74,11 +76,7 @@ class PageViewEventConverter(
     private fun Location.toPairs(): Sequence<Pair<String, String?>> {
         return sequenceOf(
             LATITUDE to latitude.toString(),
-            LONGITUDE to longitude.toString(),
-            ACCURACY to accuracy.takeIf { hasAccuracy() }?.toString(),
-            ALTITUDE to altitude.takeIf { hasAltitude() }?.toString(),
-            HEADING to bearing.takeIf { hasBearing() }?.toString(),
-            SPEED to speed.takeIf { hasSpeed() }?.toString()
+            LONGITUDE to longitude.toString()
         )
     }
 
@@ -122,6 +120,7 @@ class PageViewEventConverter(
         internal const val EXTERNAL_USER_KEY = "eit"
         internal const val EXTERNAL_USER_VALUE = "eid"
         internal const val CONSENT = "con"
+        internal const val CONSENT_VERSION = "cv"
         internal const val CUSTOM_PARAMETER_PREFIX = "cp_"
         private const val CUSTOM_USER_PARAMETER_PREFIX = "cp_u_"
         private const val DEFAULT_API_VERSION = "1"
@@ -148,9 +147,5 @@ class PageViewEventConverter(
         private const val NEW_USER = "new"
         private const val LATITUDE = "plat"
         private const val LONGITUDE = "plon"
-        private const val ACCURACY = "pacc"
-        private const val ALTITUDE = "palt"
-        private const val HEADING = "phed"
-        private const val SPEED = "pspd"
     }
 }

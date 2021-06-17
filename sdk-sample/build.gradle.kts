@@ -1,17 +1,13 @@
+import com.cxense.cxensesdk.dependencies.Libs
+
 plugins {
-    id(Plugins.androidApp)
-    id(Plugins.kotlinAndroid)
-    id(Plugins.ktlint)
+    id("com.android.application")
+    id("common-android-config")
 }
 
 android {
-    compileSdkVersion(Config.androidCompileSdk)
-    buildToolsVersion(Config.androidBuildTools)
-
     defaultConfig {
         applicationId = "com.example.cxensesdk"
-        minSdkVersion(Config.androidMinSdk)
-        targetSdkVersion(Config.androidTargetSdk)
         versionCode = 1
         versionName = "1.0"
 
@@ -24,25 +20,14 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
-        getByName("release") {
+        named("release") {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
-    compileOptions {
-        sourceCompatibility = Config.compileSourceVersion
-        targetCompatibility = Config.compileTargetVersion
-    }
     buildFeatures {
         viewBinding = true
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-
-ktlint {
-    android.set(true)
 }
 
 dependencies {

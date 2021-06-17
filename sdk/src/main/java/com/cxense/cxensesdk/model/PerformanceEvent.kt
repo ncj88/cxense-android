@@ -197,7 +197,7 @@ class PerformanceEvent internal constructor(
                 TimeUnit.MILLISECONDS.toSeconds(time),
                 segments.takeUnless { it.isEmpty() }?.let { Collections.unmodifiableList(it) },
                 Collections.unmodifiableList(customParameters),
-                DependenciesProvider.getInstance().cxenseConfiguration.consentOptionsValues
+                DependenciesProvider.getInstance().cxenseConfiguration.consentSettings.consents
             )
         }
     }

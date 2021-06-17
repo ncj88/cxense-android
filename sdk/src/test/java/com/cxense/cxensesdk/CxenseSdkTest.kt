@@ -1,6 +1,6 @@
 package com.cxense.cxensesdk
 
-import com.cxense.cxensesdk.model.ConsentOption
+import com.cxense.cxensesdk.model.ConsentSettings
 import com.cxense.cxensesdk.model.UserIdentity
 import com.cxense.cxensesdk.model.WidgetItem
 import com.nhaarman.mockitokotlin2.any
@@ -26,7 +26,9 @@ class CxenseSdkTest {
     private val call: Call<Any> = mock()
 
     private val executor: ScheduledExecutorService = mock()
-    private val configuration: CxenseConfiguration = mock()
+    private val configuration: CxenseConfiguration = mock {
+        on { consentSettings } doReturn ConsentSettings()
+    }
     private val advertisingIdProvider: AdvertisingIdProvider = mock {
         on { defaultUserId } doReturn DEFAULT_USER_ID
         on { limitAdTrackingEnabled } doReturn false
@@ -119,7 +121,7 @@ class CxenseSdkTest {
 
     @Test
     fun trackClickNullUrl() {
-        val callback: LoadCallback<Void> = mock()
+        val callback: LoadCallback<Unit> = mock()
         cxenseSdk.trackClick(WidgetItem("title", "url", null, mapOf()), callback)
         verify(callback).onError(any())
         verify(cxenseSdk, never()).trackClick(any<String>(), eq(callback))
@@ -177,7 +179,7 @@ class CxenseSdkTest {
     @Test
     fun getUserSegmentIdsNoConsent() {
         val callback: LoadCallback<List<String>> = mock()
-        whenever(configuration.consentOptions).thenReturn(mutableSetOf(ConsentOption.CONSENT_REQUIRED))
+        whenever(configuration.consentSettings).thenReturn(ConsentSettings().consentRequired(true))
         cxenseSdk.getUserSegmentIds(listOf(mock()), listOf("123"), callback)
         verify(callback).onError(any())
     }
