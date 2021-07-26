@@ -1,5 +1,16 @@
 # Cxense SDK for Android
 
+## v2.2.0-SNAPSHOT
+* New features will be here
+* Updated dependencies:
+    - Kotlin [1.5.10 -> 1.5.21]
+      https://kotlinlang.org/
+    - androidx.appcompat:appcompat [1.3.0 -> 1.3.1]
+      https://developer.android.com/jetpack/androidx/releases/appcompat#1.3.1
+    - com.android.tools.build:gradle [4.2.1 -> 4.2.2]
+      http://tools.android.com/
+
+
 ## 2.1.0
 * Auto-initialization has been migrated to `androidx.startup` library
 * Added custom parameter `sdk_version` to all PV events

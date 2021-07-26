@@ -1,6 +1,5 @@
 package com.cxense.cxensesdk
 
-import com.cxense.cxensesdk.model.ConsentOption
 import com.cxense.cxensesdk.model.ConsentSettings
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
@@ -34,17 +33,6 @@ class CxenseConfiguration {
     }
 
     var consentSettings = ConsentSettings()
-    @Deprecated(
-        "Use consentSettings instead"
-    )
-    val consentOptions: MutableSet<ConsentOption> by Delegates.observable(mutableSetOf()) { _, _, newValue ->
-        consentSettings
-            .consentRequired(ConsentOption.CONSENT_REQUIRED in newValue)
-            .pvAllowed(ConsentOption.PV_ALLOWED in newValue)
-            .recsAllowed(ConsentOption.RECS_ALLOWED in newValue)
-            .segmentAllowed(ConsentOption.SEGMENT_ALLOWED in newValue)
-            .adAllowed(ConsentOption.AD_ALLOWED in newValue)
-    }
 
     internal var dispatchPeriodListener: ((Long) -> Unit)? = null
 

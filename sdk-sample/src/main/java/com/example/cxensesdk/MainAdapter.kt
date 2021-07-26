@@ -29,7 +29,7 @@ class MainAdapter(
 
         init {
             binding.root.setOnClickListener {
-                val position = adapterPosition
+                val position = bindingAdapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     clickListener(data[position])
                 }
