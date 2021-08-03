@@ -22,6 +22,6 @@ jobs:
     -   name: Check code style
         run: ./gradlew ktLiCh
     -   name: Run tests
-        run: ./gradlew test
+        run: ./gradlew testDebug --stacktrace
     -   name: Build APK
         run: ./gradlew assembleDebug --stacktrace

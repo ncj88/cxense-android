@@ -1,9 +1,9 @@
 package com.cxense.cxensesdk
 
-import android.location.Location
 import androidx.annotation.RestrictTo
 import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.Event
+import com.cxense.cxensesdk.model.ExternalUserId
 import com.cxense.cxensesdk.model.PageViewEvent
 import com.squareup.moshi.JsonAdapter
 import java.util.Calendar
@@ -21,7 +21,7 @@ class PageViewEventConverter(
 ) : EventConverter() {
     override fun canConvert(event: Event): Boolean = event is PageViewEvent
 
-    private fun PageViewEvent.toQueryMap(): Map<String, String> {
+    private fun PageViewEvent.toQueryMap(skipExternalIds: Boolean = false): Map<String, String> {
         val offset = with(Calendar.getInstance()) {
             TimeUnit.MILLISECONDS.toMinutes(timeZone.getOffset(timeInMillis).toLong())
         }
@@ -60,25 +60,22 @@ class PageViewEventConverter(
             "${CUSTOM_PARAMETER_PREFIX}app" to deviceInfoProvider.applicationName,
             "${CUSTOM_PARAMETER_PREFIX}appv" to (deviceInfoProvider.applicationVersion ?: "")
         ) else emptySequence()
-        val userLocation = userLocation?.toPairs() ?: emptySequence()
-        val ids = externalUserIds.asSequence().withIndex().flatMap { (i, id) ->
-            sequenceOf(
-                "$EXTERNAL_USER_KEY$i" to id.userType,
-                "$EXTERNAL_USER_VALUE$i" to id.userId
-            )
-        }
-        val result = pairs + appMetadata + userLocation + ids +
+        val ids = if (skipExternalIds) listOf() else externalUserIds.toPairs()
+        val result = pairs + appMetadata + ids +
             customParameters.asSequence().map { "$CUSTOM_PARAMETER_PREFIX${it.name}" to it.value } +
             customUserParameters.asSequence().map { "$CUSTOM_USER_PARAMETER_PREFIX${it.name}" to it.value }
         return result.filterNotNullValues().toMap()
     }
 
-    private fun Location.toPairs(): Sequence<Pair<String, String?>> {
-        return sequenceOf(
-            LATITUDE to latitude.toString(),
-            LONGITUDE to longitude.toString()
-        )
-    }
+    private fun List<ExternalUserId>.toPairs(): List<Pair<String, String>> =
+        filterNot {
+            it.userId.isEmpty()
+        }.flatMapIndexed { i, id ->
+            listOf(
+                "$EXTERNAL_USER_KEY$i" to id.userType,
+                "$EXTERNAL_USER_VALUE$i" to id.userId
+            )
+        }
 
     internal fun extractQueryData(eventRecord: EventRecord, fixUserIdFunc: () -> String): Map<String, String> =
         requireNotNull(mapAdapter.fromJson(eventRecord.data)).let {
@@ -95,8 +92,22 @@ class PageViewEventConverter(
                 mapAdapter.toJson(toQueryMap()),
                 userId,
                 rnd,
-                time
+                time,
+                mergeKey = mergeKey
             )
+        }
+
+    override fun update(oldRecord: EventRecord, event: Event): EventRecord =
+        with(event as PageViewEvent) {
+            mapAdapter.fromJson(oldRecord.data)?.let { old ->
+                val oldIds = old.keys.filter { it.startsWith(EXTERNAL_USER_KEY) }
+                val queryMap = toQueryMap(skipExternalIds = true) - listOf(RND, TIME)
+                val ids = externalUserIds.toSet() + oldIds.map { ExternalUserId(it, old[it].orEmpty()) }
+                val map = old - oldIds + queryMap + ids.take(PageViewEvent.MAX_EXTERNAL_USER_IDS).toPairs()
+                oldRecord.copy(
+                    data = mapAdapter.toJson(map)
+                )
+            } ?: oldRecord
         }
 
     internal fun updateActiveTimeData(data: String, activeTime: Long): String =
@@ -109,6 +120,10 @@ class PageViewEventConverter(
             )
             mapAdapter.toJson(map)
         }
+
+    @Suppress("NOTHING_TO_INLINE", "UNCHECKED_CAST")
+    internal inline fun <T, R> Sequence<Pair<T, R?>>.filterNotNullValues(): Sequence<Pair<T, R>> =
+        filterNot { it.second == null } as Sequence<Pair<T, R>>
 
     companion object {
         const val TIME = "ltm"
@@ -145,7 +160,5 @@ class PageViewEventConverter(
         internal const val ENCODING = "chs"
         private const val FLASH = "fls"
         private const val NEW_USER = "new"
-        private const val LATITUDE = "plat"
-        private const val LONGITUDE = "plon"
     }
 }

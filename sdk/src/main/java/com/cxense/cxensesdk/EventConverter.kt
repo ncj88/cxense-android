@@ -10,4 +10,6 @@ abstract class EventConverter {
     abstract fun canConvert(event: Event): Boolean
 
     abstract fun toEventRecord(event: Event): EventRecord?
+
+    abstract fun update(oldRecord: EventRecord, event: Event): EventRecord
 }

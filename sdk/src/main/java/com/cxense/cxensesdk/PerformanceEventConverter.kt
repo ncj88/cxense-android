@@ -55,8 +55,30 @@ class PerformanceEventConverter(
                 jsonAdapter.toJson(this),
                 prnd,
                 rnd,
-                TimeUnit.SECONDS.toMillis(time)
+                TimeUnit.SECONDS.toMillis(time),
+                mergeKey = mergeKey
             )
+        }
+
+    override fun update(oldRecord: EventRecord, event: Event): EventRecord =
+        with(event as PerformanceEvent) {
+            jsonAdapter.fromJson(oldRecord.data)?.let { old ->
+                toEventRecord(
+                    PerformanceEvent(
+                        eventId ?: old.eventId,
+                        identities.takeUnless { it.isEmpty() } ?: old.identities,
+                        siteId,
+                        origin,
+                        eventType,
+                        prnd ?: old.prnd,
+                        old.time,
+                        segments?.takeUnless { it.isEmpty() } ?: old.segments,
+                        customParameters.takeUnless { it.isEmpty() } ?: old.customParameters,
+                        consentOptions.takeUnless { it.isEmpty() } ?: old.consentOptions,
+                        old.rnd
+                    )
+                )
+            } ?: oldRecord
         }
 
     internal fun prepareKey(objectName: String, nameKey: String, valueKey: String, name: String): String =

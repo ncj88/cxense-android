@@ -6,6 +6,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.util.Collections
 import java.util.Date
+import java.util.Objects
 import java.util.concurrent.TimeUnit
 
 /**
@@ -34,8 +35,9 @@ class PerformanceEvent internal constructor(
     @Json(name = SEGMENT_IDS) val segments: List<String>?,
     @Json(name = CUSTOM_PARAMETERS) val customParameters: List<CustomParameter>,
     @Json(name = "consent") val consentOptions: List<String>,
-    @Json(name = RND) val rnd: String = "${System.currentTimeMillis()}${(Math.random() * 10E8).toInt()}"
+    @Json(name = RND) val rnd: String
 ) : Event(eventId) {
+    override val mergeKey = Objects.hash(eventType, origin)
 
     /**
      * @constructor Initialize Builder with required parameters
@@ -187,18 +189,21 @@ class PerformanceEvent internal constructor(
                 identities
             } ?: identities + UserIdentity(UserIdentity.CX_USER_TYPE, userProvider.userId)
 
-            return PerformanceEvent(
-                eventId,
-                Collections.unmodifiableList(userIds),
-                siteId,
-                origin,
-                eventType,
-                prnd,
-                TimeUnit.MILLISECONDS.toSeconds(time),
-                segments.takeUnless { it.isEmpty() }?.let { Collections.unmodifiableList(it) },
-                Collections.unmodifiableList(customParameters),
-                DependenciesProvider.getInstance().cxenseConfiguration.consentSettings.consents
-            )
+            return with(DependenciesProvider.getInstance().cxenseConfiguration) {
+                PerformanceEvent(
+                    eventId,
+                    Collections.unmodifiableList(userIds),
+                    siteId,
+                    origin,
+                    eventType,
+                    prnd,
+                    TimeUnit.MILLISECONDS.toSeconds(time),
+                    segments.takeUnless { it.isEmpty() }?.let { Collections.unmodifiableList(it) },
+                    Collections.unmodifiableList(customParameters),
+                    consentSettings.consents,
+                    randomIdProvider(time)
+                )
+            }
         }
     }
 
