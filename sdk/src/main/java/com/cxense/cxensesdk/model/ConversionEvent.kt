@@ -4,6 +4,7 @@ import com.cxense.cxensesdk.DependenciesProvider
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.util.Collections
+import java.util.Objects
 
 /**
  * Conversion event description
@@ -27,6 +28,7 @@ class ConversionEvent internal constructor(
     @Json(name = "productRenewalFrequency") val renewalFrequency: String?,
     @Json(name = "eventType") val eventType: String = EVENT_TYPE
 ) : Event(null) {
+    override val mergeKey = Objects.hash(eventType, siteId, productId)
     /**
      * @constructor Initialize Builder with required parameters
      * @property siteId The Cxense site identifier to be associated with the events.

@@ -16,10 +16,11 @@ data class EventRecord(
     val ckp: String? = null,
     val rnd: String? = null,
     val timestamp: Long = System.currentTimeMillis(),
-    val spentTime: Long? = null
-) {
-    var id: Long? = null
+    val spentTime: Long? = null,
+    val mergeKey: Int,
+    var id: Long? = null,
     var isSent: Boolean = false
+) {
 
     fun toContentValues(): ContentValues =
         ContentValues().apply {
@@ -31,6 +32,7 @@ data class EventRecord(
             put(TIME, timestamp)
             put(SPENT_TIME, spentTime)
             put(IS_SENT, isSent)
+            put(MERGE_KEY, mergeKey)
         }
 
     companion object {
@@ -42,6 +44,7 @@ data class EventRecord(
         internal const val TIME = "time"
         internal const val SPENT_TIME = "spentTime"
         internal const val IS_SENT = "isSent"
+        internal const val MERGE_KEY = "mergeKey"
 
         const val TABLE_NAME = "event"
         @JvmStatic
@@ -53,7 +56,8 @@ data class EventRecord(
             RND,
             TYPE,
             SPENT_TIME,
-            IS_SENT
+            IS_SENT,
+            MERGE_KEY
         )
     }
 }

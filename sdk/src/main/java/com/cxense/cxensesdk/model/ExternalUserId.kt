@@ -34,6 +34,21 @@ class ExternalUserId(
             }
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ExternalUserId
+
+        if (userType != other.userType) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return userType.hashCode()
+    }
+
     companion object {
         private const val CX_USER_TYPE = "cx"
         private const val USER_TYPE_MAX_LENGTH = 10

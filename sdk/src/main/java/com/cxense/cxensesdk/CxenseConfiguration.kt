@@ -33,8 +33,12 @@ class CxenseConfiguration {
     }
 
     var consentSettings = ConsentSettings()
+    var eventsMergePeriod: Long = 0
+        private set
 
     internal var dispatchPeriodListener: ((Long) -> Unit)? = null
+
+    var randomIdProvider: (Long) -> String = { "$it${(Math.random() * 10E8).toInt()}" }
 
     /**
      * Sets dispatch period for the dispatcher. The dispatcher will check for events to dispatch
@@ -67,6 +71,14 @@ class CxenseConfiguration {
         outdatePeriod = millis
     }
 
+    fun eventsMergePeriod(period: Long, unit: TimeUnit) {
+        val millis = unit.toMillis(period)
+        require(millis >= 0) {
+            "Period must be greater than 0"
+        }
+        eventsMergePeriod = millis
+    }
+
     /**
      * Network statuses ordered by connection capability.
      */
@@ -75,14 +87,17 @@ class CxenseConfiguration {
          * No network.
          */
         NONE,
+
         /**
          * GPRS connection.
          */
         GPRS,
+
         /**
          * A mobile connection (3G/4G/LTE).
          */
         MOBILE,
+
         /**
          * A Wi-Fi connection.
          */
