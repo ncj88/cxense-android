@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     implementation("com.github.ben-manes:gradle-versions-plugin:0.39.0")
-    implementation("com.android.tools.build:gradle:4.2.2")
+    implementation("com.android.tools.build:gradle:7.0.0")
     implementation(kotlin("gradle-plugin", "1.5.21"))
     implementation("org.jlleitschuh.gradle:ktlint-gradle:10.1.0")
     implementation("org.jetbrains.dokka:dokka-gradle-plugin:1.5.0")

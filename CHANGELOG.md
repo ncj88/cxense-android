@@ -7,7 +7,9 @@
       https://kotlinlang.org/
     - androidx.appcompat:appcompat [1.3.0 -> 1.3.1]
       https://developer.android.com/jetpack/androidx/releases/appcompat#1.3.1
-    - com.android.tools.build:gradle [4.2.1 -> 4.2.2]
+    - androidx.startup:startup-runtime [1.0.0 -> 1.1.0]
+      https://developer.android.com/jetpack/androidx/releases/startup#1.1.0
+    - com.android.tools.build:gradle [4.2.1 -> 7.0.0]
       http://tools.android.com/
 
 

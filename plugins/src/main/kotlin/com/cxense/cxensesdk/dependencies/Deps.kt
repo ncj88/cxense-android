@@ -7,7 +7,7 @@ private object Versions {
     const val compatLibrary = "1.3.1"
     const val annotationsLibrary = "1.2.0"
     const val materialLibrary = "1.4.0"
-    const val startupLibrary = "1.0.0"
+    const val startupLibrary = "1.1.0"
 
     // Third party Libraries
     const val googlePlayServices = "17.0.1"
