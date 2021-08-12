@@ -20,7 +20,7 @@ private object Versions {
     // Test Libraries
     const val junit = "4.13.2"
     const val mockitoKotlin = "2.2.0"
-    const val mockitoCore = "3.11.2"
+    const val mockitoCore = "3.0.0"
 }
 
 object Libs {
