@@ -23,6 +23,6 @@ jobs:
     -   name: Check code style
         run: ./gradlew ktLiCh
     -   name: Run tests
-        run: ./gradlew testDebug --stacktrace
+        run: ./gradlew sdk:testDebug --stacktrace
     -   name: Build APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew sdk-sample:assembleDebug --stacktrace
