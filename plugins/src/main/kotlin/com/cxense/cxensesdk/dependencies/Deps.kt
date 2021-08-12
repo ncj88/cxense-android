@@ -14,13 +14,13 @@ private object Versions {
     const val retrofit = "2.6.4"
     const val okhttp = "3.12.6"
     const val moshi = "1.12.0"
-    const val timber = "4.7.1"
+    const val timber = "5.0.0"
     const val viewBindingProperty = "1.4.7"
 
     // Test Libraries
     const val junit = "4.13.2"
     const val mockitoKotlin = "2.2.0"
-    const val mockitoCore = "3.0.0"
+    const val mockitoCore = "3.11.2"
 }
 
 object Libs {

@@ -20,5 +20,5 @@ class UserDataRequest(
         @Json(name = "groups") groups: List<String>? = null,
         @Json(name = "recent") recent: Boolean? = null,
         @Json(name = "identityTypes") identityTypes: List<String>? = null
-    ) : this(userIdentity.type, userIdentity.id)
+    ) : this(userIdentity.type, userIdentity.id, groups, recent, identityTypes)
 }

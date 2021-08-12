@@ -1,7 +1,8 @@
 # Cxense SDK for Android
 
 ## v2.2.0-SNAPSHOT
-* New features will be here
+* Android 12 compatibility
+* Piano C1X support 
 * Updated dependencies:
     - Kotlin [1.5.10 -> 1.5.21]
       https://kotlinlang.org/
