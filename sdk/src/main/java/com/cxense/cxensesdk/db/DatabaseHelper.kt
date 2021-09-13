@@ -42,6 +42,12 @@ class DatabaseHelper(
                         );
                     """.trimIndent()
                 )
+            1 -> db?.execSQL(
+                """
+                    ALTER TABLE ${EventRecord.TABLE_NAME} 
+                    ADD COLUMN ${EventRecord.MERGE_KEY} INTEGER DEFAULT 0
+                """.trimIndent()
+            )
         }
     }
 
@@ -70,7 +76,7 @@ class DatabaseHelper(
     fun query(
         columns: Array<String>? = EventRecord.COLUMNS,
         selection: String? = null,
-        selectionArgs: Array<out String>? = null,
+        selectionArgs: Array<out String?>? = null,
         groupBy: String? = null,
         having: String? = null,
         orderBy: String? = "${EventRecord.TIME} ASC",
@@ -92,7 +98,7 @@ class DatabaseHelper(
         }
 
     companion object {
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
         private const val DATABASE_NAME = "tracks.db"
 
         @JvmStatic

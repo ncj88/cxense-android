@@ -40,7 +40,7 @@ class PerformanceEventConverterTest {
 
     @Test
     fun extractQueryData() {
-        assertNotNull(converter.extractQueryData(EventRecord("type", "", "{}")))
+        assertNotNull(converter.extractQueryData(EventRecord("type", "", "{}", mergeKey = 0)))
     }
 
     @Test

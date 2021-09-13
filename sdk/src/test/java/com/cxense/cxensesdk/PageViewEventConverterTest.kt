@@ -35,9 +35,7 @@ class PageViewEventConverterTest {
     }
 
     private val converter = PageViewEventConverter(jsonAdapter, configuration, deviceInfoProvider)
-    private val event: PageViewEvent = mock {
-        on { userLocation } doReturn mock()
-    }
+    private val event: PageViewEvent = mock()
     private val fixUserIdFunc: () -> String = mock()
 
     @Test
@@ -56,7 +54,7 @@ class PageViewEventConverterTest {
 
     @Test
     fun extractQueryData() {
-        assertNotNull(converter.extractQueryData(EventRecord("type", "", "{}"), fixUserIdFunc))
+        assertNotNull(converter.extractQueryData(EventRecord("type", "", "{}", mergeKey = 0), fixUserIdFunc))
         verify(jsonAdapter).fromJson(any<String>())
         verify(fixUserIdFunc).invoke()
     }
@@ -68,7 +66,7 @@ class PageViewEventConverterTest {
                 PageViewEventConverter.CKP to "123"
             )
         )
-        assertNotNull(converter.extractQueryData(EventRecord("type", "", "{}"), fixUserIdFunc))
+        assertNotNull(converter.extractQueryData(EventRecord("type", "", "{}", mergeKey = 0), fixUserIdFunc))
         verify(jsonAdapter).fromJson(any<String>())
         verify(fixUserIdFunc, never()).invoke()
     }

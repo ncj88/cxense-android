@@ -1,6 +1,7 @@
 package com.cxense.cxensesdk
 
 import android.content.ContentValues
+import android.provider.BaseColumns
 import com.cxense.cxensesdk.db.DatabaseHelper
 import com.cxense.cxensesdk.db.EventRecord
 import com.cxense.cxensesdk.model.ConversionEvent
@@ -14,17 +15,18 @@ import java.util.concurrent.TimeUnit
  * Repository for saving/getting events via local database.
  */
 class EventRepository(
+    private val configuration: CxenseConfiguration,
     private val databaseHelper: DatabaseHelper,
     private val eventConverters: List<EventConverter>
 ) {
     fun putEventsInDatabase(events: Array<out Event>) {
         events.forEach { e ->
             try {
-                eventConverters.firstOrNull { it.canConvert(e) }
-                    ?.toEventRecord(e)
-                    ?.let {
-                        putEventRecordInDatabase(it)
-                    }
+                eventConverters.firstOrNull {
+                    it.canConvert(e)
+                }?.buildEventRecord(e)?.let {
+                    putEventRecordInDatabase(it)
+                }
             } catch (ex: Exception) {
                 Timber.e(ex, "Error at pushing event")
             }
@@ -40,40 +42,50 @@ class EventRepository(
         )
 
     fun getNotSubmittedPvEvents() = getEvents(
-        "${EventRecord.IS_SENT} = 0 AND ${EventRecord.TYPE} = ?",
-        PageViewEvent.EVENT_TYPE
+        "$NOT_SENT_FILTER AND ${EventRecord.TYPE} = ?",
+        arrayOf(PageViewEvent.EVENT_TYPE)
     )
 
     fun getNotSubmittedDmpEvents() = getEvents(
-        "${EventRecord.IS_SENT} = 0 AND ${EventRecord.TYPE} <> ? AND ${EventRecord.TYPE} <> ?",
-        PageViewEvent.EVENT_TYPE,
-        ConversionEvent.EVENT_TYPE
+        "$NOT_SENT_FILTER AND ${EventRecord.TYPE} <> ? AND ${EventRecord.TYPE} <> ?",
+        arrayOf(PageViewEvent.EVENT_TYPE, ConversionEvent.EVENT_TYPE)
     )
 
     fun getNotSubmittedConversionEvents() = getEvents(
-        "${EventRecord.IS_SENT} = 0 AND ${EventRecord.TYPE} = ?",
-        ConversionEvent.EVENT_TYPE
+        "$NOT_SENT_FILTER AND ${EventRecord.TYPE} = ?",
+        arrayOf(ConversionEvent.EVENT_TYPE)
     )
 
-    internal fun getEvents(selection: String?, vararg selectionArgs: String): List<EventRecord> =
+    internal fun getEvents(
+        selection: String?,
+        selectionArgs: Array<out String?>?,
+        limit: String? = null
+    ): List<EventRecord> =
         databaseHelper.query(
             selection = selection,
             selectionArgs = selectionArgs,
-            orderBy = "${EventRecord.TIME} ASC"
-        ).map(ContentValues::toEventRecord)
+            orderBy = "${EventRecord.TIME} ASC",
+            limit = limit
+        ).map { it.toEventRecord() }
 
     fun getPvEventFromDatabase(eventId: String): EventRecord? =
         databaseHelper.query(
             selection = "${EventRecord.CUSTOM_ID} = ? AND ${EventRecord.TYPE} = ?",
             selectionArgs = arrayOf(eventId, PageViewEvent.EVENT_TYPE),
-            orderBy = "${EventRecord.TIME} DESC"
+            orderBy = "${EventRecord.TIME} DESC",
+            limit = "1"
         ).firstOrNull()?.toEventRecord()
 
     fun getEventStatuses(): List<EventStatus> =
         databaseHelper.query(
             columns = arrayOf(EventRecord.CUSTOM_ID, EventRecord.IS_SENT),
             orderBy = "${EventRecord.TIME} ASC"
-        ).map(ContentValues::toEventStatus)
+        ).map {
+            EventStatus(
+                it.getAsString(EventRecord.CUSTOM_ID),
+                it.getAsBoolean(EventRecord.IS_SENT)
+            )
+        }
 
     fun putEventTime(eventId: String, activeTime: Long) {
         try {
@@ -93,5 +105,32 @@ class EventRepository(
         } catch (e: Exception) {
             Timber.e(e, "Error at tracking time")
         }
+    }
+
+    private fun EventConverter.buildEventRecord(e: Event): EventRecord? =
+        getEvents(
+            "$NOT_SENT_FILTER AND ${EventRecord.MERGE_KEY} = ? AND ${EventRecord.TIME} > ?",
+            arrayOf(e.mergeKey.toString(), (System.currentTimeMillis() - configuration.eventsMergePeriod).toString()),
+            limit = "1"
+        ).firstOrNull()?.let {
+            update(it, e)
+        } ?: toEventRecord(e)
+
+    private fun ContentValues.toEventRecord(): EventRecord =
+        EventRecord(
+            getAsString(EventRecord.TYPE),
+            getAsString(EventRecord.CUSTOM_ID),
+            getAsString(EventRecord.DATA),
+            getAsString(EventRecord.CKP),
+            getAsString(EventRecord.RND),
+            getAsLong(EventRecord.TIME),
+            getAsLong(EventRecord.SPENT_TIME),
+            getAsInteger(EventRecord.MERGE_KEY),
+            getAsLong(BaseColumns._ID),
+            getAsBoolean(EventRecord.IS_SENT)
+        )
+
+    companion object {
+        private const val NOT_SENT_FILTER = "${EventRecord.IS_SENT} = 0"
     }
 }

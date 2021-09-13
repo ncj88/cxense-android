@@ -11,9 +11,12 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".AnimalActivity" />
+        <activity
+                android:name=".AnimalActivity"
+                android:exported="false" />
         <activity
                 android:name=".MainActivity"
+                android:exported="true"
                 android:label="@string/title_activity_main"
                 android:theme="@style/AppTheme">
             <intent-filter>

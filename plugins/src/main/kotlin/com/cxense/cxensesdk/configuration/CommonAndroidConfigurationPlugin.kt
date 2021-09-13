@@ -21,8 +21,8 @@ class CommonAndroidConfigurationPlugin : Plugin<Project> {
             buildToolsVersion = AndroidConfig.androidBuildTools
             compileSdkVersion(AndroidConfig.androidCompileSdk)
             defaultConfig {
-                minSdkVersion(AndroidConfig.androidMinSdk)
-                targetSdkVersion(AndroidConfig.androidTargetSdk)
+                minSdk = AndroidConfig.androidMinSdk
+                targetSdk = AndroidConfig.androidTargetSdk
             }
             compileOptions {
                 sourceCompatibility = AndroidConfig.compileSourceVersion

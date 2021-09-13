@@ -1,6 +1,5 @@
 package com.cxense.cxensesdk
 
-import com.cxense.cxensesdk.model.ConsentOption
 import com.cxense.cxensesdk.model.ConsentSettings
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
@@ -34,19 +33,12 @@ class CxenseConfiguration {
     }
 
     var consentSettings = ConsentSettings()
-    @Deprecated(
-        "Use consentSettings instead"
-    )
-    val consentOptions: MutableSet<ConsentOption> by Delegates.observable(mutableSetOf()) { _, _, newValue ->
-        consentSettings
-            .consentRequired(ConsentOption.CONSENT_REQUIRED in newValue)
-            .pvAllowed(ConsentOption.PV_ALLOWED in newValue)
-            .recsAllowed(ConsentOption.RECS_ALLOWED in newValue)
-            .segmentAllowed(ConsentOption.SEGMENT_ALLOWED in newValue)
-            .adAllowed(ConsentOption.AD_ALLOWED in newValue)
-    }
+    var eventsMergePeriod: Long = 0
+        private set
 
     internal var dispatchPeriodListener: ((Long) -> Unit)? = null
+
+    var randomIdProvider: (Long) -> String = { "$it${(Math.random() * 10E8).toInt()}" }
 
     /**
      * Sets dispatch period for the dispatcher. The dispatcher will check for events to dispatch
@@ -79,6 +71,14 @@ class CxenseConfiguration {
         outdatePeriod = millis
     }
 
+    fun eventsMergePeriod(period: Long, unit: TimeUnit) {
+        val millis = unit.toMillis(period)
+        require(millis >= 0) {
+            "Period must be greater than 0"
+        }
+        eventsMergePeriod = millis
+    }
+
     /**
      * Network statuses ordered by connection capability.
      */
@@ -87,14 +87,17 @@ class CxenseConfiguration {
          * No network.
          */
         NONE,
+
         /**
          * GPRS connection.
          */
         GPRS,
+
         /**
          * A mobile connection (3G/4G/LTE).
          */
         MOBILE,
+
         /**
          * A Wi-Fi connection.
          */

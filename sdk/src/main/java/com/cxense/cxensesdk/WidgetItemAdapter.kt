@@ -13,6 +13,8 @@ class WidgetItemAdapter {
             props[CLICK_URL]?.toString(),
             props.filterKeys { it !in listOf(TITLE, URL, CLICK_URL) }
         )
+
+    @Suppress("UNUSED_PARAMETER")
     @ToJson
     fun toJson(value: WidgetItem): Map<String, Any> {
         TODO("Not supported")

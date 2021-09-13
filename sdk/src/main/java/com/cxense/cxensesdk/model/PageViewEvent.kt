@@ -1,10 +1,10 @@
 package com.cxense.cxensesdk.model
 
-import android.location.Location
 import com.cxense.cxensesdk.DependenciesProvider
 import com.cxense.cxensesdk.UserProvider
 import okhttp3.HttpUrl
 import java.util.Collections
+import java.util.Objects
 
 /**
  * Tracking page view event description.
@@ -20,7 +20,6 @@ import java.util.Collections
  * @property accountId The Cxense account identifier.
  * @property pageName The page name.
  * @property newUser Hint to indicate if this looks like a new user.
- * @property userLocation User geo location
  * @property customParameters Custom parameters.
  * @property customUserParameters Custom user profile parameters.
  * @property externalUserIds External user ids.
@@ -36,14 +35,14 @@ class PageViewEvent private constructor(
     val accountId: Int?,
     val pageName: String?,
     val newUser: Boolean?,
-    val userLocation: Location?,
     val customParameters: MutableList<CustomParameter>,
     val customUserParameters: MutableList<CustomParameter>,
-    val externalUserIds: MutableList<ExternalUserId>
+    val externalUserIds: MutableList<ExternalUserId>,
+    val time: Long,
+    val rnd: String
 ) : Event(eventId) {
     val eventType = EVENT_TYPE
-    val time = System.currentTimeMillis()
-    val rnd: String = "${time}${(Math.random() * 10E8).toInt()}"
+    override val mergeKey = Objects.hash(eventType, siteId, location, contentId, referrer)
 
     /**
      * @property siteId the Cxense site identifier.
@@ -55,7 +54,6 @@ class PageViewEvent private constructor(
      * @property accountId the Cxense account identifier.
      * @property pageName the page name.
      * @property newUser hint to indicate if this looks like a new user.
-     * @property userLocation user geo location
      * @property customParameters custom parameters.
      * @property customUserParameters custom user profile parameters.
      * @property externalUserIds external user ids.
@@ -70,7 +68,6 @@ class PageViewEvent private constructor(
         var accountId: Int? = null,
         var pageName: String? = null,
         var newUser: Boolean? = null,
-        var userLocation: Location? = null,
         var customParameters: MutableList<CustomParameter> = mutableListOf(),
         var customUserParameters: MutableList<CustomParameter> = mutableListOf(),
         var externalUserIds: MutableList<ExternalUserId> = mutableListOf()
@@ -88,7 +85,6 @@ class PageViewEvent private constructor(
             accountId: Int? = null,
             pageName: String? = null,
             newUser: Boolean? = null,
-            userLocation: Location? = null,
             customParameters: MutableList<CustomParameter> = mutableListOf(),
             customUserParameters: MutableList<CustomParameter> = mutableListOf(),
             externalUserIds: MutableList<ExternalUserId> = mutableListOf()
@@ -102,7 +98,6 @@ class PageViewEvent private constructor(
             accountId,
             pageName,
             newUser,
-            userLocation,
             customParameters,
             customUserParameters,
             externalUserIds
@@ -155,12 +150,6 @@ class PageViewEvent private constructor(
          * @param newUser hint to indicate if this looks like a new user.
          */
         fun newUser(newUser: Boolean?) = apply { this.newUser = newUser }
-
-        /**
-         * Sets user geo location.
-         * @param userLocation user geo location
-         */
-        fun userLocation(userLocation: Location?) = apply { this.userLocation = userLocation }
 
         /**
          * Add custom parameters.
@@ -232,6 +221,8 @@ class PageViewEvent private constructor(
                     "You should provide valid url as referrer"
                 }
             }
+            val time = System.currentTimeMillis()
+
             return PageViewEvent(
                 eventId,
                 userProvider.userId,
@@ -242,10 +233,11 @@ class PageViewEvent private constructor(
                 accountId,
                 pageName,
                 newUser,
-                userLocation,
                 Collections.unmodifiableList(customParameters),
                 Collections.unmodifiableList(customUserParameters),
-                Collections.unmodifiableList(externalUserIds.takeLast(MAX_EXTERNAL_USER_IDS))
+                Collections.unmodifiableList(externalUserIds.takeLast(MAX_EXTERNAL_USER_IDS)),
+                time,
+                DependenciesProvider.getInstance().cxenseConfiguration.randomIdProvider(time)
             )
         }
     }

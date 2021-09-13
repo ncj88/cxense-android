@@ -102,6 +102,7 @@ internal class DependenciesProvider private constructor(
     private val databaseHelper: DatabaseHelper by lazy { DatabaseHelper(context) }
     private val eventRepository: EventRepository by lazy {
         EventRepository(
+            cxenseConfiguration,
             databaseHelper,
             listOf(
                 pageViewEventConverter,

@@ -2,6 +2,7 @@ package com.cxense.cxensesdk
 
 import com.cxense.cxensesdk.db.DatabaseHelper
 import com.cxense.cxensesdk.db.EventRecord
+import com.cxense.cxensesdk.model.ConsentSettings
 import com.cxense.cxensesdk.model.ConversionEvent
 import com.cxense.cxensesdk.model.PageViewEvent
 import com.nhaarman.mockitokotlin2.any
@@ -18,6 +19,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class EventRepositoryTest {
+    private val configuration: CxenseConfiguration = mock {
+        on { consentSettings } doReturn ConsentSettings()
+    }
     private val databaseHelper: DatabaseHelper = mock()
     private val converter: PageViewEventConverter = mock {
         on { updateActiveTimeData(any(), any()) } doReturn "{}"
@@ -28,7 +32,7 @@ class EventRepositoryTest {
 
     @BeforeTest
     fun setUp() {
-        repository = spy(EventRepository(databaseHelper, eventConverters))
+        repository = spy(EventRepository(configuration, databaseHelper, eventConverters))
     }
 
     @Test
@@ -56,29 +60,33 @@ class EventRepositoryTest {
 
     @Test
     fun getNotSubmittedPvEvents() {
-        doReturn(listOf<EventRecord>(mock())).`when`(repository).getEvents(any(), any())
+        doReturn(listOf<EventRecord>(mock())).`when`(repository).getEvents(any(), any(), anyOrNull())
         assertEquals(1, repository.getNotSubmittedPvEvents().size)
-        verify(repository).getEvents(any(), eq(PageViewEvent.EVENT_TYPE))
+        verify(repository).getEvents(any(), eq(arrayOf(PageViewEvent.EVENT_TYPE)), anyOrNull())
     }
 
     @Test
     fun getNotSubmittedDmpEvents() {
-        doReturn(listOf<EventRecord>(mock())).`when`(repository).getEvents(any(), any(), any())
+        doReturn(listOf<EventRecord>(mock())).`when`(repository).getEvents(any(), any(), anyOrNull())
         assertEquals(1, repository.getNotSubmittedDmpEvents().size)
-        verify(repository).getEvents(any(), eq(PageViewEvent.EVENT_TYPE), eq(ConversionEvent.EVENT_TYPE))
+        verify(repository).getEvents(
+            any(),
+            eq(arrayOf(PageViewEvent.EVENT_TYPE, ConversionEvent.EVENT_TYPE)),
+            anyOrNull()
+        )
     }
 
     @Test
     fun getNotSubmittedConversionEvents() {
-        doReturn(listOf<EventRecord>(mock())).`when`(repository).getEvents(any(), any())
+        doReturn(listOf<EventRecord>(mock())).`when`(repository).getEvents(any(), any(), anyOrNull())
         assertEquals(1, repository.getNotSubmittedConversionEvents().size)
-        verify(repository).getEvents(any(), eq(ConversionEvent.EVENT_TYPE))
+        verify(repository).getEvents(any(), eq(arrayOf(ConversionEvent.EVENT_TYPE)), anyOrNull())
     }
 
     @Test
     fun getEvents() {
-        repository.getEvents(any())
-        verify(databaseHelper).query(any(), anyOrNull(), any(), anyOrNull(), anyOrNull(), any(), anyOrNull())
+        repository.getEvents(any(), any(), anyOrNull())
+        verify(databaseHelper).query(any(), anyOrNull(), anyOrNull(), anyOrNull(), anyOrNull(), any(), anyOrNull())
     }
 
     @Test
@@ -95,7 +103,7 @@ class EventRepositoryTest {
 
     @Test
     fun putEventTime() {
-        val record = EventRecord("type", null, "")
+        val record = EventRecord("type", null, "", mergeKey = 0)
         doReturn(record).`when`(repository).getPvEventFromDatabase(any())
         repository.putEventTime("", 0)
         verify(repository).getPvEventFromDatabase(any())

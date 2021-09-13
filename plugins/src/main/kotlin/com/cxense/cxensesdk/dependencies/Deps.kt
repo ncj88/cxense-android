@@ -1,21 +1,21 @@
 package com.cxense.cxensesdk.dependencies
 
 private object Versions {
-    const val kotlin = "1.5.10"
+    const val kotlin = "1.5.30"
 
     // Android/Jetpack libraries
-    const val compatLibrary = "1.3.0"
+    const val compatLibrary = "1.3.1"
     const val annotationsLibrary = "1.2.0"
-    const val materialLibrary = "1.3.0"
-    const val startupLibrary = "1.0.0"
+    const val materialLibrary = "1.4.0"
+    const val startupLibrary = "1.1.0"
 
     // Third party Libraries
     const val googlePlayServices = "17.0.1"
     const val retrofit = "2.6.4"
     const val okhttp = "3.12.6"
     const val moshi = "1.12.0"
-    const val timber = "4.7.1"
-    const val viewBindingProperty = "1.4.6"
+    const val timber = "5.0.1"
+    const val viewBindingProperty = "1.4.7"
 
     // Test Libraries
     const val junit = "4.13.2"

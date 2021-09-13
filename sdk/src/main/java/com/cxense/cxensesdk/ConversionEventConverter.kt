@@ -20,7 +20,26 @@ class ConversionEventConverter(
             EventRecord(
                 ConversionEvent.EVENT_TYPE,
                 eventId,
-                jsonAdapter.toJson(this)
+                jsonAdapter.toJson(this),
+                mergeKey = mergeKey
             )
+        }
+
+    override fun update(oldRecord: EventRecord, event: Event): EventRecord =
+        with(event as ConversionEvent) {
+            jsonAdapter.fromJson(oldRecord.data)?.let { old ->
+                toEventRecord(
+                    ConversionEvent(
+                        identities.takeUnless { it.isEmpty() } ?: old.identities,
+                        siteId,
+                        consentOptions.takeUnless { it.isEmpty() } ?: old.consentOptions,
+                        productId,
+                        funnelStep,
+                        price ?: old.price,
+                        renewalFrequency ?: old.renewalFrequency,
+                        eventType
+                    )
+                )
+            } ?: oldRecord
         }
 }
