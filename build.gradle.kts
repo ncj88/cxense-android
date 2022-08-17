@@ -1,31 +1,14 @@
-import pl.allegro.tech.build.axion.release.domain.TagNameSerializationConfig
-import pl.allegro.tech.build.axion.release.domain.properties.TagProperties
-import pl.allegro.tech.build.axion.release.domain.scm.ScmPosition
-
 plugins {
     id("dependencies-updater")
-    id("ktlint-config")
-    id("pl.allegro.tech.build.axion-release") version "1.13.3"
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.app) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.kotlin.kapt) apply false
+    alias(libs.plugins.ktlint) apply false
+    alias(libs.plugins.mavenRelease) apply false
 }
 
 buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
     termsOfServiceAgree = "yes"
-}
-
-scmVersion {
-    tag(
-        closureOf<TagNameSerializationConfig> {
-            prefix = ""
-            initialVersion = KotlinClosure2({ _: TagProperties, _: ScmPosition -> "1.0.0" }, this, this)
-        }
-    )
-    rootProject.version = version
-}
-
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
 }
