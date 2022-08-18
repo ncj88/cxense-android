@@ -35,6 +35,7 @@ class CxenseConfiguration {
     var consentSettings = ConsentSettings()
     var eventsMergePeriod: Long = 0
         private set
+    var sendEventsAtPush = false
 
     internal var dispatchPeriodListener: ((Long) -> Unit)? = null
 

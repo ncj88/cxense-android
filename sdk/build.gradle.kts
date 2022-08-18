@@ -12,7 +12,7 @@ android {
         compileSdk = 33
         targetSdk = 33
         val authority = "CxSdkInitProvider"
-        buildConfigField("String", "SDK_VERSION", """"${rootProject.version}"""")
+        buildConfigField("String", "SDK_VERSION", """"${project.version}"""")
         buildConfigField("String", "SDK_NAME", """"cxense"""")
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
         buildConfigField("String", "AUTHORITY", """LIBRARY_PACKAGE_NAME + ".$authority"""")

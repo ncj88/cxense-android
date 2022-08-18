@@ -24,6 +24,7 @@ class DeviceInfoProvider(
      *
      * @return application's version or 'null' if not found
      */
+    @Suppress("DEPRECATION")
     val applicationVersion: String? by lazy {
         try {
             context.packageManager.getPackageInfo(context.packageName, 0).versionName

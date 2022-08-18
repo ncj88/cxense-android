@@ -96,7 +96,11 @@ class CxenseSdk(
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun pushEvents(vararg events: Event) =
-        executor.execute { eventRepository.putEventsInDatabase(events) }
+        executor.execute {
+            eventRepository.putEventsInDatabase(events)
+            if (configuration.sendEventsAtPush)
+                flushEventQueue()
+        }
 
     /**
      * Tracks active time for the given page view event.

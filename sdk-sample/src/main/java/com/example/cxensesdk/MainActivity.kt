@@ -78,12 +78,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             object : CxenseSdk.DispatchEventsCallback {
                 override fun onDispatch(statuses: List<EventStatus>) {
                     val grouped = statuses.groupBy { it.isSent }
-                    showText(
-                        """
+                    runOnUiThread {
+                        showText(
+                            """
                             Sent: '${grouped[true]?.joinToString { it.eventId ?: ""}}'
                             Not sent: '${grouped[false]?.joinToString { it.eventId ?: ""}}'
                         """.trimIndent()
-                    )
+                        )
+                    }
                 }
             }
         )

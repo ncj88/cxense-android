@@ -45,7 +45,9 @@ class AnimalActivity : AppCompatActivity(R.layout.activity_animal) {
                         Sent: '${grouped[true]?.joinToString { it.eventId ?: "" }}'
                         Not sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'
                         """.trimIndent()
-                    Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                    runOnUiThread {
+                        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+                    }
                 }
             }
         )
