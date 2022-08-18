@@ -36,21 +36,17 @@ class AnimalActivity : AppCompatActivity(R.layout.activity_animal) {
 
     override fun onResume() {
         super.onResume()
-        CxenseSdk.getInstance().setDispatchEventsCallback(
-            object : CxenseSdk.DispatchEventsCallback {
-                override fun onDispatch(statuses: List<EventStatus>) {
-                    val grouped = statuses.groupBy { it.isSent }
-                    val message =
-                        """
+        CxenseSdk.getInstance().setDispatchEventsCallback { statuses ->
+            val grouped = statuses.groupBy { it.isSent }
+            val message =
+                """
                         Sent: '${grouped[true]?.joinToString { it.eventId ?: "" }}'
                         Not sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'
                         """.trimIndent()
-                    runOnUiThread {
-                        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
-                    }
-                }
+            runOnUiThread {
+                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
             }
-        )
+        }
         CxenseSdk.getInstance().pushEvents(
             PageViewEvent.Builder(BuildConfig.SITE_ID)
                 .contentId(item)

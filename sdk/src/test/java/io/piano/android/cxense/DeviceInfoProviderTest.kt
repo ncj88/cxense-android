@@ -14,6 +14,7 @@ import org.mockito.ArgumentMatchers.anyInt
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
+@Suppress("DEPRECATION")
 class DeviceInfoProviderTest {
     private val dm: DisplayMetrics = mock()
     private val res: Resources = mock {

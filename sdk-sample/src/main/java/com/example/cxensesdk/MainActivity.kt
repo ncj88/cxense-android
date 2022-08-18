@@ -74,21 +74,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onResume() {
         super.onResume()
-        CxenseSdk.getInstance().setDispatchEventsCallback(
-            object : CxenseSdk.DispatchEventsCallback {
-                override fun onDispatch(statuses: List<EventStatus>) {
-                    val grouped = statuses.groupBy { it.isSent }
-                    runOnUiThread {
-                        showText(
-                            """
-                            Sent: '${grouped[true]?.joinToString { it.eventId ?: ""}}'
-                            Not sent: '${grouped[false]?.joinToString { it.eventId ?: ""}}'
-                        """.trimIndent()
-                        )
-                    }
-                }
+        CxenseSdk.getInstance().setDispatchEventsCallback { statuses ->
+            val grouped = statuses.groupBy { it.isSent }
+            runOnUiThread {
+                showText(
+                    """
+                    Sent: '${grouped[true]?.joinToString { it.eventId ?: ""}}'
+                    Not sent: '${grouped[false]?.joinToString { it.eventId ?: ""}}'
+                    """.trimIndent()
+                )
             }
-        )
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

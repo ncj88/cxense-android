@@ -308,6 +308,15 @@ class CxenseSdk(
         cxApi.addUserExternalLink(UserIdentityMappingRequest(cxenseId, identity.type, identity.id)).enqueue(callback)
 
     // -------- Persisted API
+    /**
+     * Executes persisted query. You can find some popular endpoints in {@link CxenseConstants}
+     *
+     * @param url               API endpoint
+     * @param persistentQueryId query id
+     * @param data              data for sending as request body
+     * @param callback          callback for response data
+     * @param <T>               response type
+     */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     @JvmOverloads
     fun <T : Any> executePersistedQuery(
@@ -373,7 +382,7 @@ class CxenseSdk(
         private val DISPATCH_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(10)
     }
 
-    interface DispatchEventsCallback {
+    fun interface DispatchEventsCallback {
         fun onDispatch(statuses: List<EventStatus>)
     }
 }

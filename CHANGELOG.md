@@ -1,4 +1,23 @@
-# Cxense SDK for Android
+# Piano DMP & Content SDK for Android
+
+## v2.3.0
+* Renamed to Piano DMP & Content SDK
+* Changed package, group and artifact id
+* Android 13 compatibility
+* The first Maven Central release
+* Updated dependencies:
+    - Kotlin [1.5.30 -> 1.6.21]
+      https://kotlinlang.org/
+    - androidx.appcompat:appcompat [1.3.1 -> 1.4.2]
+      https://developer.android.com/jetpack/androidx/releases/appcompat#1.4.2
+    - androidx.startup:startup-runtime [1.1.0 -> 1.1.1]
+      https://developer.android.com/jetpack/androidx/releases/startup#1.1.1
+    - androidx.annotation:annotation [1.2.0 -> 1.4.0]
+      https://developer.android.com/jetpack/androidx/releases/annotation#annotation-1.4.0
+    - com.squareup.moshi:moshi [1.12.0 -> 1.13.0]
+      https://github.com/square/moshi/
+    - com.squareup.okhttp3:okhttp [3.12.6 -> 3.12.13]
+      https://github.com/square/okhttp/
 
 ## v2.2.0
 * Android 12 compatibility
