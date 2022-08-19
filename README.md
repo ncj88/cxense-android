@@ -1,3 +1,5 @@
+# Piano DMP & Content SDK
+![Maven Central](https://img.shields.io/maven-central/v/io.piano.android/cxense)
 
 ## Migration from SDK 2.0-2.2 to 2.3+
 1. Change dependency in your app script to `implementation("io.piano.android:cxense:VERSION")`
@@ -19,7 +21,7 @@ There are breaking changes in API:
 * Android 4.4 (API level 19) or higher
 * Gradle 6.0 or newer (use latest version if possible)
 
-#### Steps:
+#### Setup:
 Add in your app script:
 Kotlin script
 ```
@@ -37,7 +39,7 @@ dependencies {
 ```
 
 ## Configure Piano DMP & Content SDK
-Before SDK can be used in the application it require to be configured. Configuration can be easily provided by utilizing instance of special class called `CxenseConfiguration`. It contains set of methods vital for SDK's execution. It requires to set `CredentialsProvider`, which provides *username* and *API key* or *persistedId* (see Pixel API for /dmp/push). You can provide it by using special set-method of 'CxenseConfiguration' class:
+Before SDK can be used in the application it require to be configured. Configuration can be easily provided by utilizing instance of special class called `CxenseConfiguration`. It contains set of methods vital for SDK's execution. It requires to set `CredentialsProvider`, which provides *username* and *API key* or *persistedId* (see [Pixel API for /dmp/push](https://docs.piano.io/dmp-api-dmp-push?paragraphId=657f46f37bda217)). You can provide it by using special set-method of 'CxenseConfiguration' class:
 ```kotlin
 CxenseSdk.getInstance().configuration.apply {
     credentialsProvider = object : CredentialsProvider {
@@ -64,7 +66,7 @@ Also you can create class, which implements CredentialsProvider and loads these 
 | minimumNetworkStatus |  | none | Defines minimum network conditions upon which dispatch loop can send events. |
 | dispatchMode |  | online | Defines dispatch mode of dispatch loop. |
 | isAutoMetaInfoTrackingEnabled |  | true | Shows whether automatic meta-information tracking is enabled or not. Under meta-information following items are meant: app name, app version, sdk version. In case this flag is enabled, all specified parameters will be send as events' custom parameters. |
-| consentOptions |  |  | List of options that indicate consent on data processing. |
+| consentSettings |  |  | Options that indicate consent on data processing. |
 | sendEventsAtPush |  | false | Try to send all not submitted events at every `pushEvents` call (including passed as call parameters) |
 
 To override default SDK's settings just set your values to any of these fields.
@@ -75,11 +77,9 @@ Piano DMP & Content SDK allows tracking events of these types:
 
 * page view
 * performance
-* conversion
 
 *Page view event* is collection of data that describes the visit (time and length of visit; previous, current and next page URL; etc) and the visitor (browser, OS, location, IP address, etc). It is also reffered as 'traffic event'.
 *Performance event* describes what the user did while visiting the page.
-*Conversion event* used for CCE support.
 
 ### Page View Events
 Page view events are aggregated by Piano Insight. All collected page view events are available for analysis in Insight's web interface.
@@ -175,14 +175,14 @@ val currentUserId = cxenseSdk.userId
 cxenseSdk.userId = customUserId
 ```
 #### Working with user consent (GDPR) 
-If user consent is required in your application you should add ConsentOption.CONSENT_REQUIRED to enable checking consents before event processing. Add additional consent flags after requesting it from user. 
+If user consent is required in your application you should set `consentRequired` to enable checking consents before event processing. Add additional consent flags after requesting it from user. 
 ```kotlin
 CxenseSdk.getInstance().configuration.apply {
     consentSettings
         .consentRequired(true)
         .pvAllowed(true)
         .segmentAllowed(true)
-    consentSettings.version = 2 // Set if you use geoAllowed / deviceAllowed 
+    consentSettings.version = 2 // required for deviceAllowed and geoAllowed 
 }
 ```
 > Pay attention that if given consent options may affect not only data processing on backend, but also affect SDK's functionality.
@@ -326,7 +326,7 @@ cxenseSdk.deleteUserExternalData(UserIdentity(type, id), object : LoadCallback<U
 > Updating external data will overwrite any existing data associated with the user. Hence, if the intention is to add a new key-value to the user without erasing the existing information, the client should first read the currently stored data, add the new data to the already stored data, and upload the new profile consisting of both the previously stored information,and the new information.
 
 #### Using persisted queries
-Piano DMP & Content SDK provides also support of Persisted Queries. It contains two methods in its public API that are work with the queries:
+Piano DMP & Content SDK provides also support of [Persisted Queries](https://docs.piano.io/dmp-persisted-query/). It contains two methods in its public API that are work with the queries:
 ```kotlin
 /**
  * Executes persisted query. You can find some popular endpoints in {@link CxenseConstants}
