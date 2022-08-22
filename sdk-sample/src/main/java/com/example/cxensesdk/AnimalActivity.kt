@@ -3,17 +3,17 @@ package com.example.cxensesdk
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.cxense.cxensesdk.CxenseSdk
-import com.cxense.cxensesdk.LoadCallback
-import com.cxense.cxensesdk.model.ConversionEvent
-import com.cxense.cxensesdk.model.CustomParameter
-import com.cxense.cxensesdk.model.EventStatus
-import com.cxense.cxensesdk.model.Impression
-import com.cxense.cxensesdk.model.PageViewEvent
-import com.cxense.cxensesdk.model.PerformanceEvent
-import com.cxense.cxensesdk.model.UserIdentity
-import com.cxense.cxensesdk.model.WidgetContext
-import com.cxense.cxensesdk.model.WidgetItem
+import io.piano.android.cxense.CxenseSdk
+import io.piano.android.cxense.LoadCallback
+import io.piano.android.cxense.model.ConversionEvent
+import io.piano.android.cxense.model.CustomParameter
+import io.piano.android.cxense.model.EventStatus
+import io.piano.android.cxense.model.Impression
+import io.piano.android.cxense.model.PageViewEvent
+import io.piano.android.cxense.model.PerformanceEvent
+import io.piano.android.cxense.model.UserIdentity
+import io.piano.android.cxense.model.WidgetContext
+import io.piano.android.cxense.model.WidgetItem
 import com.example.cxensesdk.databinding.ActivityAnimalBinding
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
@@ -36,19 +36,17 @@ class AnimalActivity : AppCompatActivity(R.layout.activity_animal) {
 
     override fun onResume() {
         super.onResume()
-        CxenseSdk.getInstance().setDispatchEventsCallback(
-            object : CxenseSdk.DispatchEventsCallback {
-                override fun onDispatch(statuses: List<EventStatus>) {
-                    val grouped = statuses.groupBy { it.isSent }
-                    val message =
-                        """
+        CxenseSdk.getInstance().setDispatchEventsCallback { statuses ->
+            val grouped = statuses.groupBy { it.isSent }
+            val message =
+                """
                         Sent: '${grouped[true]?.joinToString { it.eventId ?: "" }}'
                         Not sent: '${grouped[false]?.joinToString { it.eventId ?: "" }}'
                         """.trimIndent()
-                    Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
-                }
+            runOnUiThread {
+                Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
             }
-        )
+        }
         CxenseSdk.getInstance().pushEvents(
             PageViewEvent.Builder(BuildConfig.SITE_ID)
                 .contentId(item)

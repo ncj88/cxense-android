@@ -1,12 +1,13 @@
-import com.cxense.cxensesdk.dependencies.Libs
-
 plugins {
-    id("com.android.application")
-    id("common-android-config")
+    alias(libs.plugins.android.app)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
     defaultConfig {
+        minSdk = 19
+        compileSdk = 33
+        targetSdk = 33
         applicationId = "com.example.cxensesdk"
         versionCode = 1
         versionName = "1.0"
@@ -32,7 +33,7 @@ android {
 
 dependencies {
     implementation(project(":sdk"))
-    implementation(Libs.appcompat)
-    implementation(Libs.material)
-    implementation(Libs.viewBindingProperty)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.viewBindingProperty)
 }

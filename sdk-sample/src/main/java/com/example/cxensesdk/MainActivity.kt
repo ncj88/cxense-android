@@ -8,22 +8,22 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
-import com.cxense.cxensesdk.CredentialsProvider
-import com.cxense.cxensesdk.CxenseSdk
-import com.cxense.cxensesdk.ENDPOINT_USER_SEGMENTS
-import com.cxense.cxensesdk.LoadCallback
-import com.cxense.cxensesdk.MIN_DISPATCH_PERIOD
-import com.cxense.cxensesdk.model.CustomParameter
-import com.cxense.cxensesdk.model.EventStatus
-import com.cxense.cxensesdk.model.ExternalItem
-import com.cxense.cxensesdk.model.PerformanceEvent
-import com.cxense.cxensesdk.model.SegmentsResponse
-import com.cxense.cxensesdk.model.User
-import com.cxense.cxensesdk.model.UserExternalData
-import com.cxense.cxensesdk.model.UserIdentity
-import com.cxense.cxensesdk.model.UserSegmentRequest
-import com.cxense.cxensesdk.model.WidgetContext
-import com.cxense.cxensesdk.model.WidgetItem
+import io.piano.android.cxense.CredentialsProvider
+import io.piano.android.cxense.CxenseSdk
+import io.piano.android.cxense.ENDPOINT_USER_SEGMENTS
+import io.piano.android.cxense.LoadCallback
+import io.piano.android.cxense.MIN_DISPATCH_PERIOD
+import io.piano.android.cxense.model.CustomParameter
+import io.piano.android.cxense.model.EventStatus
+import io.piano.android.cxense.model.ExternalItem
+import io.piano.android.cxense.model.PerformanceEvent
+import io.piano.android.cxense.model.SegmentsResponse
+import io.piano.android.cxense.model.User
+import io.piano.android.cxense.model.UserExternalData
+import io.piano.android.cxense.model.UserIdentity
+import io.piano.android.cxense.model.UserSegmentRequest
+import io.piano.android.cxense.model.WidgetContext
+import io.piano.android.cxense.model.WidgetItem
 import com.example.cxensesdk.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
@@ -74,19 +74,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onResume() {
         super.onResume()
-        CxenseSdk.getInstance().setDispatchEventsCallback(
-            object : CxenseSdk.DispatchEventsCallback {
-                override fun onDispatch(statuses: List<EventStatus>) {
-                    val grouped = statuses.groupBy { it.isSent }
-                    showText(
-                        """
-                            Sent: '${grouped[true]?.joinToString { it.eventId ?: ""}}'
-                            Not sent: '${grouped[false]?.joinToString { it.eventId ?: ""}}'
-                        """.trimIndent()
-                    )
-                }
+        CxenseSdk.getInstance().setDispatchEventsCallback { statuses ->
+            val grouped = statuses.groupBy { it.isSent }
+            runOnUiThread {
+                showText(
+                    """
+                    Sent: '${grouped[true]?.joinToString { it.eventId ?: ""}}'
+                    Not sent: '${grouped[false]?.joinToString { it.eventId ?: ""}}'
+                    """.trimIndent()
+                )
             }
-        )
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
