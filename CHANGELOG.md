@@ -1,5 +1,8 @@
 # Piano DMP & Content SDK for Android
 
+## v2.3.1
+* Fix C1X compatibility
+
 ## v2.3.0
 * Renamed to Piano DMP & Content SDK
 * Changed package, group and artifact id
