@@ -162,6 +162,7 @@ class CxenseSdk(
      * @param user custom user
      * @param tag Only display results from the branch with the given tag and ignore other conditions.
      * @param prnd Identifier for the page view where the result of this call will be displayed.
+     * @param experienceId Experience identifier for C1X
      * @param callback listener for returning result
      */
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
@@ -172,6 +173,7 @@ class CxenseSdk(
         user: ContentUser? = null,
         tag: String? = null,
         prnd: String? = null,
+        experienceId: String? = null,
         callback: LoadCallback<List<WidgetItem>>
     ) = cxApi.getWidgetData(
         WidgetRequest(
@@ -180,7 +182,8 @@ class CxenseSdk(
             widgetContext,
             user ?: defaultContentUser,
             tag,
-            prnd
+            prnd,
+            experienceId
         )
     ).enqueue(callback) { it.items }
 
