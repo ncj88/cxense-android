@@ -56,10 +56,10 @@ interface CxApi {
     @POST(ENDPOINT_PUSH_DMP_EVENTS)
     fun pushEvents(@Body request: EventDataRequest): Call<Void>
 
-    @GET("https://scomcluster.cxense.com/Repo/rep.gif")
+    @GET("https://comcluster.cxense.com/Repo/rep.gif")
     fun trackInsightEvent(@QueryMap options: Map<String, String>): Call<ResponseBody>
 
-    @GET("https://scomcluster.cxense.com/dmp/push.gif")
+    @GET("https://comcluster.cxense.com/dmp/push.gif")
     fun trackDmpEvent(
         @Query("persisted") persistentId: String,
         @Query(PerformanceEvent.SEGMENT_IDS) segments: List<String>,
