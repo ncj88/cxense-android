@@ -1,14 +1,15 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.mavenRelease)
+    alias(libs.plugins.moshiIR)
 }
 
 android {
+    namespace = "io.piano.android.cxense"
     defaultConfig {
-        minSdk = 19
+        minSdk = 21
         compileSdk = 33
         targetSdk = 33
         val authority = "CxSdkInitProvider"
@@ -51,7 +52,6 @@ dependencies {
     api(libs.retrofit)
     api(libs.retrofitConverter)
     implementation(libs.moshi)
-    kapt(libs.moshiCodegen)
     api(libs.okhttpLogging)
     api(libs.timber)
 

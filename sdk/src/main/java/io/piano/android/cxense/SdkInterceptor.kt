@@ -17,7 +17,7 @@ internal class SdkInterceptor(
             chain.request()
                 .run {
                     newBuilder()
-                        .url(url().addSdkParams())
+                        .url(url.addSdkParams())
                         .build()
                 }
         )

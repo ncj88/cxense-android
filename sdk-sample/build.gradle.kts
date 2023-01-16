@@ -4,8 +4,9 @@ plugins {
 }
 
 android {
+    namespace = "com.example.cxensesdk"
     defaultConfig {
-        minSdk = 19
+        minSdk = 21
         compileSdk = 33
         targetSdk = 33
         applicationId = "com.example.cxensesdk"

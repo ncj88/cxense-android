@@ -2,7 +2,7 @@ package io.piano.android.cxense.model
 
 import io.piano.android.cxense.DependenciesProvider
 import io.piano.android.cxense.UserProvider
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.Collections
 import java.util.Objects
 
@@ -212,12 +212,12 @@ class PageViewEvent private constructor(
                 }
             }
             location?.let {
-                check(HttpUrl.parse(it) != null) {
+                check(it.toHttpUrlOrNull() != null) {
                     "You should provide valid url as location"
                 }
             }
             referrer?.let {
-                check(HttpUrl.parse(it) != null) {
+                check(it.toHttpUrlOrNull() != null) {
                     "You should provide valid url as referrer"
                 }
             }

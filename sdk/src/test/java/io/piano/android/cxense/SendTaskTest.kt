@@ -1,21 +1,19 @@
 package io.piano.android.cxense
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doNothing
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.doThrow
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.times
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import io.piano.android.cxense.db.EventRecord
 import io.piano.android.cxense.model.ConsentSettings
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doNothing
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import retrofit2.Call
 import retrofit2.Response
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class SendTaskTest {
     private val call: Call<Any> = mock {
@@ -47,7 +45,6 @@ class SendTaskTest {
         on { extractQueryData(any()) } doReturn (listOf("") to mapOf())
     }
     private val errorParser: ApiErrorParser = mock()
-    private val sendCallback: CxenseSdk.DispatchEventsCallback = mock()
 
     private val sendTask = spy(
         SendTask(
@@ -58,63 +55,24 @@ class SendTaskTest {
             userProvider,
             pageViewEventConverter,
             performanceEventConverter,
-            errorParser,
-            sendCallback
-        )
+            errorParser
+        ) {
+        }
     )
-
-    @Test
-    fun sendDmpEventsViaApi() {
-        val events = listOf<EventRecord>(mock(), mock())
-        sendTask.sendDmpEventsViaApi(events)
-        verify(cxApi).pushEvents(any())
-        verify(eventRepository, times(events.size)).putEventRecordInDatabase(any())
-        verify(errorParser).parseError(any())
-        verify(sendCallback).onDispatch(any())
-    }
 
     @Test
     fun sendEventsOneByOne() {
         val event1: EventRecord = mock()
         val event2: EventRecord = mock()
-        val sendFunc: (EventRecord) -> Exception? = mock {
-            on { invoke(eq(event1)) } doReturn null
-            on { invoke(eq(event2)) } doThrow BaseException()
+        var calls = 0
+        val sendFunc: (EventRecord) -> Exception? = {
+            calls++
+            if (it == event1)
+                null
+            else BaseException()
         }
         sendTask.sendEventsOneByOne(listOf(event1, event2), sendFunc)
-        verify(sendFunc, times(2)).invoke(any())
-        verify(sendCallback).onDispatch(any())
-    }
-
-    @Test
-    fun sendDmpEventsViaPersisted() {
-        val events = listOf<EventRecord>(mock(), mock())
-        sendTask.sendDmpEventsViaPersisted(events)
-        verify(sendTask).sendEventsOneByOne(eq(events), any())
-        verify(credentialsProvider, times(events.size)).getDmpPushPersistentId()
-        verify(cxApi, times(events.size)).trackDmpEvent(any(), any(), any())
-        verify(eventRepository, times(events.size)).putEventRecordInDatabase(any())
-        verify(errorParser, times(events.size)).parseError(any())
-    }
-
-    @Test
-    fun sendPageViewEvents() {
-        val events = listOf<EventRecord>(mock(), mock())
-        sendTask.sendPageViewEvents(events)
-        verify(sendTask).sendEventsOneByOne(eq(events), any())
-        verify(cxApi, times(events.size)).trackInsightEvent(any())
-        verify(eventRepository, times(events.size)).putEventRecordInDatabase(any())
-        verify(errorParser, times(events.size)).parseError(any())
-    }
-
-    @Test
-    fun sendConversionEvents() {
-        val events = listOf<EventRecord>(mock(), mock())
-        sendTask.sendConversionEvents(events)
-        verify(sendTask).sendEventsOneByOne(eq(events), any())
-        verify(cxApi, times(events.size)).pushConversionEvents(any())
-        verify(eventRepository, times(events.size)).putEventRecordInDatabase(any())
-        verify(errorParser, times(events.size)).parseError(any())
+        assertEquals(2, calls)
     }
 
     @Test

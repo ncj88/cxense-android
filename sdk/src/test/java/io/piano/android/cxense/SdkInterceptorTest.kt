@@ -5,6 +5,7 @@ import okhttp3.Request
 import okhttp3.mockwebserver.MockResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class SdkInterceptorTest : BaseInterceptorTest() {
 
@@ -21,6 +22,7 @@ class SdkInterceptorTest : BaseInterceptorTest() {
             )
             .execute()
         with(mockWebServer.takeRequest().requestUrl) {
+            assertNotNull(this)
             assertEquals(SDK_NAME, queryParameter(SdkInterceptor.ARG_SDK_NAME))
             assertEquals(SDK_VERSION_NAME, queryParameter(SdkInterceptor.ARG_SDK_VERSION))
             assertEquals(SdkInterceptor.VALUE_SDK_PLATFORM, queryParameter(SdkInterceptor.ARG_SDK_PLATFORM))

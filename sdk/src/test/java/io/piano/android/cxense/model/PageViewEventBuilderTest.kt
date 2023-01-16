@@ -2,8 +2,8 @@ package io.piano.android.cxense.model
 
 import io.piano.android.cxense.UserProvider
 import io.piano.android.cxense.assertFailsWithMessage
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
