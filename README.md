@@ -1,5 +1,7 @@
 # Piano DMP & Content SDK
+![GitHub](https://img.shields.io/github/license/cXense/cxense-android)
 ![Maven Central](https://img.shields.io/maven-central/v/io.piano.android/cxense)
+![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/cXense/cxense-android/build.yml?branch=master)
 
 ## Migration from SDK 2.0-2.2 to 2.3+
 1. Change dependency in your app script to `implementation("io.piano.android:cxense:VERSION")`
@@ -18,7 +20,7 @@ There are breaking changes in API:
 #### Requirements:
 
 * Java 8 / Kotlin
-* Android 4.4 (API level 19) or higher
+* Android 5.0 (API level 21) or higher
 * Gradle 6.0 or newer (use latest version if possible)
 
 #### Setup:

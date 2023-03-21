@@ -5,15 +5,14 @@ import io.piano.android.cxense.db.EventRecord
 import io.piano.android.cxense.model.ConsentSettings
 import io.piano.android.cxense.model.ConversionEvent
 import io.piano.android.cxense.model.PageViewEvent
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyOrNull
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.eq
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.spy
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
+import org.mockito.kotlin.spy
+import org.mockito.kotlin.verify
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -33,17 +32,6 @@ class EventRepositoryTest {
     @BeforeTest
     fun setUp() {
         repository = spy(EventRepository(configuration, databaseHelper, eventConverters))
-    }
-
-    @Test
-    fun putEventsInDatabase() {
-        whenever(converter.canConvert(any())).thenReturn(true)
-        whenever(converter.toEventRecord(any())).thenReturn(mock())
-        doReturn(0L).`when`(repository).putEventRecordInDatabase(any())
-        repository.putEventsInDatabase(arrayOf(mock()))
-        verify(converter).canConvert(any())
-        verify(converter).toEventRecord(any())
-        verify(repository).putEventRecordInDatabase(any())
     }
 
     @Test

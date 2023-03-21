@@ -1,5 +1,6 @@
 package io.piano.android.cxense
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
@@ -7,7 +8,6 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.DisplayMetrics
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import timber.log.Timber
 
@@ -43,7 +43,6 @@ class DeviceInfoProvider(
         context.packageManager.getApplicationLabel(context.applicationInfo).toString()
     }
 
-    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun NetworkCapabilities.toNetworkStatus(): CxenseConfiguration.NetworkStatus {
         return when {
             hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
@@ -59,6 +58,7 @@ class DeviceInfoProvider(
      *
      * @return {@code NetworkStatus} instance
      */
+
     fun getCurrentNetworkStatus(): CxenseConfiguration.NetworkStatus {
         val manager = ContextCompat.getSystemService(context, ConnectivityManager::class.java)
             ?: return CxenseConfiguration.NetworkStatus.NONE
@@ -76,6 +76,7 @@ class DeviceInfoProvider(
                 else -> {
                     val telephonyManager =
                         ContextCompat.getSystemService(context, TelephonyManager::class.java)
+                    @SuppressLint("MissingPermission")
                     when {
                         telephonyManager == null -> CxenseConfiguration.NetworkStatus.NONE
                         telephonyManager.networkType in MOBILE_NETWORK_TYPES -> CxenseConfiguration.NetworkStatus.MOBILE

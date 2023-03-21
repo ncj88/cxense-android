@@ -1,5 +1,23 @@
 # Piano DMP & Content SDK for Android
 
+## v2.4.0
+* Increased minSdkVersion from 19 to 21
+* Migrate from Moshi Codegen to Moshi-IR
+* Migrate PV event to new host
+* Updated dependencies:
+    - Kotlin [1.6.21 -> 1.7.22]
+      https://kotlinlang.org/
+    - androidx.startup:startup-runtime [1.1.0 -> 1.1.1]
+      https://developer.android.com/jetpack/androidx/releases/startup#1.1.1
+    - androidx.annotation:annotation [1.4.0 -> 1.5.0]
+      https://developer.android.com/jetpack/androidx/releases/annotation#annotation-1.5.0
+    - com.squareup.moshi:moshi [1.13.0 -> 1.14.0]
+      https://github.com/square/moshi/
+    - com.squareup.okhttp3:okhttp [3.12.13 -> 4.10.0]
+      https://square.github.io/okhttp/
+    - com.squareup.retrofit2:retrofit [2.6.4 -> 2.9.0]
+      https://github.com/square/retrofit
+
 ## v2.3.1
 * Fix C1X compatibility
 

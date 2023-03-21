@@ -1,7 +1,7 @@
 package io.piano.android.cxense.model
 
 import com.squareup.moshi.JsonClass
-import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import java.util.Collections
 
 /**
@@ -111,11 +111,11 @@ class WidgetContext internal constructor(
          * @throws [IllegalArgumentException] if constraints failed
          */
         fun build(): WidgetContext {
-            check(HttpUrl.parse(url) != null) {
+            check(url.toHttpUrlOrNull() != null) {
                 "You should provide valid url as source"
             }
             referrer?.let {
-                check(HttpUrl.parse(it) != null) {
+                check(it.toHttpUrlOrNull() != null) {
                     "You should provide valid url as referrer"
                 }
             }

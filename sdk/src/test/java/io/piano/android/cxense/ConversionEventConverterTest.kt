@@ -1,10 +1,10 @@
 package io.piano.android.cxense
 
 import io.piano.android.cxense.model.ConversionEvent
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import com.squareup.moshi.JsonAdapter
 import kotlin.test.Test
 import kotlin.test.assertFalse
