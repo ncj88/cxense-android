@@ -18,6 +18,6 @@ plugins {
     id("com.gradle.enterprise") version "3.0"
 }
 
-includeBuild("plugins")
+includeBuild("gradle/plugins")
 
 include(":sdk", ":sdk-sample")

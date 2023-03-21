@@ -1,8 +1,9 @@
 # Piano DMP & Content SDK for Android
 
-## v2.4.0-SNAPSHOT
+## v2.4.0
 * Increased minSdkVersion from 19 to 21
 * Migrate from Moshi Codegen to Moshi-IR
+* Migrate PV event to new host
 * Updated dependencies:
     - Kotlin [1.6.21 -> 1.7.22]
       https://kotlinlang.org/
