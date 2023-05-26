@@ -14,8 +14,9 @@ class ApiErrorParser(
     private val converter: Converter<ResponseBody, ApiError>
 ) {
     fun parseError(response: Response<*>): BaseException? {
-        if (response.isSuccessful)
+        if (response.isSuccessful) {
             return null
+        }
         try {
             val apiError: ApiError = response.errorBody()?.let {
                 try {

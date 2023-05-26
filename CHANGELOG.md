@@ -1,5 +1,18 @@
 # Piano DMP & Content SDK for Android
 
+## v2.5.0-SNAPSHOT
+* Fix `sdkv=unspecified` issue
+* Add Kotlin coroutine suspend support for API
+* Updated dependencies:
+    - Kotlin [1.7.22 -> 1.8.21]
+      https://kotlinlang.org/
+    - com.squareup.moshi:moshi [1.14.0 -> 1.15.0]
+      https://github.com/square/moshi/
+    - com.squareup.okhttp3:okhttp [4.10.0 -> 4.11.0]
+      https://square.github.io/okhttp/
+    - androidx.annotation:annotation [1.5.0 -> 1.6.0]
+      https://developer.android.com/jetpack/androidx/releases/annotation#1.6.0
+
 ## v2.4.0
 * Increased minSdkVersion from 19 to 21
 * Migrate from Moshi Codegen to Moshi-IR

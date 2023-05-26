@@ -43,11 +43,14 @@ internal class DependenciesProvider private constructor(
             .addInterceptor(UserAgentInterceptor(userAgentProvider))
             .addInterceptor(
                 HttpLoggingInterceptor().apply {
-                    level = if (BuildConfig.DEBUG)
+                    level = if (BuildConfig.DEBUG) {
                         HttpLoggingInterceptor.Level.HEADERS
-                    else HttpLoggingInterceptor.Level.NONE
+                    } else {
+                        HttpLoggingInterceptor.Level.NONE
+                    }
                 }
             )
+            .addNetworkInterceptor(RedirectLimiterInterceptor("/public/widget/click/"))
             .build()
     }
 

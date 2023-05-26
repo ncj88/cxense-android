@@ -160,7 +160,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             listOf(BuildConfig.SITEGROUP_ID),
             object : LoadCallback<List<String>> {
                 override fun onSuccess(data: List<String>) {
-                    showText(TextUtils.join(" ", data))
+                    showText(data.joinToString(" "))
                 }
 
                 override fun onError(throwable: Throwable) {

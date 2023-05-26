@@ -22,9 +22,7 @@ internal class UserAgentProvider(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageName != Application.getProcessName()) {
                 WebView.setDataDirectorySuffix(WEBVIEW_SUFFIX)
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)
-                return WebSettings.getDefaultUserAgent(this)
-            return WebView(this).settings.userAgentString
+            return WebSettings.getDefaultUserAgent(this)
         } catch (e: Exception) {
             /*
             This block is needed as attempt to avoid problem with Android System WebView

@@ -99,7 +99,7 @@ class ConsentSettings {
             "segmentAllowed" to "segment",
             "deviceAllowed" to "device",
             "geoAllowed" to "geo",
-            "adAllowed" to "ad",
+            "adAllowed" to "ad"
         )
     }
 }

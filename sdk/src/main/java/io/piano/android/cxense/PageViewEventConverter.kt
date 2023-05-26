@@ -33,7 +33,7 @@ class PageViewEventConverter(
             VERSION to DEFAULT_API_VERSION,
             TYPE to eventType,
             ACCOUNT to accountId?.toString(),
-            LOCATION to (contentId?.let { "http://$siteId.content.id/$contentId" } ?: location),
+            LOCATION to (contentId?.let { CxenseSdk.contentUrl(siteId, contentId) } ?: location),
             REFERRER to referrer,
             PAGE_NAME to pageName,
             TIME to time.toString(),
@@ -56,10 +56,14 @@ class PageViewEventConverter(
             CONSENT_VERSION to configuration.consentSettings.version.toString(),
             "${CUSTOM_PARAMETER_PREFIX}sdk_version" to BuildConfig.SDK_VERSION
         )
-        val appMetadata = if (configuration.autoMetaInfoTrackingEnabled) sequenceOf(
-            "${CUSTOM_PARAMETER_PREFIX}app" to deviceInfoProvider.applicationName,
-            "${CUSTOM_PARAMETER_PREFIX}appv" to (deviceInfoProvider.applicationVersion ?: "")
-        ) else emptySequence()
+        val appMetadata = if (configuration.autoMetaInfoTrackingEnabled) {
+            sequenceOf(
+                "${CUSTOM_PARAMETER_PREFIX}app" to deviceInfoProvider.applicationName,
+                "${CUSTOM_PARAMETER_PREFIX}appv" to (deviceInfoProvider.applicationVersion ?: "")
+            )
+        } else {
+            emptySequence()
+        }
         val ids = if (skipExternalIds) listOf() else externalUserIds.toPairs()
         val result = pairs + appMetadata + ids +
             customParameters.asSequence().map { "$CUSTOM_PARAMETER_PREFIX${it.name}" to it.value } +
@@ -79,9 +83,7 @@ class PageViewEventConverter(
 
     internal fun extractQueryData(eventRecord: EventRecord, fixUserIdFunc: () -> String): Map<String, String> =
         requireNotNull(mapAdapter.fromJson(eventRecord.data)).let {
-            if (it[CKP].isNullOrEmpty())
-                it + (CKP to fixUserIdFunc())
-            else it
+            if (it[CKP].isNullOrEmpty()) it + (CKP to fixUserIdFunc()) else it
         }
 
     override fun toEventRecord(event: Event): EventRecord? =

@@ -22,8 +22,9 @@ class AdvertisingIdProvider(
             advertisingInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
         } catch (e: Exception) {
             Timber.e(e)
-            if (e is IOException || e is GooglePlayServicesRepairableException)
+            if (e is IOException || e is GooglePlayServicesRepairableException) {
                 initAdvertisingIdTask()
+            }
         }
     }
 

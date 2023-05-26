@@ -18,9 +18,9 @@ class ApiCallback<T : Any>(
 
     override fun onResponse(call: Call<T>, response: Response<T>) {
         val body = response.body()
-        if (response.isSuccessful && body != null)
+        if (response.isSuccessful && body != null) {
             callback.onSuccess(body)
-        else {
+        } else {
             val e = errorParser.parseError(response) ?: BaseException("Response body is null")
             callback.onError(e)
         }

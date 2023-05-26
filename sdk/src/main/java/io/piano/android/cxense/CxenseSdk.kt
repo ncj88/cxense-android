@@ -98,8 +98,9 @@ class CxenseSdk(
     fun pushEvents(vararg events: Event) =
         executor.execute {
             eventRepository.putEventsInDatabase(events)
-            if (configuration.sendEventsAtPush)
+            if (configuration.sendEventsAtPush) {
                 flushEventQueue()
+            }
         }
 
     /**
@@ -381,6 +382,9 @@ class CxenseSdk(
         @JvmStatic
         @Suppress("unused")
         fun getInstance(): CxenseSdk = DependenciesProvider.getInstance().cxenseSdk
+
+        @JvmStatic
+        fun contentUrl(siteId: String, contentId: String) = "https://$siteId.content.id/$contentId"
 
         private val DISPATCH_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(10)
     }
