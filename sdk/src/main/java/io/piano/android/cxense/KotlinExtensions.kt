@@ -240,7 +240,7 @@ suspend fun CxenseSdk.addUserExternalLink(
 
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 @JvmOverloads
-suspend fun <T : Any> CxenseSdk.executePersistedQuery(
+suspend inline fun <reified T : Any> CxenseSdk.executePersistedQuery(
     url: String,
     persistentQueryId: String,
     data: Any? = null
