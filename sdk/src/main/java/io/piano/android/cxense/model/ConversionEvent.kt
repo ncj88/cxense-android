@@ -26,7 +26,7 @@ class ConversionEvent internal constructor(
     @Json(name = "funnelStep") val funnelStep: String,
     @Json(name = "productPrice") val price: Double?,
     @Json(name = "productRenewalFrequency") val renewalFrequency: String?,
-    @Json(name = "eventType") val eventType: String = EVENT_TYPE
+    @Json(name = "eventType") val eventType: String = EVENT_TYPE,
 ) : Event(null) {
     override val mergeKey = Objects.hash(eventType, siteId, productId)
 
@@ -48,7 +48,7 @@ class ConversionEvent internal constructor(
         var funnelStep: String,
         val identities: MutableList<UserIdentity> = mutableListOf(),
         var productPrice: Double? = null,
-        var renewalFrequency: String? = null
+        var renewalFrequency: String? = null,
     ) {
 
         /**

@@ -15,7 +15,7 @@ import timber.log.Timber
  * Provides device info
  */
 class DeviceInfoProvider(
-    private val context: Context
+    private val context: Context,
 ) {
     val displayMetrics: DisplayMetrics by lazy { context.resources.displayMetrics }
 

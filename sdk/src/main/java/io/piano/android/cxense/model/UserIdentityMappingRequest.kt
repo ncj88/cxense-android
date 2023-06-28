@@ -11,5 +11,5 @@ import com.squareup.moshi.JsonClass
 class UserIdentityMappingRequest(
     @Json(name = "cxid") val cxenseId: String,
     @Json(name = "type") val type: String,
-    @Json(name = "id") val id: String? = null
+    @Json(name = "id") val id: String? = null,
 )

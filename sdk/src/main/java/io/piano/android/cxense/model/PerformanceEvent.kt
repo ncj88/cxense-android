@@ -35,7 +35,7 @@ class PerformanceEvent internal constructor(
     @Json(name = SEGMENT_IDS) val segments: List<String>?,
     @Json(name = CUSTOM_PARAMETERS) val customParameters: List<CustomParameter>,
     @Json(name = "consent") val consentOptions: List<String>,
-    @Json(name = RND) val rnd: String
+    @Json(name = RND) val rnd: String,
 ) : Event(eventId) {
     override val mergeKey = Objects.hash(eventType, origin)
 
@@ -62,7 +62,7 @@ class PerformanceEvent internal constructor(
         var prnd: String? = null,
         var time: Long = System.currentTimeMillis(),
         var segments: MutableList<String> = mutableListOf(),
-        var customParameters: MutableList<CustomParameter> = mutableListOf()
+        var customParameters: MutableList<CustomParameter> = mutableListOf(),
     ) {
 
         @JvmOverloads
@@ -75,7 +75,7 @@ class PerformanceEvent internal constructor(
             prnd: String? = null,
             time: Long = System.currentTimeMillis(),
             segments: MutableList<String> = mutableListOf(),
-            customParameters: MutableList<CustomParameter> = mutableListOf()
+            customParameters: MutableList<CustomParameter> = mutableListOf(),
         ) : this(
             DependenciesProvider.getInstance().userProvider,
             siteId,

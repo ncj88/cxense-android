@@ -13,5 +13,5 @@ class WidgetRequest(
     val user: ContentUser? = null,
     val tag: String? = null,
     val prnd: String? = null,
-    val experienceId: String? = null
+    val experienceId: String? = null,
 )

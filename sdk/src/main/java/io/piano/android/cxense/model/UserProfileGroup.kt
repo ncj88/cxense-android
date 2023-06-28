@@ -11,5 +11,5 @@ import com.squareup.moshi.JsonClass
 class UserProfileGroup(
     @Json(name = "group") val group: String?,
     @Json(name = "count") val count: Int,
-    @Json(name = "weight") val weight: Double
+    @Json(name = "weight") val weight: Double,
 )

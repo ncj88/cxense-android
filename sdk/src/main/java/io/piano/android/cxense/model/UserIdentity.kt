@@ -12,7 +12,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 open class UserIdentity constructor(
     type: String,
-    @Json(name = "id") val id: String
+    @Json(name = "id") val id: String,
 ) {
     @Json(name = "type")
     val type: String = type.also {

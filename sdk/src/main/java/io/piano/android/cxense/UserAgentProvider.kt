@@ -13,7 +13,7 @@ import timber.log.Timber
  */
 internal class UserAgentProvider(
     sdkVersion: String,
-    context: Context
+    context: Context,
 ) {
     val userAgent: String by lazy { "cx-sdk/$sdkVersion ${context.getDefaultUserAgent()}" }
 

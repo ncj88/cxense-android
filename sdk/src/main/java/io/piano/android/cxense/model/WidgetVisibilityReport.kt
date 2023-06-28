@@ -9,5 +9,5 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 class WidgetVisibilityReport(
-    @Json(name = "impressions") val impressions: List<Impression>
+    @Json(name = "impressions") val impressions: List<Impression>,
 )

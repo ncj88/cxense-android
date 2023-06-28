@@ -55,7 +55,7 @@ suspend fun CxenseSdk.loadWidgetRecommendations(
     user: ContentUser? = null,
     tag: String? = null,
     prnd: String? = null,
-    experienceId: String? = null
+    experienceId: String? = null,
 ) = suspendCancellableCoroutine { continuation ->
     loadWidgetRecommendations(
         widgetId,
@@ -78,7 +78,7 @@ suspend fun CxenseSdk.loadWidgetRecommendations(
 
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 suspend fun CxenseSdk.reportWidgetVisibilities(
-    vararg impressions: Impression
+    vararg impressions: Impression,
 ) = suspendCancellableCoroutine { continuation ->
     reportWidgetVisibilities(
         object : LoadCallback<Unit> {
@@ -97,7 +97,7 @@ suspend fun CxenseSdk.reportWidgetVisibilities(
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 suspend fun CxenseSdk.getUserSegmentIds(
     identities: List<UserIdentity>,
-    siteGroupIds: List<String>
+    siteGroupIds: List<String>,
 ) = suspendCancellableCoroutine { continuation ->
     getUserSegmentIds(
         identities,
@@ -120,7 +120,7 @@ suspend fun CxenseSdk.getUser(
     identity: UserIdentity,
     groups: List<String>? = null,
     recent: Boolean? = null,
-    identityTypes: List<String>? = null
+    identityTypes: List<String>? = null,
 ) = suspendCancellableCoroutine { continuation ->
     getUser(
         identity,
@@ -144,7 +144,7 @@ suspend fun CxenseSdk.getUser(
 suspend fun CxenseSdk.getUserExternalData(
     type: String,
     id: String? = null,
-    filter: String? = null
+    filter: String? = null,
 ) = suspendCancellableCoroutine { continuation ->
     getUserExternalData(
         type,
@@ -164,7 +164,7 @@ suspend fun CxenseSdk.getUserExternalData(
 
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 suspend fun CxenseSdk.setUserExternalData(
-    userExternalData: UserExternalData
+    userExternalData: UserExternalData,
 ) = suspendCancellableCoroutine { continuation ->
     setUserExternalData(
         userExternalData,
@@ -182,7 +182,7 @@ suspend fun CxenseSdk.setUserExternalData(
 
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 suspend fun CxenseSdk.deleteUserExternalData(
-    identity: UserIdentity
+    identity: UserIdentity,
 ) = suspendCancellableCoroutine { continuation ->
     deleteUserExternalData(
         identity,
@@ -201,7 +201,7 @@ suspend fun CxenseSdk.deleteUserExternalData(
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 suspend fun CxenseSdk.getUserExternalLink(
     cxenseId: String,
-    type: String
+    type: String,
 ) = suspendCancellableCoroutine { continuation ->
     getUserExternalLink(
         cxenseId,
@@ -221,7 +221,7 @@ suspend fun CxenseSdk.getUserExternalLink(
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 suspend fun CxenseSdk.addUserExternalLink(
     cxenseId: String,
-    identity: UserIdentity
+    identity: UserIdentity,
 ) = suspendCancellableCoroutine { continuation ->
     addUserExternalLink(
         cxenseId,
@@ -243,7 +243,7 @@ suspend fun CxenseSdk.addUserExternalLink(
 suspend inline fun <reified T : Any> CxenseSdk.executePersistedQuery(
     url: String,
     persistentQueryId: String,
-    data: Any? = null
+    data: Any? = null,
 ) = suspendCancellableCoroutine { continuation ->
     executePersistedQuery(
         url,

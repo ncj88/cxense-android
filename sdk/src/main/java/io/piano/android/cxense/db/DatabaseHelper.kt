@@ -10,7 +10,7 @@ import androidx.annotation.RestrictTo
 
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class DatabaseHelper(
-    context: Context
+    context: Context,
 ) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -80,7 +80,7 @@ class DatabaseHelper(
         groupBy: String? = null,
         having: String? = null,
         orderBy: String? = "${EventRecord.TIME} ASC",
-        limit: String? = null
+        limit: String? = null,
     ): List<ContentValues> =
         readableDatabase.query(
             EventRecord.TABLE_NAME,

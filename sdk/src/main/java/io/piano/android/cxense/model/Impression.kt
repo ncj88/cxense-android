@@ -15,7 +15,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 class Impression(
     clickUrl: String,
-    seconds: Int
+    seconds: Int,
 ) {
     @Json(name = "clickUrl")
     val clickUrl: String = clickUrl.also {

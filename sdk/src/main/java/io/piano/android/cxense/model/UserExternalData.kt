@@ -12,7 +12,7 @@ import com.squareup.moshi.JsonClass
 class UserExternalData internal constructor(
     type: String,
     id: String,
-    @Json(name = "profile") val items: List<ExternalItem>
+    @Json(name = "profile") val items: List<ExternalItem>,
 ) : UserIdentity(type, id) {
 
     /**
@@ -22,7 +22,7 @@ class UserExternalData internal constructor(
      */
     data class Builder @JvmOverloads constructor(
         var identity: UserIdentity,
-        var externalItems: MutableList<ExternalItem> = mutableListOf()
+        var externalItems: MutableList<ExternalItem> = mutableListOf(),
     ) {
 
         /**

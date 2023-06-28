@@ -10,7 +10,7 @@ import okhttp3.Response
  */
 internal class SdkInterceptor(
     private val sdkName: String,
-    private val sdkVersion: String
+    private val sdkVersion: String,
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response =
         chain.proceed(

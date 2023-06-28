@@ -11,5 +11,5 @@ import com.squareup.moshi.JsonClass
 class UserExternalDataRequest(
     @Json(name = "type") val type: String,
     @Json(name = "id") val id: String?,
-    @Json(name = "filter") val filter: String?
+    @Json(name = "filter") val filter: String?,
 )

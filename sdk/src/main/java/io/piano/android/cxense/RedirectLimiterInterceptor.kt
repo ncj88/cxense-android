@@ -4,7 +4,7 @@ import okhttp3.Interceptor
 import okhttp3.Response
 
 class RedirectLimiterInterceptor(
-    urlBlockPattern: String
+    urlBlockPattern: String,
 ) : Interceptor {
     private val urlBlockRegex = urlBlockPattern.toRegex()
     override fun intercept(chain: Interceptor.Chain): Response {

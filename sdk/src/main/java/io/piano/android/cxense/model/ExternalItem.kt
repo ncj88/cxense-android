@@ -17,7 +17,7 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 class ExternalItem(
     group: String,
-    item: String
+    item: String,
 ) {
     @Json(name = "group")
     val group: String = group.also {

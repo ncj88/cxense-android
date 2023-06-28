@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class DependenciesProvider private constructor(
-    context: Context
+    context: Context,
 ) {
     private val executor: ScheduledExecutorService by lazy { Executors.newSingleThreadScheduledExecutor() }
     private val userAgentProvider: UserAgentProvider by lazy { UserAgentProvider(BuildConfig.SDK_VERSION, context) }

@@ -10,7 +10,7 @@ import retrofit2.Response
  */
 class ApiCallback<T : Any>(
     private val callback: LoadCallback<T>,
-    private val errorParser: ApiErrorParser
+    private val errorParser: ApiErrorParser,
 ) : Callback<T> {
     override fun onFailure(call: Call<T>, t: Throwable) {
         callback.onError(t)

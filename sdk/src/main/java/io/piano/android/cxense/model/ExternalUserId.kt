@@ -13,7 +13,7 @@ package io.piano.android.cxense.model
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 class ExternalUserId(
     userType: String,
-    userId: String
+    userId: String,
 ) {
     val userType: String = userType.also {
         require(it.length <= USER_TYPE_MAX_LENGTH) {

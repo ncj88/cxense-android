@@ -9,5 +9,5 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 class SegmentsResponse(
-    @Json(name = "segments") val ids: List<String> = emptyList()
+    @Json(name = "segments") val ids: List<String> = emptyList(),
 )

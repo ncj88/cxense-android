@@ -18,7 +18,7 @@ class SendTask(
     private val pageViewEventConverter: PageViewEventConverter,
     private val performanceEventConverter: PerformanceEventConverter,
     private val errorParser: ApiErrorParser,
-    var sendCallback: CxenseSdk.DispatchEventsCallback?
+    var sendCallback: CxenseSdk.DispatchEventsCallback?,
 ) : Runnable {
 
     private fun EventRecord.toEventStatus(e: Exception? = null) =

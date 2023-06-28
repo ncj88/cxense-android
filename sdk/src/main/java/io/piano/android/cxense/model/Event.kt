@@ -5,7 +5,7 @@ package io.piano.android.cxense.model
  * @param eventId custom event id, that used for tracking locally.
  */
 abstract class Event protected constructor(
-    @Transient val eventId: String?
+    @Transient val eventId: String?,
 ) {
     abstract val mergeKey: Int
 }

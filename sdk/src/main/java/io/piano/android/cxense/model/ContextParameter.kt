@@ -11,5 +11,5 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 class ContextParameter(
     val key: String,
-    val value: String
+    val value: String,
 )

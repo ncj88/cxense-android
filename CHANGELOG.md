@@ -1,6 +1,7 @@
 # Piano DMP & Content SDK for Android
 
 ## v2.5.0-SNAPSHOT
+* Android 14 compatibility
 * Fix `sdkv=unspecified` issue
 * Add Kotlin coroutine suspend support for API
 * Updated dependencies:

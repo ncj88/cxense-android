@@ -9,5 +9,5 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 class UserExternalDataResponse(
-    @Json(name = "data") val items: List<UserExternalData> = emptyList()
+    @Json(name = "data") val items: List<UserExternalData> = emptyList(),
 )

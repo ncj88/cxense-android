@@ -103,6 +103,6 @@ class CxenseConfiguration {
         /**
          * A Wi-Fi connection.
          */
-        WIFI
+        WIFI,
     }
 }

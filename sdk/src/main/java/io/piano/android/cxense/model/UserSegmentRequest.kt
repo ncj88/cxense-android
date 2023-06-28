@@ -10,5 +10,5 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 class UserSegmentRequest(
     @Json(name = "identities") val identities: List<UserIdentity>,
-    @Json(name = "siteGroupIds") val siteGroups: List<String>
+    @Json(name = "siteGroupIds") val siteGroups: List<String>,
 )

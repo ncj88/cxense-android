@@ -5,5 +5,5 @@ package io.piano.android.cxense.model
  *
  */
 class EventDataRequest(
-    val events: List<String>
+    val events: List<String>,
 )

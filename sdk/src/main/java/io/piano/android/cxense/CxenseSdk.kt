@@ -41,7 +41,7 @@ class CxenseSdk(
     private val errorParser: ApiErrorParser,
     private val moshi: Moshi,
     private val eventRepository: EventRepository,
-    private val sendTask: SendTask
+    private val sendTask: SendTask,
 ) {
     init {
         configuration.dispatchPeriodListener = { initSendTaskSchedule() }
@@ -175,7 +175,7 @@ class CxenseSdk(
         tag: String? = null,
         prnd: String? = null,
         experienceId: String? = null,
-        callback: LoadCallback<List<WidgetItem>>
+        callback: LoadCallback<List<WidgetItem>>,
     ) = cxApi.getWidgetData(
         WidgetRequest(
             widgetId,
@@ -211,7 +211,7 @@ class CxenseSdk(
     fun getUserSegmentIds(
         identities: List<UserIdentity>,
         siteGroupIds: List<String>,
-        callback: LoadCallback<List<String>>
+        callback: LoadCallback<List<String>>,
     ) {
         require(identities.isNotEmpty()) {
             "You should provide at least one user identity"
@@ -249,7 +249,7 @@ class CxenseSdk(
         groups: List<String>? = null,
         recent: Boolean? = null,
         identityTypes: List<String>? = null,
-        callback: LoadCallback<User>
+        callback: LoadCallback<User>,
     ) = cxApi.getUser(UserDataRequest(identity, groups, recent, identityTypes)).enqueue(callback)
 
     /**
@@ -266,7 +266,7 @@ class CxenseSdk(
         type: String,
         id: String? = null,
         filter: String? = null,
-        callback: LoadCallback<List<@JvmSuppressWildcards UserExternalData>>
+        callback: LoadCallback<List<@JvmSuppressWildcards UserExternalData>>,
     ) = cxApi.getUserExternalData(UserExternalDataRequest(type, id, filter)).enqueue(callback) { it.items }
 
     /**
@@ -327,7 +327,7 @@ class CxenseSdk(
         url: String,
         persistentQueryId: String,
         data: Any? = null,
-        callback: LoadCallback<T>
+        callback: LoadCallback<T>,
     ) {
         with(cxApi) {
             data?.let { postPersisted(url, persistentQueryId, it) } ?: getPersisted(url, persistentQueryId)

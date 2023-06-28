@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
  */
 class AdvertisingIdProvider(
     private val context: Context,
-    private val executor: ScheduledExecutorService
+    private val executor: ScheduledExecutorService,
 ) {
     private var advertisingInfo: AdvertisingIdClient.Info? = null
 

@@ -63,7 +63,7 @@ interface CxApi {
     fun trackDmpEvent(
         @Query("persisted") persistentId: String,
         @Query(PerformanceEvent.SEGMENT_IDS) segments: List<String>,
-        @QueryMap options: Map<String, String>
+        @QueryMap options: Map<String, String>,
     ): Call<ResponseBody>
 
     @POST("https://comcluster.cxense.com/cce/push?experimental=true")
@@ -81,13 +81,13 @@ interface CxApi {
     @GET
     fun getPersisted(
         @Url url: String,
-        @Query("persisted") persistentId: String
+        @Query("persisted") persistentId: String,
     ): Call<ResponseBody>
 
     @POST
     fun postPersisted(
         @Url url: String,
         @Query("persisted") persistentId: String,
-        @Body data: Any
+        @Body data: Any,
     ): Call<ResponseBody>
 }

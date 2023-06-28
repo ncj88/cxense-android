@@ -9,7 +9,7 @@ import java.util.UUID
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 class UserProvider(
-    private val advertisingIdProvider: AdvertisingIdProvider
+    private val advertisingIdProvider: AdvertisingIdProvider,
 ) {
     private var currentUserId: String? = null
 

@@ -39,7 +39,7 @@ class PageViewEvent private constructor(
     val customUserParameters: MutableList<CustomParameter>,
     val externalUserIds: MutableList<ExternalUserId>,
     val time: Long,
-    val rnd: String
+    val rnd: String,
 ) : Event(eventId) {
     val eventType = EVENT_TYPE
     override val mergeKey = Objects.hash(eventType, siteId, location, contentId, referrer)
@@ -70,7 +70,7 @@ class PageViewEvent private constructor(
         var newUser: Boolean? = null,
         var customParameters: MutableList<CustomParameter> = mutableListOf(),
         var customUserParameters: MutableList<CustomParameter> = mutableListOf(),
-        var externalUserIds: MutableList<ExternalUserId> = mutableListOf()
+        var externalUserIds: MutableList<ExternalUserId> = mutableListOf(),
     ) {
         /**
          * Initialize Builder with required parameters
@@ -87,7 +87,7 @@ class PageViewEvent private constructor(
             newUser: Boolean? = null,
             customParameters: MutableList<CustomParameter> = mutableListOf(),
             customUserParameters: MutableList<CustomParameter> = mutableListOf(),
-            externalUserIds: MutableList<ExternalUserId> = mutableListOf()
+            externalUserIds: MutableList<ExternalUserId> = mutableListOf(),
         ) : this(
             DependenciesProvider.getInstance().userProvider,
             siteId,

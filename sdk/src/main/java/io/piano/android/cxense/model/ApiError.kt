@@ -9,5 +9,5 @@ import com.squareup.moshi.JsonClass
  */
 @JsonClass(generateAdapter = true)
 class ApiError(
-    @Json(name = "error") val error: String? = null
+    @Json(name = "error") val error: String? = null,
 )

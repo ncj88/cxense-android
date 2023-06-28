@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 class PageViewEventConverter(
     private val mapAdapter: JsonAdapter<Map<String, String>>,
     private val configuration: CxenseConfiguration,
-    private val deviceInfoProvider: DeviceInfoProvider
+    private val deviceInfoProvider: DeviceInfoProvider,
 ) : EventConverter() {
     override fun canConvert(event: Event): Boolean = event is PageViewEvent
 

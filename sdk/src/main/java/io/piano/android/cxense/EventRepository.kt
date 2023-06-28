@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 class EventRepository(
     private val configuration: CxenseConfiguration,
     private val databaseHelper: DatabaseHelper,
-    private val eventConverters: List<EventConverter>
+    private val eventConverters: List<EventConverter>,
 ) {
     fun putEventsInDatabase(events: Array<out Event>) {
         events.forEach { e ->
@@ -59,7 +59,7 @@ class EventRepository(
     internal fun getEvents(
         selection: String?,
         selectionArgs: Array<out String?>?,
-        limit: String? = null
+        limit: String? = null,
     ): List<EventRecord> =
         databaseHelper.query(
             selection = selection,

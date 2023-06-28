@@ -9,5 +9,5 @@ import com.squareup.moshi.JsonClass
 class WidgetResponse(
     val items: List<WidgetItem> = emptyList(),
     val template: String? = null,
-    val style: String? = null
+    val style: String? = null,
 )

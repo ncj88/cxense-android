@@ -8,8 +8,8 @@ android {
     namespace = "com.example.cxensesdk"
     defaultConfig {
         minSdk = 21
-        compileSdk = 33
-        targetSdk = 33
+        compileSdk = 34
+        targetSdk = 34
         applicationId = "com.example.cxensesdk"
         versionCode = 1
         versionName = "1.0"
