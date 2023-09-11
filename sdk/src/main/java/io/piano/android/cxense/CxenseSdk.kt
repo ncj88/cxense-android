@@ -2,11 +2,13 @@ package io.piano.android.cxense
 
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.Moshi
+import io.piano.android.cxense.model.CandidateSegment
 import io.piano.android.cxense.model.ContentUser
 import io.piano.android.cxense.model.Event
 import io.piano.android.cxense.model.EventStatus
 import io.piano.android.cxense.model.Impression
 import io.piano.android.cxense.model.QueueStatus
+import io.piano.android.cxense.model.Segment
 import io.piano.android.cxense.model.User
 import io.piano.android.cxense.model.UserDataRequest
 import io.piano.android.cxense.model.UserExternalData
@@ -205,8 +207,56 @@ class CxenseSdk(
      *
      * @param identities a list of user identifiers for a single user to retrieve segments for
      * @param siteGroupIds the list of site groups to retrieve segments for
+     * @param candidateSegments A list of candidate segments to consider. The response segment matches will be a subset of these candidates.
+     * @param segmentFormat The segment format, one of [UserSegmentRequest.SegmentFormat.STANDARD] (the standard segment ID format that can be found in the platform)
+     *                      or [UserSegmentRequest.SegmentFormat.SHORT_IDS] (a specially generated shortened version of the segment identifier compatible with some Ad servers).
      * @param callback a  callback to receive a list of segment identifiers where the specified user is a member
      */
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    @JvmOverloads
+    fun getUserSegments(
+        identities: List<UserIdentity>,
+        siteGroupIds: List<String>,
+        candidateSegments: List<CandidateSegment>? = null,
+        segmentFormat: UserSegmentRequest.SegmentFormat = UserSegmentRequest.SegmentFormat.STANDARD,
+        callback: LoadCallback<List<Segment>>,
+    ) {
+        require(identities.isNotEmpty()) {
+            "You should provide at least one user identity"
+        }
+        val siteGroups = siteGroupIds
+            .filterNot { it.isEmpty() }
+            .also {
+                require(it.isNotEmpty()) {
+                    "You should provide at least one not empty site group id"
+                }
+            }
+        val segmentsDenied = with(configuration.consentSettings) {
+            consentRequired && !segmentAllowed
+        }
+        if (segmentsDenied) {
+            callback.onError(ConsentRequiredException())
+            return
+        }
+        cxApi.getUserTypedSegments(
+            UserSegmentRequest(
+                identities,
+                siteGroups,
+                candidateSegments,
+                UserSegmentRequest.ResponseFormat.CX_TYPED,
+                segmentFormat
+            )
+        ).enqueue(callback) { it.segments }
+    }
+
+    /**
+     * Asynchronously retrieves a list of all segments where the specified user is a member
+     *
+     * @param identities a list of user identifiers for a single user to retrieve segments for
+     * @param siteGroupIds the list of site groups to retrieve segments for
+     * @param callback a  callback to receive a list of segment identifiers where the specified user is a member
+     */
+    @Deprecated("Use `getUserSegments`")
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun getUserSegmentIds(
         identities: List<UserIdentity>,

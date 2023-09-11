@@ -26,6 +26,7 @@ import io.piano.android.cxense.model.WidgetContext
 import io.piano.android.cxense.model.WidgetItem
 import com.example.cxensesdk.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import io.piano.android.cxense.model.Segment
 import timber.log.Timber
 import java.util.Locale
 import java.util.UUID
@@ -155,12 +156,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
             }
         )
-        cxenseSdk.getUserSegmentIds(
+        cxenseSdk.getUserSegments(
             identities,
             listOf(BuildConfig.SITEGROUP_ID),
-            object : LoadCallback<List<String>> {
-                override fun onSuccess(data: List<String>) {
-                    showText(data.joinToString(" "))
+            callback = object : LoadCallback<List<Segment>> {
+                override fun onSuccess(data: List<Segment>) {
+                    showText(data.joinToString(" ") { "{id=${it.id},type=${it.type}}" })
                 }
 
                 override fun onError(throwable: Throwable) {

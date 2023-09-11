@@ -7,8 +7,7 @@ import com.squareup.moshi.JsonClass
  * Response for segments from server.
  *
  */
-@Deprecated("See TypedSegmentsResponse")
 @JsonClass(generateAdapter = true)
-class SegmentsResponse(
-    @Json(name = "segments") val ids: List<String> = emptyList(),
+class TypedSegmentsResponse(
+    @Json(name = "segments") val segments: List<Segment> = emptyList(),
 )

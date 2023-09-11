@@ -3,6 +3,7 @@ package io.piano.android.cxense
 import io.piano.android.cxense.model.EventDataRequest
 import io.piano.android.cxense.model.PerformanceEvent
 import io.piano.android.cxense.model.SegmentsResponse
+import io.piano.android.cxense.model.TypedSegmentsResponse
 import io.piano.android.cxense.model.User
 import io.piano.android.cxense.model.UserDataRequest
 import io.piano.android.cxense.model.UserExternalData
@@ -24,6 +25,11 @@ import retrofit2.http.QueryMap
 import retrofit2.http.Url
 
 interface CxApi {
+    @Authorized
+    @POST(ENDPOINT_USER_SEGMENTS)
+    fun getUserTypedSegments(@Body request: UserSegmentRequest): Call<TypedSegmentsResponse>
+
+    @Deprecated("Use `getUserTypedSegments`")
     @Authorized
     @POST(ENDPOINT_USER_SEGMENTS)
     fun getUserSegments(@Body request: UserSegmentRequest): Call<SegmentsResponse>

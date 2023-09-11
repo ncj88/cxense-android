@@ -2,11 +2,14 @@
 
 package io.piano.android.cxense
 
+import io.piano.android.cxense.model.CandidateSegment
 import io.piano.android.cxense.model.ContentUser
 import io.piano.android.cxense.model.Impression
+import io.piano.android.cxense.model.Segment
 import io.piano.android.cxense.model.User
 import io.piano.android.cxense.model.UserExternalData
 import io.piano.android.cxense.model.UserIdentity
+import io.piano.android.cxense.model.UserSegmentRequest
 import io.piano.android.cxense.model.WidgetContext
 import io.piano.android.cxense.model.WidgetItem
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -95,15 +98,19 @@ suspend fun CxenseSdk.reportWidgetVisibilities(
 }
 
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-suspend fun CxenseSdk.getUserSegmentIds(
+suspend fun CxenseSdk.getUserSegments(
     identities: List<UserIdentity>,
     siteGroupIds: List<String>,
+    candidateSegments: List<CandidateSegment>? = null,
+    segmentFormat: UserSegmentRequest.SegmentFormat = UserSegmentRequest.SegmentFormat.STANDARD,
 ) = suspendCancellableCoroutine { continuation ->
-    getUserSegmentIds(
+    getUserSegments(
         identities,
         siteGroupIds,
-        object : LoadCallback<List<String>> {
-            override fun onSuccess(data: List<String>) {
+        candidateSegments,
+        segmentFormat,
+        object : LoadCallback<List<Segment>> {
+            override fun onSuccess(data: List<Segment>) {
                 continuation.resume(data)
             }
 
