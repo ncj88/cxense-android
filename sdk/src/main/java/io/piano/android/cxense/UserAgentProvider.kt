@@ -17,13 +17,13 @@ internal class UserAgentProvider(
 ) {
     val userAgent: String by lazy { "cx-sdk/$sdkVersion ${context.getDefaultUserAgent()}" }
 
-    private fun Context.getDefaultUserAgent(): String {
-        try {
+    private fun Context.getDefaultUserAgent(): String =
+        runCatching {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageName != Application.getProcessName()) {
                 WebView.setDataDirectorySuffix(WEBVIEW_SUFFIX)
             }
-            return WebSettings.getDefaultUserAgent(this)
-        } catch (e: Exception) {
+            WebSettings.getDefaultUserAgent(this)
+        }.recover {
             /*
             This block is needed as attempt to avoid problem with Android System WebView
             service's update during which any requests to WebViews will be finished
@@ -42,10 +42,11 @@ internal class UserAgentProvider(
             Good explanation of the problem can be found here:
             https://bugs.chromium.org/p/chromium/issues/detail?id=506369
              */
-            Timber.e(e)
-            return System.getProperty("http.agent") ?: ""
-        }
-    }
+            Timber.e(it)
+            System.getProperty("http.agent") ?: ""
+        }.map {
+            it.filter { c -> c == '\t' || c in '\u0020'..'\u007e' }
+        }.getOrDefault("")
 
     companion object {
         private const val WEBVIEW_SUFFIX = "CxenseSDK"
