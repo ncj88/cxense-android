@@ -64,6 +64,7 @@ dependencies {
     api(libs.retrofit)
     api(libs.retrofitConverter)
     implementation(libs.moshi)
+    implementation(libs.moshiAdapters)
     api(libs.okhttpLogging)
     api(libs.timber)
     compileOnly(libs.kotlinCoroutines)

@@ -14,20 +14,21 @@ import io.piano.android.cxense.ENDPOINT_USER_SEGMENTS
 import io.piano.android.cxense.LoadCallback
 import io.piano.android.cxense.MIN_DISPATCH_PERIOD
 import io.piano.android.cxense.model.CustomParameter
-import io.piano.android.cxense.model.EventStatus
-import io.piano.android.cxense.model.ExternalItem
 import io.piano.android.cxense.model.PerformanceEvent
-import io.piano.android.cxense.model.SegmentsResponse
 import io.piano.android.cxense.model.User
-import io.piano.android.cxense.model.UserExternalData
 import io.piano.android.cxense.model.UserIdentity
 import io.piano.android.cxense.model.UserSegmentRequest
 import io.piano.android.cxense.model.WidgetContext
 import io.piano.android.cxense.model.WidgetItem
 import com.example.cxensesdk.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import io.piano.android.cxense.model.ExternalTypedItem
 import io.piano.android.cxense.model.Segment
+import io.piano.android.cxense.model.TypedItem
+import io.piano.android.cxense.model.TypedSegmentsResponse
+import io.piano.android.cxense.model.UserExternalTypedData
 import timber.log.Timber
+import java.util.Date
 import java.util.Locale
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -145,10 +146,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         cxenseSdk.executePersistedQuery(
             ENDPOINT_USER_SEGMENTS,
             segmentsPersistentId,
-            UserSegmentRequest(identities, listOf(BuildConfig.SITEGROUP_ID)),
-            object : LoadCallback<SegmentsResponse> {
-                override fun onSuccess(data: SegmentsResponse) {
-                    showText(TextUtils.join(" ", data.ids))
+            UserSegmentRequest(
+                identities,
+                listOf(BuildConfig.SITEGROUP_ID),
+                format = UserSegmentRequest.ResponseFormat.CX_TYPED
+            ),
+            object : LoadCallback<TypedSegmentsResponse> {
+                override fun onSuccess(data: TypedSegmentsResponse) {
+                    showText(data.segments.joinToString(" ") { "{id=${it.id},type=${it.type}}" })
                 }
 
                 override fun onError(throwable: Throwable) {
@@ -183,11 +188,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         )
 
         // read external data for user
-        cxenseSdk.getUserExternalData(
+        cxenseSdk.getUserExternalTypedData(
             type,
             id,
-            callback = object : LoadCallback<List<UserExternalData>> {
-                override fun onSuccess(data: List<UserExternalData>) {
+            callback = object : LoadCallback<List<UserExternalTypedData>> {
+                override fun onSuccess(data: List<UserExternalTypedData>) {
                     showText(String.format(Locale.US, "We have %d items", data.size))
                 }
 
@@ -196,20 +201,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 }
             }
         )
-
-//        // read external data for all users with type
-//        cxenseSdk.getUserExternalData(
-//            type,
-//            callback = object : LoadCallback<List<UserExternalData>> {
-//                override fun onSuccess(data: List<UserExternalData>) {
-//                    showText(String.format(Locale.US, "We have %d items", data.size))
-//                }
-//
-//                override fun onError(throwable: Throwable) {
-//                    showError(throwable)
-//                }
-//            }
-//        )
 
         // delete external data for user
         cxenseSdk.deleteUserExternalData(
@@ -226,14 +217,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         )
 
         // update external data for user
-        val userExternalData = UserExternalData.Builder(identity)
+        val userExternalData = UserExternalTypedData.Builder(identity)
             .addExternalItems(
-                ExternalItem("gender", "male"),
-                ExternalItem("interests", "football"),
-                ExternalItem("sports", "football")
+                ExternalTypedItem("gender", TypedItem.String("male")),
+                ExternalTypedItem("interests", TypedItem.Number(2)),
+                ExternalTypedItem("sports", TypedItem.Time(Date())),
+                ExternalTypedItem("sports", TypedItem.Decimal(4.0))
             )
             .build()
-        cxenseSdk.setUserExternalData(
+        cxenseSdk.setUserExternalTypedData(
             userExternalData,
             object : LoadCallback<Unit> {
                 override fun onSuccess(data: Unit) {

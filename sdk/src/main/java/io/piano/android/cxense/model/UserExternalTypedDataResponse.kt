@@ -7,8 +7,7 @@ import com.squareup.moshi.JsonClass
  * Response for data associated with the user(s) from server.
  *
  */
-@Deprecated("See UserExternalTypedDataResponse")
 @JsonClass(generateAdapter = true)
-class UserExternalDataResponse(
-    @Json(name = "data") val items: List<UserExternalData> = emptyList(),
+class UserExternalTypedDataResponse(
+    @Json(name = "data") val items: List<UserExternalTypedData> = emptyList(),
 )

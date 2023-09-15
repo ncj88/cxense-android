@@ -52,6 +52,7 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 okhttpLogging = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttp" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 moshi = { module = "com.squareup.moshi:moshi", version.ref = "moshi" }
+moshiAdapters = { module = "com.squareup.moshi:moshi-adapters", version.ref = "moshi" }
 viewBindingProperty = { module = "com.github.kirich1409:viewbindingpropertydelegate", version.ref = "viewBindingProperty" }
 recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerView" }
 kotlinCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }

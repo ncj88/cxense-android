@@ -13,6 +13,7 @@ import io.piano.android.cxense.model.User
 import io.piano.android.cxense.model.UserDataRequest
 import io.piano.android.cxense.model.UserExternalData
 import io.piano.android.cxense.model.UserExternalDataRequest
+import io.piano.android.cxense.model.UserExternalTypedData
 import io.piano.android.cxense.model.UserIdentity
 import io.piano.android.cxense.model.UserIdentityMappingRequest
 import io.piano.android.cxense.model.UserSegmentRequest
@@ -308,8 +309,30 @@ class CxenseSdk(
      * @param id identifier for the user. Use 'null' if you want match all users of provided type.
      * @param type the customer identifier type
      * @param filter a traffic filter of type user-external with required group and optional item/items specified
+     * @param groups a list of group names. The result will show a subset of profiles that include these groups.
      * @param callback a callback with {@link UserExternalData}
      */
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    @JvmOverloads
+    fun getUserExternalTypedData(
+        type: String,
+        id: String? = null,
+        filter: String? = null,
+        groups: List<String>? = null,
+        callback: LoadCallback<List<@JvmSuppressWildcards UserExternalTypedData>>,
+    ) = cxApi.getUserExternalTypedData(
+        UserExternalDataRequest(type, id, filter, groups, format = UserExternalDataRequest.ResponseFormat.TYPED)
+    ).enqueue(callback) { it.items }
+
+    /**
+     * Asynchronously retrieves the external data associated with a given user
+     *
+     * @param id identifier for the user. Use 'null' if you want match all users of provided type.
+     * @param type the customer identifier type
+     * @param filter a traffic filter of type user-external with required group and optional item/items specified
+     * @param callback a callback with {@link UserExternalData}
+     */
+    @Deprecated("Use `getUserExternalTypedData`")
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     @JvmOverloads
     fun getUserExternalData(
@@ -317,7 +340,7 @@ class CxenseSdk(
         id: String? = null,
         filter: String? = null,
         callback: LoadCallback<List<@JvmSuppressWildcards UserExternalData>>,
-    ) = cxApi.getUserExternalData(UserExternalDataRequest(type, id, filter)).enqueue(callback) { it.items }
+    ) = cxApi.getUserExternalData(UserExternalDataRequest(type, id, filter, null)).enqueue(callback) { it.items }
 
     /**
      * Asynchronously sets the external data associated with a given user
@@ -325,6 +348,19 @@ class CxenseSdk(
      * @param userExternalData external data associated with a user
      * @param callback a callback
      */
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    fun setUserExternalTypedData(
+        userExternalData: UserExternalTypedData,
+        callback: LoadCallback<@JvmSuppressWildcards Unit>,
+    ) = cxApi.setUserExternalTypedData(userExternalData).enqueue(callback)
+
+    /**
+     * Asynchronously sets the external data associated with a given user
+     *
+     * @param userExternalData external data associated with a user
+     * @param callback a callback
+     */
+    @Deprecated("Use `setUserExternalTypedData`")
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun setUserExternalData(userExternalData: UserExternalData, callback: LoadCallback<@JvmSuppressWildcards Unit>) =
         cxApi.setUserExternalData(userExternalData).enqueue(callback)

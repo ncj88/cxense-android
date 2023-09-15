@@ -9,6 +9,8 @@ import io.piano.android.cxense.model.UserDataRequest
 import io.piano.android.cxense.model.UserExternalData
 import io.piano.android.cxense.model.UserExternalDataRequest
 import io.piano.android.cxense.model.UserExternalDataResponse
+import io.piano.android.cxense.model.UserExternalTypedData
+import io.piano.android.cxense.model.UserExternalTypedDataResponse
 import io.piano.android.cxense.model.UserIdentity
 import io.piano.android.cxense.model.UserIdentityMappingRequest
 import io.piano.android.cxense.model.UserSegmentRequest
@@ -40,8 +42,18 @@ interface CxApi {
 
     @Authorized
     @POST(ENDPOINT_READ_USER_EXTERNAL_DATA)
+    fun getUserExternalTypedData(@Body request: UserExternalDataRequest): Call<UserExternalTypedDataResponse>
+
+    @Deprecated("Use `getUserExternalTypedData`")
+    @Authorized
+    @POST(ENDPOINT_READ_USER_EXTERNAL_DATA)
     fun getUserExternalData(@Body request: UserExternalDataRequest): Call<UserExternalDataResponse>
 
+    @Authorized
+    @POST(ENDPOINT_UPDATE_USER_EXTERNAL_DATA)
+    fun setUserExternalTypedData(@Body externalData: UserExternalTypedData): Call<Unit>
+
+    @Deprecated("Use `setUserExternalTypedData`")
     @Authorized
     @POST(ENDPOINT_UPDATE_USER_EXTERNAL_DATA)
     fun setUserExternalData(@Body externalData: UserExternalData): Call<Unit>

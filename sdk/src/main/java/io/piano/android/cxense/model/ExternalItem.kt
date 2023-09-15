@@ -13,6 +13,7 @@ import com.squareup.moshi.JsonClass
  *
  * @throws IllegalArgumentException if [group] or [item] doesn't meet a criteria.
  */
+@Deprecated("See ExternalTypedItem")
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 @JsonClass(generateAdapter = true)
 class ExternalItem(

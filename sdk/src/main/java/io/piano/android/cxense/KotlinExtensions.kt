@@ -7,7 +7,7 @@ import io.piano.android.cxense.model.ContentUser
 import io.piano.android.cxense.model.Impression
 import io.piano.android.cxense.model.Segment
 import io.piano.android.cxense.model.User
-import io.piano.android.cxense.model.UserExternalData
+import io.piano.android.cxense.model.UserExternalTypedData
 import io.piano.android.cxense.model.UserIdentity
 import io.piano.android.cxense.model.UserSegmentRequest
 import io.piano.android.cxense.model.WidgetContext
@@ -148,17 +148,19 @@ suspend fun CxenseSdk.getUser(
 
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
 @JvmOverloads
-suspend fun CxenseSdk.getUserExternalData(
+suspend fun CxenseSdk.getUserExternalTypedData(
     type: String,
     id: String? = null,
     filter: String? = null,
+    groups: List<String>? = null,
 ) = suspendCancellableCoroutine { continuation ->
-    getUserExternalData(
+    getUserExternalTypedData(
         type,
         id,
         filter,
-        object : LoadCallback<List<UserExternalData>> {
-            override fun onSuccess(data: List<UserExternalData>) {
+        groups,
+        object : LoadCallback<List<UserExternalTypedData>> {
+            override fun onSuccess(data: List<UserExternalTypedData>) {
                 continuation.resume(data)
             }
 
@@ -170,10 +172,10 @@ suspend fun CxenseSdk.getUserExternalData(
 }
 
 @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
-suspend fun CxenseSdk.setUserExternalData(
-    userExternalData: UserExternalData,
+suspend fun CxenseSdk.setUserExternalTypedData(
+    userExternalData: UserExternalTypedData,
 ) = suspendCancellableCoroutine { continuation ->
-    setUserExternalData(
+    setUserExternalTypedData(
         userExternalData,
         object : LoadCallback<Unit> {
             override fun onSuccess(data: Unit) {

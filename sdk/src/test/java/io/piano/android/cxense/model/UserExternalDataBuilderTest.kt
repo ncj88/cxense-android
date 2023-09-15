@@ -6,14 +6,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class UserExternalDataBuilderTest {
-    private lateinit var builder: UserExternalData.Builder
+    private lateinit var builder: UserExternalTypedData.Builder
 
     private val identity = UserIdentity("cx", "id")
-    private val externalItem = ExternalItem("group", "item")
+    private val externalItem = ExternalTypedItem("group", TypedItem.String("item"))
 
     @BeforeTest
     fun setUp() {
-        builder = UserExternalData.Builder(identity)
+        builder = UserExternalTypedData.Builder(identity)
     }
 
     @Test
