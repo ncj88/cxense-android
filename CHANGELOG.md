@@ -1,8 +1,11 @@
 # Piano DMP & Content SDK for Android
 
-## v2.5.0-SNAPSHOT
+## v2.5.0
 * Android 14 compatibility
 * Fix `sdkv=unspecified` issue
+* Fix incorrect symbols in User-Agent from some devices
+* Add support for `typed` segments
+* Add support for `typed` external items for user data
 * Add Kotlin coroutine suspend support for API
 * Updated dependencies:
     - Kotlin [1.7.22 -> 1.8.21]
