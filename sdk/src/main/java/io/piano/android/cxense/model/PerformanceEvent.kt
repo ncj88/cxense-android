@@ -35,7 +35,7 @@ class PerformanceEvent internal constructor(
     @Json(name = SEGMENT_IDS) val segments: List<String>?,
     @Json(name = CUSTOM_PARAMETERS) val customParameters: List<CustomParameter>,
     @Json(name = "consent") val consentOptions: List<String>,
-    @Json(name = RND) val rnd: String
+    @Json(name = RND) val rnd: String,
 ) : Event(eventId) {
     override val mergeKey = Objects.hash(eventType, origin)
 
@@ -61,8 +61,8 @@ class PerformanceEvent internal constructor(
         var eventId: String? = null,
         var prnd: String? = null,
         var time: Long = System.currentTimeMillis(),
-        var segments: MutableList<String> = mutableListOf(),
-        var customParameters: MutableList<CustomParameter> = mutableListOf()
+        @Deprecated("Deprecated at backend") var segments: MutableList<String> = mutableListOf(),
+        var customParameters: MutableList<CustomParameter> = mutableListOf(),
     ) {
 
         @JvmOverloads
@@ -75,7 +75,7 @@ class PerformanceEvent internal constructor(
             prnd: String? = null,
             time: Long = System.currentTimeMillis(),
             segments: MutableList<String> = mutableListOf(),
-            customParameters: MutableList<CustomParameter> = mutableListOf()
+            customParameters: MutableList<CustomParameter> = mutableListOf(),
         ) : this(
             DependenciesProvider.getInstance().userProvider,
             siteId,
@@ -146,12 +146,14 @@ class PerformanceEvent internal constructor(
          * Adds matching segments to be reported.
          * @param segments one or many segment ids
          */
+        @Deprecated("Deprecated at backend")
         fun addSegments(vararg segments: String) = apply { this.segments.addAll(segments) }
 
         /**
          * Adds matching segments to be reported.
          * @param segments [Iterable] with segment ids
          */
+        @Deprecated("Deprecated at backend")
         fun addSegments(segments: Iterable<String>) = apply { this.segments.addAll(segments) }
 
         /**
@@ -187,7 +189,7 @@ class PerformanceEvent internal constructor(
                 it.type == UserIdentity.CX_USER_TYPE
             }?.let {
                 identities
-            } ?: identities + UserIdentity(UserIdentity.CX_USER_TYPE, userProvider.userId)
+            } ?: (identities + UserIdentity(UserIdentity.CX_USER_TYPE, userProvider.userId))
 
             return with(DependenciesProvider.getInstance().cxenseConfiguration) {
                 PerformanceEvent(

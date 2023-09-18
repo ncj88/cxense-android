@@ -19,7 +19,7 @@ import io.piano.android.cxense.model.CustomParameter.Companion.MAX_CUSTOM_PARAME
 @JsonClass(generateAdapter = true)
 class CustomParameter(
     name: String,
-    value: String
+    value: String,
 ) {
     @Json(name = GROUP)
     val name: String = name.also {

@@ -18,7 +18,7 @@ class SendTask(
     private val pageViewEventConverter: PageViewEventConverter,
     private val performanceEventConverter: PerformanceEventConverter,
     private val errorParser: ApiErrorParser,
-    var sendCallback: CxenseSdk.DispatchEventsCallback?
+    var sendCallback: CxenseSdk.DispatchEventsCallback?,
 ) : Runnable {
 
     private fun EventRecord.toEventStatus(e: Exception? = null) =
@@ -105,13 +105,15 @@ class SendTask(
     override fun run() {
         try {
             eventRepository.deleteOutdatedEvents(configuration.outdatePeriod)
-            if (deviceInfoProvider.getCurrentNetworkStatus() < configuration.minimumNetworkStatus)
+            if (deviceInfoProvider.getCurrentNetworkStatus() < configuration.minimumNetworkStatus) {
                 return
+            }
             val pvDenied = with(configuration.consentSettings) {
                 consentRequired && !pvAllowed
             }
-            if (pvDenied)
+            if (pvDenied) {
                 return
+            }
             sendPageViewEvents(eventRepository.getNotSubmittedPvEvents())
             with(configuration.credentialsProvider) {
                 eventRepository.getNotSubmittedDmpEvents().let { events ->

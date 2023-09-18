@@ -19,7 +19,7 @@ data class EventRecord(
     val spentTime: Long? = null,
     val mergeKey: Int,
     var id: Long? = null,
-    var isSent: Boolean = false
+    var isSent: Boolean = false,
 ) {
 
     fun toContentValues(): ContentValues =

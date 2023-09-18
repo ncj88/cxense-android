@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
  */
 class AdvertisingIdProvider(
     private val context: Context,
-    private val executor: ScheduledExecutorService
+    private val executor: ScheduledExecutorService,
 ) {
     private var advertisingInfo: AdvertisingIdClient.Info? = null
 
@@ -22,8 +22,9 @@ class AdvertisingIdProvider(
             advertisingInfo = AdvertisingIdClient.getAdvertisingIdInfo(context)
         } catch (e: Exception) {
             Timber.e(e)
-            if (e is IOException || e is GooglePlayServicesRepairableException)
+            if (e is IOException || e is GooglePlayServicesRepairableException) {
                 initAdvertisingIdTask()
+            }
         }
     }
 

@@ -12,5 +12,5 @@ class User(
     type: String,
     id: String,
     @Json(name = "profile") val profiles: List<UserProfile>,
-    @Json(name = "identities") val identities: List<UserIdentity>
+    @Json(name = "identities") val identities: List<UserIdentity>,
 ) : UserIdentity(type, id)

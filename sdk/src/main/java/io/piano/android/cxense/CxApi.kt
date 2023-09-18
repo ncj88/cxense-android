@@ -3,11 +3,14 @@ package io.piano.android.cxense
 import io.piano.android.cxense.model.EventDataRequest
 import io.piano.android.cxense.model.PerformanceEvent
 import io.piano.android.cxense.model.SegmentsResponse
+import io.piano.android.cxense.model.TypedSegmentsResponse
 import io.piano.android.cxense.model.User
 import io.piano.android.cxense.model.UserDataRequest
 import io.piano.android.cxense.model.UserExternalData
 import io.piano.android.cxense.model.UserExternalDataRequest
 import io.piano.android.cxense.model.UserExternalDataResponse
+import io.piano.android.cxense.model.UserExternalTypedData
+import io.piano.android.cxense.model.UserExternalTypedDataResponse
 import io.piano.android.cxense.model.UserIdentity
 import io.piano.android.cxense.model.UserIdentityMappingRequest
 import io.piano.android.cxense.model.UserSegmentRequest
@@ -26,6 +29,11 @@ import retrofit2.http.Url
 interface CxApi {
     @Authorized
     @POST(ENDPOINT_USER_SEGMENTS)
+    fun getUserTypedSegments(@Body request: UserSegmentRequest): Call<TypedSegmentsResponse>
+
+    @Deprecated("Use `getUserTypedSegments`")
+    @Authorized
+    @POST(ENDPOINT_USER_SEGMENTS)
     fun getUserSegments(@Body request: UserSegmentRequest): Call<SegmentsResponse>
 
     @Authorized
@@ -34,8 +42,18 @@ interface CxApi {
 
     @Authorized
     @POST(ENDPOINT_READ_USER_EXTERNAL_DATA)
+    fun getUserExternalTypedData(@Body request: UserExternalDataRequest): Call<UserExternalTypedDataResponse>
+
+    @Deprecated("Use `getUserExternalTypedData`")
+    @Authorized
+    @POST(ENDPOINT_READ_USER_EXTERNAL_DATA)
     fun getUserExternalData(@Body request: UserExternalDataRequest): Call<UserExternalDataResponse>
 
+    @Authorized
+    @POST(ENDPOINT_UPDATE_USER_EXTERNAL_DATA)
+    fun setUserExternalTypedData(@Body externalData: UserExternalTypedData): Call<Unit>
+
+    @Deprecated("Use `setUserExternalTypedData`")
     @Authorized
     @POST(ENDPOINT_UPDATE_USER_EXTERNAL_DATA)
     fun setUserExternalData(@Body externalData: UserExternalData): Call<Unit>
@@ -63,7 +81,7 @@ interface CxApi {
     fun trackDmpEvent(
         @Query("persisted") persistentId: String,
         @Query(PerformanceEvent.SEGMENT_IDS) segments: List<String>,
-        @QueryMap options: Map<String, String>
+        @QueryMap options: Map<String, String>,
     ): Call<ResponseBody>
 
     @POST("https://comcluster.cxense.com/cce/push?experimental=true")
@@ -81,13 +99,13 @@ interface CxApi {
     @GET
     fun getPersisted(
         @Url url: String,
-        @Query("persisted") persistentId: String
+        @Query("persisted") persistentId: String,
     ): Call<ResponseBody>
 
     @POST
     fun postPersisted(
         @Url url: String,
         @Query("persisted") persistentId: String,
-        @Body data: Any
+        @Body data: Any,
     ): Call<ResponseBody>
 }

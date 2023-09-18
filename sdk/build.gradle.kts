@@ -6,14 +6,18 @@ plugins {
     alias(libs.plugins.moshiIR)
 }
 
+val GROUP: String by project
+val VERSION_NAME: String by project
+group = GROUP
+version = VERSION_NAME
+
 android {
     namespace = "io.piano.android.cxense"
     defaultConfig {
         minSdk = 21
-        compileSdk = 33
-        targetSdk = 33
+        compileSdk = 34
         val authority = "CxSdkInitProvider"
-        buildConfigField("String", "SDK_VERSION", """"${project.version}"""")
+        buildConfigField("String", "SDK_VERSION", """"$version"""")
         buildConfigField("String", "SDK_NAME", """"cxense"""")
         buildConfigField("String", "SDK_ENDPOINT", """"https://api.cxense.com"""")
         buildConfigField("String", "AUTHORITY", """LIBRARY_PACKAGE_NAME + ".$authority"""")
@@ -34,14 +38,22 @@ android {
     lint {
         abortOnError = false
     }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
 }
 
 kotlin {
     explicitApi()
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
 }
 
 ktlint {
-    version.set("0.45.2")
+    version.set("0.50.0")
     android.set(true)
 }
 
@@ -52,8 +64,10 @@ dependencies {
     api(libs.retrofit)
     api(libs.retrofitConverter)
     implementation(libs.moshi)
+    implementation(libs.moshiAdapters)
     api(libs.okhttpLogging)
     api(libs.timber)
+    compileOnly(libs.kotlinCoroutines)
 
     testImplementation(libs.kotlinJunit)
     testImplementation(libs.mockitoKotlin)

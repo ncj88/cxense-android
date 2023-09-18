@@ -4,18 +4,21 @@ import android.content.Context
 import androidx.annotation.RestrictTo
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
+import com.squareup.moshi.adapters.PolymorphicJsonAdapterFactory
+import com.squareup.moshi.adapters.Rfc3339DateJsonAdapter
 import io.piano.android.cxense.db.DatabaseHelper
 import io.piano.android.cxense.model.ApiError
 import io.piano.android.cxense.model.ConversionEvent
 import io.piano.android.cxense.model.EventDataRequest
-import io.piano.android.cxense.model.EventStatus
 import io.piano.android.cxense.model.PerformanceEvent
+import io.piano.android.cxense.model.TypedItem
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.create
 import timber.log.Timber
+import java.util.Date
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -25,7 +28,7 @@ import java.util.concurrent.TimeUnit
  */
 @RestrictTo(RestrictTo.Scope.LIBRARY)
 internal class DependenciesProvider private constructor(
-    context: Context
+    context: Context,
 ) {
     private val executor: ScheduledExecutorService by lazy { Executors.newSingleThreadScheduledExecutor() }
     private val userAgentProvider: UserAgentProvider by lazy { UserAgentProvider(BuildConfig.SDK_VERSION, context) }
@@ -43,17 +46,31 @@ internal class DependenciesProvider private constructor(
             .addInterceptor(UserAgentInterceptor(userAgentProvider))
             .addInterceptor(
                 HttpLoggingInterceptor().apply {
-                    level = if (BuildConfig.DEBUG)
+                    level = if (BuildConfig.DEBUG) {
                         HttpLoggingInterceptor.Level.HEADERS
-                    else HttpLoggingInterceptor.Level.NONE
+                    } else {
+                        HttpLoggingInterceptor.Level.NONE
+                    }
                 }
             )
+            .addNetworkInterceptor(RedirectLimiterInterceptor("/public/widget/click/"))
             .build()
     }
 
     private val moshi = Moshi.Builder()
         .add(EventDataRequest::class.java, EventsRequestAdapter())
-        .add(WidgetItemAdapter())
+        .add(WidgetItemAdapter)
+        .add(Date::class.java, Rfc3339DateJsonAdapter())
+        .add(IntStringAdapter)
+        .add(DoubleStringAdapter)
+        .add(
+            PolymorphicJsonAdapterFactory.of(TypedItem::class.java, "type")
+                .withSubtype(TypedItem.String::class.java, "string")
+                .withSubtype(TypedItem.Number::class.java, "number")
+                .withSubtype(TypedItem.Time::class.java, "time")
+                .withSubtype(TypedItem.Decimal::class.java, "decimal")
+                .withDefaultValue(TypedItem.Unknown)
+        )
         .build()
 
     private val retrofit: Retrofit by lazy {
@@ -111,14 +128,12 @@ internal class DependenciesProvider private constructor(
             )
         )
     }
-    private val eventsSendCallback: CxenseSdk.DispatchEventsCallback = object :
-        CxenseSdk.DispatchEventsCallback {
-        override fun onDispatch(statuses: List<EventStatus>) {
+    private val eventsSendCallback: CxenseSdk.DispatchEventsCallback =
+        CxenseSdk.DispatchEventsCallback { statuses ->
             statuses.mapNotNull { it.exception }.forEach {
                 Timber.tag("CxenseEventCallback").e(it)
             }
         }
-    }
 
     private val eventsSendTask: SendTask by lazy {
         SendTask(

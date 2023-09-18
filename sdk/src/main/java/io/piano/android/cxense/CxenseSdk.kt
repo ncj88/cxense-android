@@ -2,15 +2,18 @@ package io.piano.android.cxense
 
 import com.squareup.moshi.JsonReader
 import com.squareup.moshi.Moshi
+import io.piano.android.cxense.model.CandidateSegment
 import io.piano.android.cxense.model.ContentUser
 import io.piano.android.cxense.model.Event
 import io.piano.android.cxense.model.EventStatus
 import io.piano.android.cxense.model.Impression
 import io.piano.android.cxense.model.QueueStatus
+import io.piano.android.cxense.model.Segment
 import io.piano.android.cxense.model.User
 import io.piano.android.cxense.model.UserDataRequest
 import io.piano.android.cxense.model.UserExternalData
 import io.piano.android.cxense.model.UserExternalDataRequest
+import io.piano.android.cxense.model.UserExternalTypedData
 import io.piano.android.cxense.model.UserIdentity
 import io.piano.android.cxense.model.UserIdentityMappingRequest
 import io.piano.android.cxense.model.UserSegmentRequest
@@ -41,7 +44,7 @@ class CxenseSdk(
     private val errorParser: ApiErrorParser,
     private val moshi: Moshi,
     private val eventRepository: EventRepository,
-    private val sendTask: SendTask
+    private val sendTask: SendTask,
 ) {
     init {
         configuration.dispatchPeriodListener = { initSendTaskSchedule() }
@@ -98,8 +101,9 @@ class CxenseSdk(
     fun pushEvents(vararg events: Event) =
         executor.execute {
             eventRepository.putEventsInDatabase(events)
-            if (configuration.sendEventsAtPush)
+            if (configuration.sendEventsAtPush) {
                 flushEventQueue()
+            }
         }
 
     /**
@@ -174,7 +178,7 @@ class CxenseSdk(
         tag: String? = null,
         prnd: String? = null,
         experienceId: String? = null,
-        callback: LoadCallback<List<WidgetItem>>
+        callback: LoadCallback<List<WidgetItem>>,
     ) = cxApi.getWidgetData(
         WidgetRequest(
             widgetId,
@@ -204,13 +208,61 @@ class CxenseSdk(
      *
      * @param identities a list of user identifiers for a single user to retrieve segments for
      * @param siteGroupIds the list of site groups to retrieve segments for
+     * @param candidateSegments A list of candidate segments to consider. The response segment matches will be a subset of these candidates.
+     * @param segmentFormat The segment format, one of [UserSegmentRequest.SegmentFormat.STANDARD] (the standard segment ID format that can be found in the platform)
+     *                      or [UserSegmentRequest.SegmentFormat.SHORT_IDS] (a specially generated shortened version of the segment identifier compatible with some Ad servers).
      * @param callback a  callback to receive a list of segment identifiers where the specified user is a member
      */
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    @JvmOverloads
+    fun getUserSegments(
+        identities: List<UserIdentity>,
+        siteGroupIds: List<String>,
+        candidateSegments: List<CandidateSegment>? = null,
+        segmentFormat: UserSegmentRequest.SegmentFormat = UserSegmentRequest.SegmentFormat.STANDARD,
+        callback: LoadCallback<List<Segment>>,
+    ) {
+        require(identities.isNotEmpty()) {
+            "You should provide at least one user identity"
+        }
+        val siteGroups = siteGroupIds
+            .filterNot { it.isEmpty() }
+            .also {
+                require(it.isNotEmpty()) {
+                    "You should provide at least one not empty site group id"
+                }
+            }
+        val segmentsDenied = with(configuration.consentSettings) {
+            consentRequired && !segmentAllowed
+        }
+        if (segmentsDenied) {
+            callback.onError(ConsentRequiredException())
+            return
+        }
+        cxApi.getUserTypedSegments(
+            UserSegmentRequest(
+                identities,
+                siteGroups,
+                candidateSegments,
+                UserSegmentRequest.ResponseFormat.CX_TYPED,
+                segmentFormat
+            )
+        ).enqueue(callback) { it.segments }
+    }
+
+    /**
+     * Asynchronously retrieves a list of all segments where the specified user is a member
+     *
+     * @param identities a list of user identifiers for a single user to retrieve segments for
+     * @param siteGroupIds the list of site groups to retrieve segments for
+     * @param callback a  callback to receive a list of segment identifiers where the specified user is a member
+     */
+    @Deprecated("Use `getUserSegments`")
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun getUserSegmentIds(
         identities: List<UserIdentity>,
         siteGroupIds: List<String>,
-        callback: LoadCallback<List<String>>
+        callback: LoadCallback<List<String>>,
     ) {
         require(identities.isNotEmpty()) {
             "You should provide at least one user identity"
@@ -248,8 +300,29 @@ class CxenseSdk(
         groups: List<String>? = null,
         recent: Boolean? = null,
         identityTypes: List<String>? = null,
-        callback: LoadCallback<User>
+        callback: LoadCallback<User>,
     ) = cxApi.getUser(UserDataRequest(identity, groups, recent, identityTypes)).enqueue(callback)
+
+    /**
+     * Asynchronously retrieves the external data associated with a given user
+     *
+     * @param id identifier for the user. Use 'null' if you want match all users of provided type.
+     * @param type the customer identifier type
+     * @param filter a traffic filter of type user-external with required group and optional item/items specified
+     * @param groups a list of group names. The result will show a subset of profiles that include these groups.
+     * @param callback a callback with {@link UserExternalData}
+     */
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    @JvmOverloads
+    fun getUserExternalTypedData(
+        type: String,
+        id: String? = null,
+        filter: String? = null,
+        groups: List<String>? = null,
+        callback: LoadCallback<List<@JvmSuppressWildcards UserExternalTypedData>>,
+    ) = cxApi.getUserExternalTypedData(
+        UserExternalDataRequest(type, id, filter, groups, format = UserExternalDataRequest.ResponseFormat.TYPED)
+    ).enqueue(callback) { it.items }
 
     /**
      * Asynchronously retrieves the external data associated with a given user
@@ -259,14 +332,15 @@ class CxenseSdk(
      * @param filter a traffic filter of type user-external with required group and optional item/items specified
      * @param callback a callback with {@link UserExternalData}
      */
+    @Deprecated("Use `getUserExternalTypedData`")
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     @JvmOverloads
     fun getUserExternalData(
         type: String,
         id: String? = null,
         filter: String? = null,
-        callback: LoadCallback<List<@JvmSuppressWildcards UserExternalData>>
-    ) = cxApi.getUserExternalData(UserExternalDataRequest(type, id, filter)).enqueue(callback) { it.items }
+        callback: LoadCallback<List<@JvmSuppressWildcards UserExternalData>>,
+    ) = cxApi.getUserExternalData(UserExternalDataRequest(type, id, filter, null)).enqueue(callback) { it.items }
 
     /**
      * Asynchronously sets the external data associated with a given user
@@ -274,6 +348,19 @@ class CxenseSdk(
      * @param userExternalData external data associated with a user
      * @param callback a callback
      */
+    @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
+    fun setUserExternalTypedData(
+        userExternalData: UserExternalTypedData,
+        callback: LoadCallback<@JvmSuppressWildcards Unit>,
+    ) = cxApi.setUserExternalTypedData(userExternalData).enqueue(callback)
+
+    /**
+     * Asynchronously sets the external data associated with a given user
+     *
+     * @param userExternalData external data associated with a user
+     * @param callback a callback
+     */
+    @Deprecated("Use `setUserExternalTypedData`")
     @Suppress("unused", "MemberVisibilityCanBePrivate") // Public API.
     fun setUserExternalData(userExternalData: UserExternalData, callback: LoadCallback<@JvmSuppressWildcards Unit>) =
         cxApi.setUserExternalData(userExternalData).enqueue(callback)
@@ -326,7 +413,7 @@ class CxenseSdk(
         url: String,
         persistentQueryId: String,
         data: Any? = null,
-        callback: LoadCallback<T>
+        callback: LoadCallback<T>,
     ) {
         with(cxApi) {
             data?.let { postPersisted(url, persistentQueryId, it) } ?: getPersisted(url, persistentQueryId)
@@ -381,6 +468,9 @@ class CxenseSdk(
         @JvmStatic
         @Suppress("unused")
         fun getInstance(): CxenseSdk = DependenciesProvider.getInstance().cxenseSdk
+
+        @JvmStatic
+        fun contentUrl(siteId: String, contentId: String) = "https://$siteId.content.id/$contentId"
 
         private val DISPATCH_INITIAL_DELAY = TimeUnit.SECONDS.toMillis(10)
     }

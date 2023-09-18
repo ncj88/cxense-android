@@ -27,7 +27,7 @@ class WidgetContext internal constructor(
     val categories: MutableMap<String, String>,
     val keywords: MutableList<String>,
     val neighbors: MutableList<String>,
-    val parameters: MutableList<ContextParameter>
+    val parameters: MutableList<ContextParameter>,
 ) {
     /**
      * @constructor Initialize builder for [WidgetContext]
@@ -50,7 +50,7 @@ class WidgetContext internal constructor(
         var categories: MutableMap<String, String> = mutableMapOf(),
         var keywords: MutableList<String> = mutableListOf(),
         var neighbors: MutableList<String> = mutableListOf(),
-        var parameters: MutableList<ContextParameter> = mutableListOf()
+        var parameters: MutableList<ContextParameter> = mutableListOf(),
     ) {
         /**
          * Sets url

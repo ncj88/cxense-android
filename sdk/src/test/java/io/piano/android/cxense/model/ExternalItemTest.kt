@@ -7,19 +7,12 @@ class ExternalItemTest {
     @Test
     fun withInvalidGroup() {
         assertFailsWithMessage<IllegalArgumentException>("Group should not be empty", "Expected fail for group") {
-            ExternalItem("", "")
-        }
-    }
-
-    @Test
-    fun withInvalidItem() {
-        assertFailsWithMessage<IllegalArgumentException>("Item can't be longer", "Expected fail for item") {
-            ExternalItem("group", "q".repeat(500))
+            ExternalTypedItem("", TypedItem.String(""))
         }
     }
 
     @Test
     fun createValid() {
-        ExternalItem("group", "item")
+        ExternalTypedItem("group", TypedItem.String("item"))
     }
 }

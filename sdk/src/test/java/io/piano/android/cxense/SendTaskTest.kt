@@ -67,9 +67,11 @@ class SendTaskTest {
         var calls = 0
         val sendFunc: (EventRecord) -> Exception? = {
             calls++
-            if (it == event1)
+            if (it == event1) {
                 null
-            else BaseException()
+            } else {
+                BaseException()
+            }
         }
         sendTask.sendEventsOneByOne(listOf(event1, event2), sendFunc)
         assertEquals(2, calls)

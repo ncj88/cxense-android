@@ -18,8 +18,9 @@ import kotlin.properties.Delegates
 class CxenseConfiguration {
     var autoMetaInfoTrackingEnabled: Boolean = true
     var dispatchPeriod: Long by Delegates.observable(DEFAULT_DISPATCH_PERIOD) { _, oldValue, newValue ->
-        if (oldValue != newValue)
+        if (oldValue != newValue) {
             dispatchPeriodListener?.invoke(newValue)
+        }
     }
         private set
 
@@ -102,6 +103,6 @@ class CxenseConfiguration {
         /**
          * A Wi-Fi connection.
          */
-        WIFI
+        WIFI,
     }
 }

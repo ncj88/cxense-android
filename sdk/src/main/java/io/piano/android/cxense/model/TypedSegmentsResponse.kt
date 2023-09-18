@@ -4,10 +4,10 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 /**
- * Api Error answer
+ * Response for segments from server.
  *
  */
 @JsonClass(generateAdapter = true)
-class ApiError(
-    @Json(name = "error") val error: String? = null,
+class TypedSegmentsResponse(
+    @Json(name = "segments") val segments: List<Segment> = emptyList(),
 )

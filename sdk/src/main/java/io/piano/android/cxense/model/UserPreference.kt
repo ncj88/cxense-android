@@ -12,5 +12,5 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 class UserPreference(
     val categories: List<String>,
-    val boost: Double
+    val boost: Double,
 )
